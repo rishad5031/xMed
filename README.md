@@ -17,6 +17,17 @@
 
 ---
 
+## 🌐 Live Demo & Instant Access
+
+> 🚀 **Live Public Web Portal**: [**https://absolutely-mounts-ocean-unknown.trycloudflare.com**](https://absolutely-mounts-ocean-unknown.trycloudflare.com)  
+> 🏥 **Doctor Studio**: [https://absolutely-mounts-ocean-unknown.trycloudflare.com/doctor-dashboard](https://absolutely-mounts-ocean-unknown.trycloudflare.com/doctor-dashboard)  
+> 🩺 **Citizen Health Vault**: [https://absolutely-mounts-ocean-unknown.trycloudflare.com/patient-dashboard](https://absolutely-mounts-ocean-unknown.trycloudflare.com/patient-dashboard)  
+> 🤖 **MR.MED AI Assistant**: [https://absolutely-mounts-ocean-unknown.trycloudflare.com/ai-assistant](https://absolutely-mounts-ocean-unknown.trycloudflare.com/ai-assistant)  
+> 🔐 **Default Demo Password**: `Password123!`  
+> *(Connected in real-time to local XAMPP MariaDB at `192.168.0.186:3306/xmed_db` via Cloudflare Tunnel).*
+
+---
+
 ## 📖 Overview
 
 **xMED** is an enterprise-grade Electronic Health Record (EHR) web ecosystem developed to centralize patient medical records, enable frictionless doctor tele-prescribing, provide tamper-evident QR verification of medical documents, and deliver automated clinical guidance powered by Google Gemini.
