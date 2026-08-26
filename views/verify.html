@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prescription Authenticity Verification | xMED National EHR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#0ea5e9', 600: '#0284c7' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+  
+  <div class="aurora-bg">
+    <div class="aurora-blob-1"></div>
+    <div class="aurora-blob-2"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="glass-nav py-4 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5">
+          <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+        </div>
+        <span class="text-xl font-black bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">xMED Verification</span>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <button type="button" class="theme-toggle-btn p-2 rounded-xl glass-card text-slate-300 hover:text-white" aria-label="Toggle Theme"></button>
+        <a href="/" class="text-xs font-semibold text-sky-400 hover:text-sky-300">Home &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Verification Card -->
+  <main class="flex-1 flex items-center justify-center p-4 py-12 relative z-10">
+    <div class="w-full max-w-lg glass-card spotlight-wrapper p-8 rounded-3xl border border-slate-700/60 shadow-2xl relative">
+      
+      <div id="verify-loading" class="text-center py-12 space-y-4">
+        <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div class="text-sm font-semibold text-slate-300">Verifying cryptographic signature with National EHR Registry...</div>
+      </div>
+
+      <div id="verify-result" class="hidden space-y-6 animate-fade-in">
+        <!-- Verification Banner -->
+        <div class="text-center space-y-2">
+          <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/15">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-widest bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mt-2">
+            Authentic & Verified Record
+          </span>
+          <h2 class="text-2xl font-black text-slate-100 mt-1">Official E-Prescription</h2>
+          <p class="text-xs text-slate-400 font-mono" id="v-rx-badge">Rx-0000</p>
+        </div>
+
+        <!-- Verification Data Sheet -->
+        <div class="glass-card p-5 rounded-2xl border border-slate-700/50 space-y-3 text-xs">
+          <div class="flex justify-between border-b border-slate-700/30 pb-2">
+            <span class="text-slate-400">Prescribing Physician:</span>
+            <strong id="v-doctor-name" class="text-slate-100 text-right">--</strong>
+          </div>
+          <div class="flex justify-between border-b border-slate-700/30 pb-2">
+            <span class="text-slate-400">BMDC Medical License:</span>
+            <span id="v-doctor-license" class="font-mono text-teal-400 font-bold">--</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-700/30 pb-2">
+            <span class="text-slate-400">Specialization:</span>
+            <span id="v-doctor-spec" class="text-slate-200">--</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-700/30 pb-2">
+            <span class="text-slate-400">Registered Citizen Name:</span>
+            <strong id="v-patient-name" class="text-slate-100">--</strong>
+          </div>
+          <div class="flex justify-between border-b border-slate-700/30 pb-2">
+            <span class="text-slate-400">National UID:</span>
+            <span id="v-patient-uid" class="font-mono text-sky-400 font-bold">--</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-700/30 pb-2">
+            <span class="text-slate-400">Issue Timestamp:</span>
+            <span id="v-issue-date" class="text-slate-200">--</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Prescribed Drugs Count:</span>
+            <span id="v-item-count" class="font-mono font-bold text-slate-100">-- items</span>
+          </div>
+        </div>
+
+        <!-- Hash Box -->
+        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-[10px] font-mono text-slate-400 space-y-1">
+          <div class="text-slate-500 uppercase tracking-widest">Cryptographic Audit Token</div>
+          <div id="v-hash" class="text-emerald-400 break-all select-all font-bold">--</div>
+        </div>
+
+        <div class="text-center pt-2">
+          <a id="v-full-view-btn" href="#" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs shadow-lg shadow-sky-500/25 transition-all">
+            Open Full Prescription Record &rarr;
+          </a>
+        </div>
+      </div>
+
+      <div id="verify-error" class="hidden text-center py-8 space-y-3">
+        <div class="w-14 h-14 rounded-full bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </div>
+        <h3 class="text-lg font-bold text-slate-100">Verification Failed</h3>
+        <p class="text-xs text-slate-400" id="verify-error-msg">This prescription could not be verified in the national registry.</p>
+        <a href="/" class="inline-block text-xs text-sky-400 hover:underline pt-2">Return to xMED Portal</a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-4 text-center text-xs text-slate-500 relative z-10">
+    xMED Cryptographic Health Verification &bull; Government of Bangladesh Health Services
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Path format: /verify/prescription/:id
+      const parts = window.location.pathname.split('/');
+      const rxId = parts[parts.length - 1];
+
+      try {
+        const res = await fetch(`/api/verify/prescription/${rxId}`);
+        const data = await res.json();
+
+        document.getElementById('verify-loading').classList.add('hidden');
+
+        if (data.success && data.data) {
+          const v = data.data;
+          document.getElementById('v-rx-badge').textContent = `Record #Rx-${v.prescription_id}`;
+          document.getElementById('v-doctor-name').textContent = v.doctor_name;
+          document.getElementById('v-doctor-license').textContent = v.doctor_license;
+          document.getElementById('v-doctor-spec').textContent = v.doctor_specialization;
+          document.getElementById('v-patient-name').textContent = v.patient_name;
+          document.getElementById('v-patient-uid').textContent = v.patient_uid;
+          document.getElementById('v-issue-date').textContent = new Date(v.issued_at).toLocaleString('en-GB');
+          document.getElementById('v-item-count').textContent = `${v.item_count} items`;
+          document.getElementById('v-hash').textContent = v.verification_hash;
+          document.getElementById('v-full-view-btn').href = `/prescription-view?id=${v.prescription_id}`;
+
+          document.getElementById('verify-result').classList.remove('hidden');
+        } else {
+          document.getElementById('verify-error-msg').textContent = data.message || 'Record not found in the national registry.';
+          document.getElementById('verify-error').classList.remove('hidden');
+        }
+      } catch (err) {
+        document.getElementById('verify-loading').classList.add('hidden');
+        document.getElementById('verify-error').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

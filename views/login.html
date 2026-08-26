@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | xMED National EHR Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#0ea5e9', 600: '#0284c7' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between relative overflow-x-hidden">
+
+  <!-- Ambient Aurora Canvas -->
+  <div class="aurora-bg">
+    <div class="aurora-blob-1"></div>
+    <div class="aurora-blob-2"></div>
+  </div>
+
+  <!-- Top Bar -->
+  <header class="glass-nav py-4 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-teal-400 p-0.5">
+          <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+        </div>
+        <span class="text-xl font-black bg-gradient-to-r from-sky-400 to-teal-300 bg-clip-text text-transparent">xMED</span>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <button type="button" class="theme-toggle-btn p-2 rounded-xl glass-card text-slate-300 hover:text-white" aria-label="Toggle Theme"></button>
+        <a href="/register" class="text-xs font-semibold text-sky-400 hover:text-sky-300">
+          New User? Register &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Login Card Form -->
+  <main class="flex-1 flex items-center justify-center p-4 py-10 relative z-10">
+    <div class="w-full max-w-lg glass-card spotlight-wrapper p-6 sm:p-8 rounded-3xl border border-slate-700/60 shadow-2xl relative space-y-5">
+      
+      <div class="text-center">
+        <div class="inline-flex p-1 rounded-2xl bg-slate-900/60 border border-slate-800 mb-3">
+          <button type="button" id="tab-patient-login" class="px-5 py-2 rounded-xl text-xs font-bold transition-all bg-sky-500 text-white shadow-lg">
+            Citizen Portal
+          </button>
+          <button type="button" id="tab-doctor-login" class="px-5 py-2 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">
+            Doctor Portal
+          </button>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-100 tracking-tight">Access Health Record</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Authenticate with your verified national credentials</p>
+      </div>
+
+      <!-- Quick Demo Account Suite Selector -->
+      <div class="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-slate-300 font-bold uppercase tracking-wider">1-Click Test Suite:</span>
+          <span class="text-slate-400">Click any card to auto-fill</span>
+        </div>
+
+        <!-- Citizen Demo Accounts Strip -->
+        <div id="demo-citizens-strip" class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-sky-400 font-bold uppercase tracking-wider">Seeded Test Citizens (Pass: Password123!):</span>
+            <span class="text-[10px] text-slate-400 font-mono">100 Seeded</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="fillCitizen('BD-2000-0001', 'Password123!', 'Rahim Rahman (A-)')" class="p-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-sky-300">Rahim Rahman</div>
+              <div class="text-[10px] text-sky-400 font-mono">BD-2000-0001 &bull; Blood: A-</div>
+              <div class="text-[9px] text-slate-400">5 Consultations + 2 OTC Logs</div>
+            </button>
+            <button type="button" onclick="fillCitizen('BD-2000-0002', 'Password123!', 'Fatima Chowdhury (B+)')" class="p-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-sky-300">Fatima Chowdhury</div>
+              <div class="text-[10px] text-sky-400 font-mono">BD-2000-0002 &bull; Blood: B+</div>
+              <div class="text-[9px] text-slate-400">7 Consultations + 2 OTC Logs</div>
+            </button>
+            <button type="button" onclick="fillCitizen('BD-2000-0003', 'Password123!', 'Nafis Hossain (AB-)')" class="p-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-sky-300">Nafis Hossain</div>
+              <div class="text-[10px] text-sky-400 font-mono">BD-2000-0003 &bull; Blood: AB-</div>
+              <div class="text-[9px] text-slate-400">9 Consultations + 1 OTC Log</div>
+            </button>
+            <button type="button" onclick="fillCitizen('BD-2000-0010', 'Password123!', 'Sadia Begum (O+)')" class="p-2.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-sky-300">Sadia Begum</div>
+              <div class="text-[10px] text-sky-400 font-mono">BD-2000-0010 &bull; Blood: O+</div>
+              <div class="text-[9px] text-slate-400">8 Consultations + 3 OTC Logs</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Doctor Demo Accounts Strip -->
+        <div id="demo-doctors-strip" class="space-y-1.5 hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-teal-400 font-bold uppercase tracking-wider">Seeded Test Physicians (Pass: Password123!):</span>
+            <span class="text-[10px] text-slate-400 font-mono">20 Seeded</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="fillDoctor('dr.tanvir@xmed.gov.bd', 'Password123!', 'Dr. Tanvir (Cardiology)')" class="p-2.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-teal-300">Dr. Tanvir Ahmed</div>
+              <div class="text-[10px] text-teal-400">Cardiology &bull; BMDC-10001</div>
+              <div class="text-[9px] text-slate-400">dr.tanvir@xmed.gov.bd</div>
+            </button>
+            <button type="button" onclick="fillDoctor('dr.nusrat@xmed.gov.bd', 'Password123!', 'Dr. Nusrat (Pulmonology)')" class="p-2.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-teal-300">Dr. Nusrat Jahan</div>
+              <div class="text-[10px] text-teal-400">Pulmonology &bull; BMDC-10002</div>
+              <div class="text-[9px] text-slate-400">dr.nusrat@xmed.gov.bd</div>
+            </button>
+            <button type="button" onclick="fillDoctor('dr.shakil@xmed.gov.bd', 'Password123!', 'Dr. Shakil (Dermatology)')" class="p-2.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-teal-300">Dr. Shakil Hossain</div>
+              <div class="text-[10px] text-teal-400">Dermatology &bull; BMDC-10003</div>
+              <div class="text-[9px] text-slate-400">dr.shakil@xmed.gov.bd</div>
+            </button>
+            <button type="button" onclick="fillDoctor('dr.farzana@xmed.gov.bd', 'Password123!', 'Dr. Farzana (Pediatrics)')" class="p-2.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-left transition-all group">
+              <div class="text-xs font-bold text-slate-100 group-hover:text-teal-300">Dr. Farzana Kabir</div>
+              <div class="text-[10px] text-teal-400">Pediatrics &bull; BMDC-10004</div>
+              <div class="text-[9px] text-slate-400">dr.farzana@xmed.gov.bd</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. Patient Login Form -->
+      <form id="form-patient-login" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Citizen UID or Email / Phone</label>
+          <div class="relative">
+            <input type="text" id="patient-login-id" required class="w-full px-4 py-3 text-sm rounded-xl glass-input pl-10 font-mono uppercase" placeholder="e.g. BD-2026-8841">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Password</label>
+          <div class="relative">
+            <input type="password" id="patient-login-pass" required class="w-full px-4 py-3 text-sm rounded-xl glass-input pl-10" placeholder="Enter password">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 text-white font-bold text-sm hover:opacity-90 shadow-lg shadow-sky-500/25 transition-all mt-2">
+          Access Citizen Portal
+        </button>
+      </form>
+
+      <!-- 2. Doctor Login Form -->
+      <form id="form-doctor-login" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Doctor Email or BMDC License No</label>
+          <div class="relative">
+            <input type="text" id="doctor-login-id" required class="w-full px-4 py-3 text-sm rounded-xl glass-input pl-10" placeholder="e.g. doctor@xmed.gov.bd">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Password</label>
+          <div class="relative">
+            <input type="password" id="doctor-login-pass" required class="w-full px-4 py-3 text-sm rounded-xl glass-input pl-10" placeholder="Enter password">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-sm hover:opacity-90 shadow-lg shadow-teal-500/25 transition-all mt-2">
+          Enter Doctor Workspace
+        </button>
+      </form>
+
+      <div class="pt-4 border-t border-slate-700/50 text-center text-xs text-slate-400">
+        Don't have an xMED record yet? <a href="/register" class="text-sky-400 font-semibold hover:underline">Create Account</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 text-center text-xs text-slate-500 relative z-10">
+    xMED National Electronic Health Record System &bull; Secure 256-bit Session &bull; <span class="font-mono text-sky-400">Designed by F'Studio</span>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    function fillCitizen(uid, pass, label) {
+      const tab = document.getElementById('tab-patient-login');
+      if (tab) tab.click();
+      document.getElementById('patient-login-id').value = uid;
+      document.getElementById('patient-login-pass').value = pass;
+      showToast(`Selected ${label}`, 'info');
+    }
+
+    function fillDoctor(email, pass, label) {
+      const tab = document.getElementById('tab-doctor-login');
+      if (tab) tab.click();
+      document.getElementById('doctor-login-id').value = email;
+      document.getElementById('doctor-login-pass').value = pass;
+      showToast(`Selected ${label}`, 'info');
+    }
+
+    // Toggle demo accounts strip on tab switch
+    document.getElementById('tab-patient-login').addEventListener('click', () => {
+      document.getElementById('demo-citizens-strip').classList.remove('hidden');
+      document.getElementById('demo-doctors-strip').classList.add('hidden');
+    });
+
+    document.getElementById('tab-doctor-login').addEventListener('click', () => {
+      document.getElementById('demo-doctors-strip').classList.remove('hidden');
+      document.getElementById('demo-citizens-strip').classList.add('hidden');
+    });
+  </script>
+</body>
+</html>

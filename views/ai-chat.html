@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MR.MED | AI Health & Clinical Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#06b6d4', 600: '#0891b2' },
+            cyber: { cyan: '#00f0ff', crimson: '#ff3366' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between relative overflow-x-hidden bg-slate-950 text-slate-100">
+
+  <!-- Ambient Neon Aurora Canvas -->
+  <div class="aurora-bg">
+    <div class="aurora-blob-1" style="background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, rgba(14, 165, 233, 0.08) 50%, transparent 80%);"></div>
+    <div class="aurora-blob-2" style="background: radial-gradient(circle, rgba(244, 63, 94, 0.16) 0%, rgba(225, 29, 72, 0.04) 50%, transparent 80%);"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 glass-nav border-b border-cyan-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3.5 group">
+        <div class="w-12 h-12 rounded-2xl bg-black p-0.5 border-2 border-cyan-400 shadow-lg shadow-cyan-500/25 group-hover:scale-105 transition-transform overflow-hidden flex items-center justify-center">
+          <img src="/images/mr-med-robot.png" alt="MR.MED Holographic Assistant" class="w-full h-full object-cover object-left">
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl font-black bg-gradient-to-r from-cyan-400 via-sky-300 to-rose-400 bg-clip-text text-transparent">MR.MED</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+              🟢 Live AI Assistant
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">xMED Intelligent Health Assistant &bull; Powered by Google Gemini</p>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <button type="button" class="theme-toggle-btn p-2.5 rounded-xl glass-card text-slate-300 hover:text-white transition-colors" aria-label="Toggle Theme"></button>
+        <a href="/" class="px-4 py-2 rounded-xl glass-card text-xs font-bold text-slate-200 hover:text-white hover:border-cyan-500/40 transition-all">
+          Home
+        </a>
+        <a href="/login" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-bold text-xs hover:opacity-90 shadow-lg shadow-cyan-500/25 transition-all">
+          Portal Login
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main AI Studio Compartment Container -->
+  <main class="flex-1 max-w-5xl mx-auto px-4 py-6 w-full flex flex-col justify-between relative z-10 space-y-4">
+    
+    <!-- Holographic Robot Hero Card -->
+    <div class="ai-cyber-card rounded-3xl p-5 sm:p-6 shadow-2xl relative overflow-hidden border border-cyan-500/40 flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      <!-- Left: Robot Visual & Hologram Banner -->
+      <div class="flex items-center gap-5 w-full md:w-auto">
+        <div class="relative group">
+          <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-black border-2 border-cyan-400/80 p-1 shadow-[0_0_25px_rgba(6,182,212,0.45)] overflow-hidden flex items-center justify-center">
+            <img src="/images/mr-med-robot.png" alt="MR.MED AI Hologram" class="w-full h-full object-cover object-left scale-110 hover:scale-125 transition-transform duration-500">
+          </div>
+          <span class="absolute -bottom-1 -right-1 flex h-4 w-4">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-4 w-4 bg-cyan-500 border border-slate-950"></span>
+          </span>
+        </div>
+
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-[10px] text-cyan-300 font-mono font-bold tracking-wide">
+            <span>⚡ SERVER-PROXIED</span> &bull; <span>FREE & UNLIMITED</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            Ask MR.MED Anything
+          </h1>
+          <p class="text-xs text-slate-300 max-w-md leading-relaxed">
+            Your automated clinical companion. Decode laboratory reports, explore healthy vitals, and clarify medical terminologies instantly.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Cyber Guardrail Badge -->
+      <div class="flex flex-col items-start md:items-end gap-1.5 text-xs text-slate-400 border-t md:border-t-0 md:border-l border-cyan-500/20 pt-3 md:pt-0 md:pl-6 w-full md:w-auto">
+        <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/30 text-cyan-300 text-[11px] font-medium flex items-center gap-1.5">
+          <span class="text-rose-400">🛡️</span>
+          <span>Educational Guidance &bull; Consult Doctor</span>
+        </div>
+        <div class="text-[10px] text-slate-400 flex items-center gap-2">
+          <span>Emergency Helpline:</span>
+          <span class="font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">999</span>
+          <span class="font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">16263</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Interactive Chat Studio Card -->
+    <div class="ai-cyber-card rounded-3xl p-5 sm:p-7 flex-1 flex flex-col justify-between min-h-[550px] shadow-2xl relative border border-cyan-500/30">
+      
+      <!-- Quick Prompt Pills -->
+      <div class="mb-3 space-y-1.5">
+        <div class="text-[10px] uppercase font-bold text-cyan-400 tracking-wider flex items-center gap-1.5">
+          <span>💡</span> <span>Quick Health Inquiries:</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" class="quick-prompt-pill neon-chip px-3 py-1 rounded-xl text-xs">
+            🩸 What does elevated WBC mean on my CBC report?
+          </button>
+          <button type="button" class="quick-prompt-pill neon-chip px-3 py-1 rounded-xl text-xs">
+            🩺 What are the healthy blood pressure stages?
+          </button>
+          <button type="button" class="quick-prompt-pill neon-chip px-3 py-1 rounded-xl text-xs">
+            🍬 How do I interpret fasting blood sugar and HbA1c?
+          </button>
+          <button type="button" class="quick-prompt-pill neon-chip px-3 py-1 rounded-xl text-xs">
+            🤕 How do I manage a tension headache?
+          </button>
+          <button type="button" class="quick-prompt-pill neon-chip px-3 py-1 rounded-xl text-xs">
+            🌡️ What home care is advised for seasonal fever?
+          </button>
+          <button type="button" class="quick-prompt-pill neon-chip px-3 py-1 rounded-xl text-xs">
+            🚨 Emergency hospital contacts in Bangladesh
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Stream Area -->
+      <div id="ai-chat-messages" class="flex-1 overflow-y-auto space-y-4 p-3 sm:p-4 rounded-2xl bg-slate-950/70 border border-cyan-500/20 max-h-[460px] shadow-inner">
+        <!-- Initial Welcome Message from MR.MED -->
+        <div class="flex items-start gap-3">
+          <div class="w-9 h-9 rounded-xl bg-black p-0.5 border border-cyan-400/80 shadow-[0_0_10px_rgba(6,182,212,0.4)] flex-shrink-0 mt-0.5 overflow-hidden">
+            <img src="/images/mr-med-robot.png" alt="MR.MED Avatar" class="w-full h-full object-cover object-left">
+          </div>
+          <div class="glass-card p-4 rounded-2xl rounded-tl-sm border border-cyan-500/30 text-xs leading-relaxed max-w-[85%] text-slate-200 space-y-2 shadow-md">
+            <p><strong class="text-cyan-300 font-bold">Hello! I am MR.MED</strong>, your personal AI Health Assistant for the <strong>xMED National Healthcare Portal</strong>.</p>
+            <p>I am online and ready to assist you. Ask me about your blood test results (CBC, Lipid Panel, Blood Sugar), healthy vital thresholds, symptom relief guidelines, or navigating your xMED health records.</p>
+            <div class="text-[11px] text-cyan-300/80 pt-1.5 border-t border-cyan-500/20 flex items-center gap-1.5">
+              <span class="text-rose-400">🛡️</span>
+              <em>Informational guidance only. For medical prescriptions or clinical decisions, please consult your verified doctor.</em>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div id="ai-typing-indicator" class="hidden flex items-center gap-2 px-3 py-2 text-xs text-cyan-300 font-mono">
+        <div class="flex gap-1 items-center">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style="animation-delay: 0.15s"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" style="animation-delay: 0.3s"></span>
+        </div>
+        <span>MR.MED is analyzing clinical information...</span>
+      </div>
+
+      <!-- Input Bar Form -->
+      <form id="ai-chat-form" class="pt-4 border-t border-cyan-500/20 flex gap-2">
+        <input type="text" id="ai-chat-input" required autocomplete="off" autofocus class="flex-1 px-4 py-3.5 text-sm rounded-xl bg-slate-900/90 text-white placeholder-slate-400 border border-cyan-500/40 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all outline-none" placeholder="Type your health inquiry (e.g. What does elevated HbA1c mean?)...">
+        <button type="submit" id="btn-ai-send" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:opacity-95 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-95 transition-all">
+          <span>Send</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+      </form>
+
+    </div>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="glass-nav py-4 border-t border-cyan-500/20 text-center text-xs text-slate-400 relative z-10">
+    MR.MED AI Health Assistant &bull; 100% Automated Server-Side Intelligence &bull; <span class="font-mono text-cyan-400 font-bold">Designed by F'Studio</span>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script>
+    const chatMessages = document.getElementById('ai-chat-messages');
+    const chatForm = document.getElementById('ai-chat-form');
+    const chatInput = document.getElementById('ai-chat-input');
+    const typingIndicator = document.getElementById('ai-typing-indicator');
+
+    // Focus input immediately on load
+    window.addEventListener('DOMContentLoaded', () => {
+      chatInput.focus();
+    });
+
+    // Quick Prompt Pills
+    document.querySelectorAll('.quick-prompt-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.textContent.replace(/^[^a-zA-Z0-9]+/, '').trim();
+        chatInput.value = text;
+        sendMessage(text);
+      });
+    });
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = chatInput.value.trim();
+      if (!message) return;
+      sendMessage(message);
+    });
+
+    // 100% Automated Server-Side Chat Dispatch
+    async function sendMessage(text) {
+      chatInput.value = '';
+      appendUserMessage(text);
+
+      typingIndicator.classList.remove('hidden');
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      try {
+        const res = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+
+        typingIndicator.classList.add('hidden');
+
+        if (data && data.reply) {
+          appendAiMessage(data.reply);
+        } else {
+          appendAiMessage('I apologize, I encountered a temporary issue. Please try asking your question again.');
+        }
+      } catch (err) {
+        console.error('Chat error:', err);
+        typingIndicator.classList.add('hidden');
+        appendAiMessage('Connection error. Please check your connection to the xMED server.');
+      }
+    }
+
+    function appendUserMessage(text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'flex justify-end';
+      msgDiv.innerHTML = `
+        <div class="p-3.5 rounded-2xl rounded-tr-sm bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-bold text-xs max-w-[80%] shadow-lg leading-relaxed">
+          ${escapeHtml(text)}
+        </div>
+      `;
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function appendAiMessage(markdown) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'flex items-start gap-3 animate-fade-in';
+      msgDiv.innerHTML = `
+        <div class="w-9 h-9 rounded-xl bg-black p-0.5 border border-cyan-400/80 shadow-[0_0_10px_rgba(6,182,212,0.4)] flex-shrink-0 mt-0.5 overflow-hidden">
+          <img src="/images/mr-med-robot.png" alt="MR.MED Avatar" class="w-full h-full object-cover object-left">
+        </div>
+        <div class="glass-card p-4 rounded-2xl rounded-tl-sm border border-cyan-500/30 text-xs leading-relaxed max-w-[85%] text-slate-200 space-y-2 shadow-md">
+          ${parseMarkdown(markdown)}
+        </div>
+      `;
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[m]);
+    }
+
+    function parseMarkdown(md) {
+      let html = md;
+      html = html.replace(/^### (.*$)/gim, '<h4 class="text-sm font-bold text-cyan-300 mt-2 mb-1">$1</h4>');
+      html = html.replace(/^## (.*$)/gim, '<h3 class="text-base font-bold text-cyan-300 mt-2 mb-1">$1</h3>');
+      html = html.replace(/\*\*(.*?)\*\*/gim, '<strong class="text-white font-bold">$1</strong>');
+      html = html.replace(/\*(.*?)\*/gim, '<em class="text-cyan-200">$1</em>');
+      html = html.replace(/^\> (.*$)/gim, '<blockquote class="p-2.5 rounded-xl bg-cyan-950/40 border-l-2 border-cyan-400 text-cyan-200 my-2">$1</blockquote>');
+      html = html.replace(/^\* (.*$)/gim, '<li class="ml-4 list-disc text-slate-300">$1</li>');
+      html = html.replace(/`(.*?)`/gim, '<code class="px-1.5 py-0.5 rounded bg-slate-900 font-mono text-[11px] text-cyan-300 border border-slate-700">$1</code>');
+      html = html.replace(/\n\n/g, '<br><br>');
+      return html;
+    }
+  </script>
+</body>
+</html>

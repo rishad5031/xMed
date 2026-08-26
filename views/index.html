@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xMED | National Healthcare & Electronic Health Record (EHR) Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="page-welcome selection:bg-sky-500 selection:text-white flex flex-col justify-between relative overflow-x-hidden">
+
+  <!-- Ambient Aurora Glow Canvas -->
+  <div class="aurora-bg">
+    <div class="aurora-blob-1" style="background: radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, rgba(59, 130, 246, 0.04) 60%, transparent 80%);"></div>
+    <div class="aurora-blob-2" style="background: radial-gradient(circle, rgba(147, 51, 234, 0.14) 0%, rgba(217, 70, 239, 0.03) 60%, transparent 80%);"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-50 glass-nav">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Logo & Emblem -->
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-500 via-indigo-400 to-sky-400 p-0.5 shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
+          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-300 to-sky-400 bg-clip-text text-transparent">xMED</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">National EHR</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium tracking-wide">Government of Bangladesh Health Informatics</p>
+        </div>
+      </a>
+
+      <!-- Quick Nav Links -->
+      <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="#features" class="hover:text-purple-400 transition-colors">Platform Capabilities</a>
+        <a href="#clinical-blogs" class="hover:text-teal-400 transition-colors">Doctors Insights</a>
+        <a href="/ai-assistant" class="text-cyan-300 hover:text-cyan-200 font-bold flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/30 hover:border-cyan-400/60 shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-all">
+          <img src="/images/mr-med-robot.png" alt="AI" class="w-4 h-4 rounded-full object-cover object-left border border-cyan-400">
+          <span>MR.MED AI</span>
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        </a>
+        <a href="/login" class="hover:text-sky-400 transition-colors">Clinical Login</a>
+      </nav>
+
+      <!-- Right Navigation Actions -->
+      <div class="flex items-center gap-3">
+        <button type="button" class="theme-toggle-btn p-2.5 rounded-xl glass-card text-slate-300 hover:text-white transition-colors" aria-label="Toggle Theme"></button>
+
+        <a href="/login" class="px-4 py-2 rounded-xl glass-card text-xs font-bold text-slate-200 hover:text-white hover:border-sky-500/40 transition-all">
+          Sign In
+        </a>
+
+        <a href="/register" class="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 text-white text-xs font-bold hover:opacity-90 shadow-lg shadow-sky-500/25 transition-all">
+          Get Citizen UID
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 relative z-10">
+
+    <!-- ========================================================= -->
+    <!-- HERO SECTION (Google AI Studio Inspired)                  -->
+    <!-- ========================================================= -->
+    <section class="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-4xl mx-auto space-y-6">
+        
+        <!-- Live Status Pill -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card border border-sky-500/30 text-xs font-semibold text-sky-400 animate-fade-in shadow-md">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Unified National Electronic Health Record Ecosystem &bull; Node Active at 192.168.0.186:3306</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-slate-100 leading-tight">
+          Next-Generation <br>
+          <span class="bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
+            National Health Intelligence
+          </span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          One lifelong Citizen UID. Zero lost prescriptions. Real-time drug conflict alerts. xMED unites citizens, certified BMDC physicians, and diagnostic laboratories into a unified, high-availability medical cloud.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+          <a href="/login" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-teal-500 text-white font-bold text-sm hover:opacity-95 shadow-xl shadow-sky-500/25 transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+            Access Clinical Portal
+          </a>
+          <a href="/register" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl glass-card text-slate-200 hover:text-white font-bold text-sm border border-slate-700/60 hover:border-sky-500/50 shadow-lg transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+            Register for Citizen UID
+          </a>
+        </div>
+
+        <!-- Google AI Studio Interactive Live Simulator Mockup -->
+        <div class="pt-10 max-w-4xl mx-auto">
+          <div class="glass-card spotlight-wrapper p-6 sm:p-8 rounded-3xl border border-sky-500/40 shadow-2xl relative text-left">
+            <!-- Simulated Mockup Browser Top Bar -->
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4 mb-6">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+                <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+                <span class="ml-2 text-xs font-mono text-slate-400">xmed.gov.bd/portal/live-stream</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  ACID SYNC ACTIVE
+                </span>
+              </div>
+            </div>
+
+            <!-- Simulated Workspace Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <!-- Left Mini Panel: Patient Card -->
+              <div class="md:col-span-5 space-y-4">
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-sky-950/80 border border-sky-500/30 space-y-2">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="text-[10px] uppercase font-bold text-slate-400">National Health ID</span>
+                    <span class="text-rose-400 font-mono font-bold">O+ POSITIVE</span>
+                  </div>
+                  <div class="text-base font-bold text-slate-100">Md. Rahim Chowdhury</div>
+                  <div class="text-xs font-mono text-sky-400 font-bold">BD-2026-8841</div>
+                  <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-800">
+                    Age: 34 yrs &bull; Gender: Male &bull; Verified
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-900/50 border border-slate-800 text-xs space-y-1.5">
+                  <div class="text-[10px] uppercase font-bold text-slate-400">Recent Clinical Diagnosis</div>
+                  <div class="text-xs font-semibold text-slate-200">Acute Bronchitis with Mild Hypertension</div>
+                  <div class="text-[11px] text-slate-400">Prescribing: Dr. Tanvir Ahmed (BMDC-A10982)</div>
+                </div>
+              </div>
+
+              <!-- Right Mini Panel: Live Prescribed Medicines & Conflict Engine -->
+              <div class="md:col-span-7 space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+                  <span>Prescribed Drug Regimen</span>
+                  <span class="text-emerald-400 font-mono">&lt; 1ms In-Memory Lookup</span>
+                </div>
+
+                <div class="space-y-2">
+                  <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                    <div>
+                      <span class="font-bold text-slate-100">Sergel 20mg</span>
+                      <span class="text-[10px] text-slate-400 block italic">Esomeprazole &bull; Capsule</span>
+                    </div>
+                    <div class="text-right font-mono text-[11px] text-sky-400">
+                      1+0+1 before meal &bull; 14 days
+                    </div>
+                  </div>
+
+                  <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                    <div>
+                      <span class="font-bold text-slate-100">Azithrocin 500mg</span>
+                      <span class="text-[10px] text-slate-400 block italic">Azithromycin &bull; Tablet</span>
+                    </div>
+                    <div class="text-right font-mono text-[11px] text-sky-400">
+                      1+0+0 after meal &bull; 5 days
+                    </div>
+                  </div>
+
+                  <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                    <div>
+                      <span class="font-bold text-slate-100">Napa Extra</span>
+                      <span class="text-[10px] text-slate-400 block italic">Paracetamol + Caffeine &bull; Tablet</span>
+                    </div>
+                    <div class="text-right font-mono text-[11px] text-sky-400">
+                      1+1+1 SOS &bull; 5 days
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Simulation Security Footer -->
+                <div class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 flex items-center justify-between">
+                  <span class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    Cryptographic QR Validation Enabled
+                  </span>
+                  <a href="/prescription-view?id=1" target="_blank" class="text-sky-400 hover:underline font-bold">
+                    View Printable Rx &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- PLATFORM STATS STRIP                                      -->
+    <!-- ========================================================= -->
+    <section class="border-y border-slate-800/80 bg-slate-900/30 py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <div class="text-3xl sm:text-4xl font-black text-sky-400 font-mono">100%</div>
+            <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Encrypted Records</div>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-black text-teal-400 font-mono">ACID</div>
+            <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Atomic Transactions</div>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-black text-emerald-400 font-mono">&lt; 1ms</div>
+            <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">In-Memory Medicine Cache</div>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-black text-amber-400 font-mono">BMDC</div>
+            <div class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Verified Medical Practice</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- ARCHITECTURAL PILLARS & FEATURES                          -->
+    <!-- ========================================================= -->
+    <section id="features" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+        <span class="text-xs font-mono font-bold uppercase tracking-widest text-sky-400">Enterprise Healthcare Framework</span>
+        <h2 class="text-3xl sm:text-4xl font-black text-slate-100">Engineered for Reliability & Scale</h2>
+        <p class="text-sm text-slate-400">Explore how xMED modernizes the national patient-doctor workflow from diagnosis to dispensary.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="glass-card spotlight-wrapper p-8 rounded-3xl border border-slate-700/50 hover:border-sky-500/40 transition-all space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-100">Doctor Clinical Studio</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Split-screen modular workspace allowing instant patient lookups by UID. Review complete past visits, laboratory reports, and construct new prescriptions with real-time autocomplete and automatic drug conflict warnings.
+          </p>
+          <div class="pt-2 text-xs font-semibold text-sky-400 flex items-center gap-1">
+            <span>Includes Chart.js Consultation Analytics</span> &rarr;
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="glass-card spotlight-wrapper p-8 rounded-3xl border border-slate-700/50 hover:border-teal-500/40 transition-all space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-teal-500/20 text-teal-400 flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-100">Citizen Health Vault</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Interactive Digital Health ID card, chronological medical timeline, drag-and-drop diagnostic report uploader (PDF/PNG), and interactive longitudinal vitals trend graphs (Blood Pressure, Blood Glucose, BMI).
+          </p>
+          <div class="pt-2 text-xs font-semibold text-teal-400 flex items-center gap-1">
+            <span>Encrypted Diagnostic Storage</span> &rarr;
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-card spotlight-wrapper p-8 rounded-3xl border border-slate-700/50 hover:border-emerald-500/40 transition-all space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-100">QR Authenticity & PDF Export</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Every issued prescription generates a cryptographic QR code pointing to <code class="text-emerald-400">/verify/prescription/:id</code>. Features both native high-contrast paper print and one-click direct PDF downloads via html2pdf.
+          </p>
+          <div class="pt-2 text-xs font-semibold text-emerald-400 flex items-center gap-1">
+            <span>Cryptographic Validation Protocol</span> &rarr;
+          </div>
+        </div>
+      </div>
+
+      <!-- MR.MED AI Assistant Feature Spotlight -->
+      <div class="mt-10 ai-cyber-card p-6 sm:p-8 rounded-3xl border border-cyan-500/40 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-5">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-black border-2 border-cyan-400 p-0.5 shadow-[0_0_20px_rgba(6,182,212,0.4)] overflow-hidden flex items-center justify-center flex-shrink-0">
+            <img src="/images/mr-med-robot.png" alt="MR.MED AI Hologram" class="w-full h-full object-cover object-left scale-110">
+          </div>
+          <div class="space-y-1.5">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-[10px] text-cyan-300 font-mono font-bold">
+              <span>⚡ 100% AUTOMATED & SERVER-PROXIED</span> &bull; <span>FREE CLINICAL AI</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-black text-white">MR.MED AI Health Companion</h3>
+            <p class="text-xs text-slate-300 max-w-xl leading-relaxed">
+              Decode complex laboratory results (CBC, Lipid Panel, Blood Glucose, Renal Function) and receive instant wellness guidelines powered directly by server-side Google Gemini intelligence.
+            </p>
+          </div>
+        </div>
+        <a href="/ai-assistant" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-black text-xs hover:opacity-95 shadow-lg shadow-cyan-500/25 flex items-center gap-2 whitespace-nowrap hover:scale-105 transition-all">
+          <span>Chat with MR.MED</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- DOCTORS CLINICAL BLOG & INSIGHTS SECTION                  -->
+    <!-- ========================================================= -->
+    <section id="clinical-blogs" class="py-20 border-t border-slate-800/80 bg-slate-900/20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20 mb-2">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+              Verified Medical Insights
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-black text-slate-100">Doctor Clinical Blog & Research</h2>
+            <p class="text-sm text-slate-400 mt-1">Articles, treatment guidelines, and health informatics authored by registered BMDC physicians.</p>
+          </div>
+
+          <!-- Specialty Category Filter Tabs -->
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="blog-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-sky-500 text-white transition-all shadow-md" data-category="All">All</button>
+            <button type="button" class="blog-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card text-slate-300 hover:text-white transition-all" data-category="Cardiology">Cardiology</button>
+            <button type="button" class="blog-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card text-slate-300 hover:text-white transition-all" data-category="Internal Medicine">Internal Medicine</button>
+            <button type="button" class="blog-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card text-slate-300 hover:text-white transition-all" data-category="Health Informatics">Health Informatics</button>
+            <button type="button" class="blog-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold glass-card text-slate-300 hover:text-white transition-all" data-category="Pediatrics">Pediatrics</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Blog Cards Grid (Populated by blog.js) -->
+        <div id="doctor-blogs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="h-64 skeleton rounded-3xl"></div>
+          <div class="h-64 skeleton rounded-3xl"></div>
+          <div class="h-64 skeleton rounded-3xl"></div>
+          <div class="h-64 skeleton rounded-3xl"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- DEVELOPER SECTION AT END OF WELCOME PAGE                  -->
+    <!-- (Designed by F'Studio)                                    -->
+    <!-- ========================================================= -->
+    <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="glass-card spotlight-wrapper p-8 sm:p-12 rounded-3xl border border-sky-500/30 text-center relative overflow-hidden bg-gradient-to-b from-slate-900/60 via-slate-900/80 to-slate-950/90 shadow-2xl">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 via-teal-400 to-indigo-500 p-0.5 mx-auto mb-4 shadow-lg shadow-sky-500/30">
+          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-teal-300 font-mono">
+            F'
+          </div>
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-xs font-mono font-bold text-sky-400 mb-3">
+          Principal UI/UX Architecture & Full-Stack Engineering
+        </div>
+
+        <h3 class="text-2xl sm:text-3xl font-black text-slate-100 tracking-tight">
+          Designed by <span class="bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">F'Studio</span>
+        </h3>
+
+        <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mt-2 leading-relaxed">
+          Crafted with obsessive precision for national scale healthcare delivery, featuring fluid micro-interactions, responsive glassmorphism, and enterprise-grade data security.
+        </p>
+
+        <div class="flex items-center justify-center gap-3 pt-6 text-xs text-slate-400 font-mono">
+          <span class="px-3 py-1 rounded-lg glass-card border border-slate-800">Vanilla JS</span>
+          <span class="px-3 py-1 rounded-lg glass-card border border-slate-800">Node / Express</span>
+          <span class="px-3 py-1 rounded-lg glass-card border border-slate-800">Tailwind Glassmorphic</span>
+          <span class="px-3 py-1 rounded-lg glass-card border border-slate-800">MySQL MariaDB</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="glass-nav py-8 border-t border-slate-800 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>xMED Central Health Information Network &bull; People's Republic of Bangladesh</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span>Protected under Digital Healthcare Regulations</span>
+        <span class="font-mono text-sky-400 font-bold">Designed by F'Studio</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/blog.js"></script>
+  <script src="/js/chatbot.js"></script>
+</body>
+</html>

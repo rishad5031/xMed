@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Health Vault | xMED National Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#0ea5e9', 600: '#0284c7' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between relative overflow-x-hidden">
+
+  <!-- Ambient Aurora Canvas -->
+  <div class="aurora-bg">
+    <div class="aurora-blob-1"></div>
+    <div class="aurora-blob-2"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 glass-nav">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-teal-400 p-0.5 shadow-md">
+            <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
+              <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-extrabold text-slate-100">xMED</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30">Citizen Portal</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-medium">Personal Electronic Health Record Vault</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- User Info & Controls -->
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:flex flex-col text-right">
+          <span id="header-patient-name" class="text-sm font-bold text-slate-100">Loading Citizen...</span>
+          <span id="header-patient-uid" class="text-xs text-sky-400 font-mono">--</span>
+        </div>
+
+        <a href="/ai-assistant" class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 text-xs font-bold flex items-center gap-1.5 transition-all">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          Ask MR.MED
+        </a>
+
+        <button type="button" class="theme-toggle-btn p-2.5 rounded-xl glass-card text-slate-300 hover:text-white" aria-label="Toggle Theme"></button>
+
+        <button type="button" id="btn-logout" class="px-3.5 py-2 rounded-xl glass-card text-xs font-semibold text-rose-400 hover:bg-rose-500/15 transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading Skeleton -->
+  <div id="patient-dashboard-loading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-6 relative z-10">
+    <div class="h-32 skeleton rounded-3xl w-full"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-5 h-96 skeleton rounded-3xl"></div>
+      <div class="lg:col-span-7 h-96 skeleton rounded-3xl"></div>
+    </div>
+  </div>
+
+  <!-- Main Content Dashboard -->
+  <main id="patient-dashboard-content" class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full hidden animate-fade-in relative z-10 space-y-6">
+    
+    <!-- Top Vitals Summary & Longitudinal Analytics Row -->
+    <div class="glass-card spotlight-wrapper p-6 sm:p-8 rounded-3xl border border-slate-700/60 shadow-xl space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/40 pb-4">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-sky-400">Clinical Surveillance</span>
+          <h2 class="text-2xl font-black text-slate-100 mt-1">Longitudinal Vitals Trends</h2>
+        </div>
+        <!-- Vitals Metric Badges -->
+        <div class="flex flex-wrap items-center gap-3 text-xs">
+          <div class="px-3.5 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20">
+            <span class="text-slate-400 block text-[10px] uppercase">Blood Pressure</span>
+            <strong id="vitals-current-bp" class="text-rose-400 font-mono font-bold text-sm">--</strong>
+          </div>
+          <div class="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <span class="text-slate-400 block text-[10px] uppercase">Fasting Glucose</span>
+            <strong id="vitals-current-glucose" class="text-emerald-400 font-mono font-bold text-sm">--</strong>
+          </div>
+          <div class="px-3.5 py-1.5 rounded-xl bg-sky-500/10 border border-sky-500/20">
+            <span class="text-slate-400 block text-[10px] uppercase">BMI Score</span>
+            <strong id="vitals-current-bmi" class="text-sky-400 font-mono font-bold text-sm">--</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Dual Container -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <div class="text-xs font-bold text-slate-300">Blood Pressure History (Systolic / Diastolic)</div>
+          <div class="h-48 w-full">
+            <canvas id="chart-vitals-bp"></canvas>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <div class="text-xs font-bold text-slate-300">Blood Glucose History (Fasting / Post-Prandial)</div>
+          <div class="h-48 w-full">
+            <canvas id="chart-vitals-glucose"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- LEFT COLUMN: Digital ID Card & Diagnostic Uploads (5 cols) -->
+      <section class="lg:col-span-5 space-y-6">
+        
+        <!-- Futuristic Digital Citizen Health Identity Card -->
+        <div class="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 border border-sky-500/40 shadow-2xl spotlight-wrapper">
+          <div class="absolute -top-12 -right-12 w-48 h-48 bg-sky-500/20 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="absolute -bottom-8 -left-8 w-36 h-36 bg-teal-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+          <!-- Card Header with Smart Chip -->
+          <div class="flex items-center justify-between mb-6 relative z-10">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              </div>
+              <div>
+                <div class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Government of Bangladesh</div>
+                <div class="text-xs font-bold text-slate-200">National Health ID</div>
+              </div>
+            </div>
+
+            <div class="w-10 h-7 rounded-md bg-amber-500/30 border border-amber-400/50 flex items-center justify-around px-1 shadow-inner">
+              <div class="w-2.5 h-4 border-r border-amber-400/40"></div>
+              <div class="w-2.5 h-4"></div>
+            </div>
+          </div>
+
+          <!-- Citizen Name & Monospace UID with Copy Button -->
+          <div class="space-y-1 mb-6 relative z-10">
+            <div class="text-[11px] uppercase font-bold tracking-widest text-slate-400">Citizen Name</div>
+            <h3 id="card-patient-name" class="text-2xl font-black text-white tracking-tight">--</h3>
+            <div class="pt-2 flex items-center justify-between">
+              <div>
+                <div class="text-[10px] uppercase font-mono tracking-widest text-sky-400">National UID Number</div>
+                <div id="card-patient-uid" class="text-xl font-black text-sky-300 font-mono tracking-widest">--</div>
+              </div>
+              <button type="button" id="btn-copy-uid" class="px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-xs font-medium border border-sky-500/30 flex items-center gap-1 transition-all" title="Copy UID to Clipboard">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                Copy
+              </button>
+            </div>
+          </div>
+
+          <!-- Demographics Strip -->
+          <div class="grid grid-cols-4 gap-2 pt-4 border-t border-slate-700/60 relative z-10 text-xs">
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-semibold">Blood</span>
+              <span id="card-patient-blood" class="text-rose-400 font-black font-mono text-sm">--</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-semibold">Age</span>
+              <span id="card-patient-age" class="text-slate-200 font-bold">--</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-semibold">Gender</span>
+              <span id="card-patient-gender" class="text-slate-200 font-bold">--</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase font-semibold">Status</span>
+              <span class="inline-flex items-center gap-1 text-emerald-400 font-bold text-[11px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Active
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-3 border-t border-slate-800/80 mt-3 text-[11px] text-slate-400 relative z-10">
+            <div>DOB: <span id="card-patient-dob" class="text-slate-200 font-medium">--</span></div>
+            <div class="text-right">Tel: <span id="card-patient-phone" class="text-slate-200 font-mono font-medium">--</span></div>
+            <div class="col-span-2 truncate">Email: <span id="card-patient-email" class="text-slate-200 font-mono font-medium">--</span></div>
+          </div>
+        </div>
+
+        <!-- Diagnostic Reports Vault & Drag-and-Drop Uploader -->
+        <div class="glass-card spotlight-wrapper p-6 rounded-3xl border border-slate-700/60 shadow-xl space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Diagnostic Lab Reports
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Upload and maintain your lab investigations</p>
+            </div>
+            <span id="reports-count-badge" class="text-xs font-mono px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30">0 files</span>
+          </div>
+
+          <!-- Drag and Drop Upload Form -->
+          <form id="form-upload-report" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Diagnostic Test Name</label>
+              <input type="text" id="report-test-name" required class="w-full px-3.5 py-2 text-sm rounded-xl glass-input" placeholder="e.g. Chest X-Ray, Blood Glucose (Fasting)">
+            </div>
+
+            <!-- Drop Zone -->
+            <div id="report-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-sky-500 rounded-2xl p-5 text-center cursor-pointer transition-all bg-slate-900/30">
+              <input type="file" id="report-file-input" accept=".pdf,image/png,image/jpeg,image/webp" class="hidden">
+              <div class="w-10 h-10 rounded-full bg-sky-500/10 text-sky-400 mx-auto flex items-center justify-center mb-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+              </div>
+              <div class="text-xs font-semibold text-slate-200">
+                Drop report file here, or <span class="text-sky-400 underline">browse</span>
+              </div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Supports PDF, PNG, JPG up to 15MB</div>
+              <div id="selected-file-name" class="text-xs text-emerald-400 font-mono mt-2 hidden"></div>
+            </div>
+
+            <button type="submit" id="btn-submit-report" class="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs shadow-md transition-all">
+              Upload to Health Vault
+            </button>
+          </form>
+
+          <!-- List of Uploaded Reports -->
+          <div class="pt-2 border-t border-slate-700/50">
+            <h4 class="text-xs font-semibold text-slate-300 mb-2">Stored Diagnostic Documents</h4>
+            <div id="patient-reports-list" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: Chronological Medical Timeline (7 cols) -->
+      <section class="lg:col-span-7">
+        <div class="glass-card spotlight-wrapper p-6 sm:p-8 rounded-3xl border border-slate-700/60 shadow-xl space-y-6">
+          
+          <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-sky-400 font-mono">National Medical History</span>
+                <span id="timeline-count-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300">0 records</span>
+              </div>
+            <div class="flex items-center gap-2">
+              <button type="button" id="btn-open-self-med" class="px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm">
+                <span>⚡</span>
+                <span class="hidden sm:inline">Log Emergency / OTC Medicine</span>
+                <span class="sm:hidden">Log OTC</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Timeline Container -->
+          <div id="medical-timeline-container" class="space-y-2"></div>
+
+          <!-- Load More Pagination Button -->
+          <div class="text-center pt-2">
+            <button type="button" id="btn-load-more-timeline" class="hidden px-5 py-2 rounded-xl glass-card text-xs font-bold text-sky-400 hover:text-sky-300 border border-slate-700/50">
+              Load Earlier Consultations &darr;
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Modal: Log Emergency / OTC Medicine -->
+  <div id="modal-self-med" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md hidden p-4 animate-fade-in">
+    <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-md w-full border border-amber-500/40 shadow-2xl relative space-y-4">
+      <div class="flex items-center justify-between border-b border-amber-500/20 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-400 flex items-center justify-center text-base">
+            ⚡
+          </div>
+          <div>
+            <h3 class="text-base font-black text-white">Log Self-Medication / OTC</h3>
+            <p class="text-[11px] text-slate-400">Record emergency or OTC medicines without doctor approval</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-self-med-modal" class="p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors">✕</button>
+      </div>
+
+      <form id="form-self-med" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Medicine Name & Strength</label>
+          <input type="text" id="self-med-name" required class="w-full px-3.5 py-2.5 text-xs rounded-xl glass-input border-amber-500/30 focus:border-amber-400" placeholder="e.g. Paracetamol 500mg, Antacid Chewable, ORS">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Dosage Taken</label>
+            <input type="text" id="self-med-dosage" required class="w-full px-3.5 py-2.5 text-xs rounded-xl glass-input border-amber-500/30 focus:border-amber-400" placeholder="e.g. 1 tablet, 2 spoons">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Date Taken</label>
+            <input type="date" id="self-med-date" required class="w-full px-3.5 py-2.5 text-xs rounded-xl glass-input border-amber-500/30 focus:border-amber-400">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Reason / Emergency Context</label>
+          <textarea id="self-med-reason" rows="3" required class="w-full px-3.5 py-2.5 text-xs rounded-xl glass-input border-amber-500/30 focus:border-amber-400" placeholder="Describe the symptom or emergency (e.g. Sudden high fever of 102°F at midnight, acute acid reflux, intense migraine)..."></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-700/50">
+          <button type="button" id="btn-cancel-self-med" class="px-4 py-2 rounded-xl glass-card text-xs font-bold text-slate-300 hover:text-white">Cancel</button>
+          <button type="submit" id="btn-submit-self-med" class="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-bold text-xs hover:opacity-95 shadow-md">
+            Save to Timeline
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="py-4 text-center text-xs text-slate-500 glass-nav border-t border-slate-800 relative z-10">
+    xMED Patient Health Vault &bull; Government of Bangladesh Health Services
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/patient.js"></script>
+  <script src="/js/chatbot.js"></script>
+</body>
+</html>
