@@ -149,7 +149,35 @@ async function getHospitalById(hospital_id) {
   return hospital;
 }
 
+async function getDoctorsByHospitalId(hospitalId) {
+  const sql = `
+    SELECT 
+      d.doctor_id,
+      d.uid,
+      COALESCE(d.name, d.full_name) AS name,
+      d.email,
+      d.phone,
+      COALESCE(d.license_number, d.license_no) AS license_number,
+      d.specialization,
+      d.consultation_fee,
+      d.working_days,
+      d.shift_start,
+      d.shift_end,
+      d.max_daily_slots,
+      d.biography,
+      h.name AS hospital_name,
+      h.area AS hospital_area,
+      h.city AS hospital_city
+    FROM doctors d
+    JOIN hospitals h ON d.hospital_id = h.hospital_id
+    WHERE d.hospital_id = ?
+    ORDER BY d.doctor_id ASC;
+  `;
+  return await query(sql, [hospitalId]);
+}
+
 module.exports = {
   getHospitals,
-  getHospitalById
+  getHospitalById,
+  getDoctorsByHospitalId
 };

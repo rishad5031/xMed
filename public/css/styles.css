@@ -1355,3 +1355,460 @@ html.light .nav-link-govt:hover,
   color: #12544F !important;
 }
 
+/* =============================================================
+   LIQUID GLASS DESIGN SYSTEM & ADVANCED MICRO-ANIMATIONS
+   ============================================================= */
+
+/* Micro-Animation Keyframes */
+@keyframes liquidEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes liquidSpring {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulseEmergency {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes liquidGlowPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.animate-liquid-entrance {
+  animation: liquidEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-liquid-spring {
+  animation: liquidSpring 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Liquid Scale Hover Effect */
+.liquid-hover {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease !important;
+}
+.liquid-hover:hover {
+  transform: translateY(-3px) scale(1.008) !important;
+}
+
+/* Opaque Liquid Glass Card (Dark Mode Default) */
+.liquid-card {
+  background: #0d152a;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-card-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.25rem 1.5rem;
+}
+
+/* Tab Navigation Bar */
+.liquid-tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.liquid-tab-btn {
+  padding: 0.65rem 1.15rem;
+  border-radius: 14px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #94a3b8;
+}
+
+.liquid-tab-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.liquid-tab-active {
+  background: linear-gradient(135deg, rgba(42, 131, 95, 0.9), rgba(18, 84, 79, 0.9)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px rgba(42, 131, 95, 0.3), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Blood Bank UI Elements */
+.blood-badge-emergency {
+  animation: pulseEmergency 2s infinite ease-in-out;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.blood-donor-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.blood-group-pill {
+  background: #dc2626;
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-weight: 900;
+  border-radius: 12px;
+  padding: 0.25rem 0.6rem;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+}
+
+/* Universal Messaging UI Elements */
+.chat-conversation-item {
+  transition: all 0.2s ease;
+  border-radius: 16px;
+  cursor: pointer;
+}
+.chat-conversation-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.chat-conversation-active {
+  background: rgba(42, 131, 95, 0.25) !important;
+  border-left: 4px solid #2A835F !important;
+}
+
+.chat-bubble-sent {
+  background: linear-gradient(135deg, #12544F, #2A835F);
+  color: #ffffff;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 4px 12px rgba(18, 84, 79, 0.25);
+}
+
+.chat-bubble-received {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px 18px 18px 4px;
+}
+
+/* =============================================================
+   STRICT LIGHT MODE PALETTE OVERRIDES FOR LIQUID GLASS
+   (#092328, #12544F, #2A835F, #8BBB92, #FFFFFF / #F4F7F6)
+   ============================================================= */
+
+html.light .liquid-card,
+[data-theme="light"] .liquid-card {
+  background: #FFFFFF !important;
+  border: 2px solid #8BBB92 !important;
+  border-radius: 24px !important;
+  box-shadow: 0 20px 40px -15px rgba(9, 35, 40, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+html.light .liquid-card-header,
+[data-theme="light"] .liquid-card-header {
+  border-bottom: 1.5px solid rgba(139, 187, 146, 0.4) !important;
+  background: #F8FAF9 !important;
+}
+
+html.light .liquid-tabs-container,
+[data-theme="light"] .liquid-tabs-container {
+  background: #F4F7F6 !important;
+  border: 1.5px solid #8BBB92 !important;
+}
+
+html.light .liquid-tab-btn,
+[data-theme="light"] .liquid-tab-btn {
+  color: #12544F !important;
+}
+
+html.light .liquid-tab-btn:hover,
+[data-theme="light"] .liquid-tab-btn:hover {
+  background: rgba(139, 187, 146, 0.2) !important;
+  color: #092328 !important;
+}
+
+html.light .liquid-tab-active,
+[data-theme="light"] .liquid-tab-active {
+  background: linear-gradient(135deg, #2A835F, #12544F) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 15px rgba(42, 131, 95, 0.35), inset 0 1px 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+html.light .chat-conversation-item:hover,
+[data-theme="light"] .chat-conversation-item:hover {
+  background: #F4F7F6 !important;
+}
+
+html.light .chat-conversation-active,
+[data-theme="light"] .chat-conversation-active {
+  background: rgba(139, 187, 146, 0.25) !important;
+  border-left: 4px solid #2A835F !important;
+}
+
+html.light .chat-bubble-sent,
+[data-theme="light"] .chat-bubble-sent {
+  background: linear-gradient(135deg, #092328, #12544F) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 15px rgba(9, 35, 40, 0.2) !important;
+}
+
+html.light .chat-bubble-received,
+[data-theme="light"] .chat-bubble-received {
+  background: #FFFFFF !important;
+  color: #092328 !important;
+  border: 1.5px solid #8BBB92 !important;
+  box-shadow: 0 2px 8px rgba(9, 35, 40, 0.05) !important;
+}
+
+html.light .liquid-input,
+[data-theme="light"] .liquid-input {
+  background: #FFFFFF !important;
+  border: 1.5px solid #8BBB92 !important;
+  color: #092328 !important;
+}
+
+html.light .liquid-input:focus,
+[data-theme="light"] .liquid-input:focus {
+  border-color: #2A835F !important;
+  box-shadow: 0 0 0 3px rgba(42, 131, 95, 0.2) !important;
+}
+
+/* =============================================================
+   AI ASSISTANT COLOR GRADING & "FADED SHED" ELIMINATION (LIGHT MODE)
+   ============================================================= */
+
+/* Dark Mode Default for AI Bubbles */
+.ai-msg-bubble {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.user-msg-bubble {
+  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  color: #030712;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+}
+.ai-input-field {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: #ffffff;
+}
+.ai-input-field:focus {
+  border-color: #06b6d4;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+}
+.ai-send-btn {
+  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  color: #030712;
+}
+
+/* Light Mode Overrides for AI Assistant (Page & Docked Widget) */
+html.light .ai-cyber-card,
+[data-theme="light"] .ai-cyber-card {
+  background: #FFFFFF !important;
+  border: 2px solid #8BBB92 !important;
+  box-shadow: 0 20px 45px -10px rgba(9, 35, 40, 0.12) !important;
+}
+
+html.light .ai-chat-stream-box,
+[data-theme="light"] .ai-chat-stream-box,
+html.light #mrmed-stream,
+[data-theme="light"] #mrmed-stream {
+  background: #F4F7F6 !important;
+  border: 1.5px solid #8BBB92 !important;
+}
+
+/* AI Response Bubble: Solid crisp surface (#FFFFFF), border 1px solid #8BBB92, text #092328 */
+html.light .ai-msg-bubble,
+[data-theme="light"] .ai-msg-bubble,
+html.light .mrmed-bot-bubble,
+[data-theme="light"] .mrmed-bot-bubble {
+  background: #FFFFFF !important;
+  border: 1px solid #8BBB92 !important;
+  color: #092328 !important;
+  box-shadow: 0 4px 14px rgba(9, 35, 40, 0.08) !important;
+}
+
+html.light .ai-msg-strong,
+[data-theme="light"] .ai-msg-strong,
+html.light .ai-msg-bubble strong,
+[data-theme="light"] .ai-msg-bubble strong,
+html.light .mrmed-bot-bubble strong,
+[data-theme="light"] .mrmed-bot-bubble strong {
+  color: #12544F !important;
+}
+
+html.light .ai-msg-footer,
+[data-theme="light"] .ai-msg-footer {
+  border-top: 1px solid #8BBB92 !important;
+  color: #12544F !important;
+}
+
+/* User Prompt Bubble: Deep slate teal (#092328) with crisp white text (#FFFFFF) */
+html.light .user-msg-bubble,
+[data-theme="light"] .user-msg-bubble,
+html.light .mrmed-user-bubble,
+[data-theme="light"] .mrmed-user-bubble {
+  background: #092328 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #092328 !important;
+  box-shadow: 0 4px 15px rgba(9, 35, 40, 0.22) !important;
+}
+
+/* Header & Controls: Header title in #092328, subtitle in #12544F */
+html.light .brand-logo-text,
+[data-theme="light"] .brand-logo-text {
+  color: #092328 !important;
+}
+
+html.light .ai-header-subtitle,
+[data-theme="light"] .ai-header-subtitle {
+  color: #12544F !important;
+}
+
+/* Input Box: Crisp white background (#FFFFFF), border 1.5px solid #8BBB92, dark text #092328 */
+html.light .ai-input-field,
+[data-theme="light"] .ai-input-field,
+html.light #mrmed-input,
+[data-theme="light"] #mrmed-input,
+html.light #ai-chat-input,
+[data-theme="light"] #ai-chat-input {
+  background: #FFFFFF !important;
+  border: 1.5px solid #8BBB92 !important;
+  color: #092328 !important;
+}
+
+html.light .ai-input-field::placeholder,
+[data-theme="light"] .ai-input-field::placeholder,
+html.light #mrmed-input::placeholder,
+[data-theme="light"] #mrmed-input::placeholder,
+html.light #ai-chat-input::placeholder,
+[data-theme="light"] #ai-chat-input::placeholder {
+  color: #4A6064 !important;
+}
+
+/* Focus ring in #2A835F */
+html.light .ai-input-field:focus,
+[data-theme="light"] .ai-input-field:focus,
+html.light #mrmed-input:focus,
+[data-theme="light"] #mrmed-input:focus,
+html.light #ai-chat-input:focus,
+[data-theme="light"] #ai-chat-input:focus {
+  border-color: #2A835F !important;
+  box-shadow: 0 0 0 3px rgba(42, 131, 95, 0.25) !important;
+}
+
+/* Send Button: Rich jade green (#2A835F) with hover transition to #12544F */
+html.light .ai-send-btn,
+[data-theme="light"] .ai-send-btn,
+html.light #btn-ai-send,
+[data-theme="light"] #btn-ai-send,
+html.light #mrmed-input-form button[type="submit"],
+[data-theme="light"] #mrmed-input-form button[type="submit"] {
+  background: #2A835F !important;
+  color: #FFFFFF !important;
+  border: 1px solid #2A835F !important;
+  transition: all 0.2s ease !important;
+}
+
+html.light .ai-send-btn:hover,
+[data-theme="light"] .ai-send-btn:hover,
+html.light #btn-ai-send:hover,
+[data-theme="light"] #btn-ai-send:hover,
+html.light #mrmed-input-form button[type="submit"]:hover,
+[data-theme="light"] #mrmed-input-form button[type="submit"]:hover {
+  background: #12544F !important;
+  border-color: #12544F !important;
+}
+
+/* Quick prompt pills */
+html.light .quick-prompt-pill,
+[data-theme="light"] .quick-prompt-pill,
+html.light .mrmed-chip,
+[data-theme="light"] .mrmed-chip {
+  background: #FFFFFF !important;
+  border: 1.5px solid #8BBB92 !important;
+  color: #12544F !important;
+  box-shadow: 0 2px 6px rgba(9, 35, 40, 0.04) !important;
+}
+
+html.light .quick-prompt-pill:hover,
+[data-theme="light"] .quick-prompt-pill:hover,
+html.light .mrmed-chip:hover,
+[data-theme="light"] .mrmed-chip:hover {
+  background: rgba(139, 187, 146, 0.25) !important;
+  border-color: #2A835F !important;
+  color: #092328 !important;
+}
+
+/* =============================================================
+   ELIMINATE "FADED SHED" / EXCESSIVE WASHED-OUT OPACITY (LIGHT MODE)
+   ============================================================= */
+html.light body,
+[data-theme="light"] body {
+  background-color: #F4F7F6 !important;
+  color: #1A353A !important;
+}
+
+html.light .aurora-bg,
+[data-theme="light"] .aurora-bg {
+  display: none !important;
+}
+
+/* High-contrast solid backgrounds with crisp 100% solid opacity borders */
+html.light .glass-card,
+[data-theme="light"] .glass-card,
+html.light .liquid-card,
+[data-theme="light"] .liquid-card {
+  background: #FFFFFF !important;
+  border: 2px solid #8BBB92 !important;
+  box-shadow: 0 20px 40px -15px rgba(9, 35, 40, 0.12) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* High-contrast headings and body text */
+html.light h1, html.light h2, html.light h3, html.light h4, html.light h5, html.light h6,
+[data-theme="light"] h1, [data-theme="light"] h2, [data-theme="light"] h3, [data-theme="light"] h4, [data-theme="light"] h5, [data-theme="light"] h6 {
+  color: #092328 !important;
+}
+
+html.light p, html.light span.text-slate-300, html.light span.text-slate-200,
+[data-theme="light"] p, [data-theme="light"] span.text-slate-300, [data-theme="light"] span.text-slate-200 {
+  color: #1A353A !important;
+}
+
+html.light .text-slate-400,
+[data-theme="light"] .text-slate-400 {
+  color: #12544F !important;
+}
+
+
+

@@ -313,8 +313,66 @@ CREATE TABLE IF NOT EXISTS `hospital_beds` (
   KEY `idx_bed_dept_status` (`department_id`, `status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- -------------------------------------------------------------
+-- 16. BLOOD DONATION & REQUEST HUB (LIFE-SAVING DONOR EXCHANGE)
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `blood_posts` (
+  `post_id` INT AUTO_INCREMENT NOT NULL,
+  `author_uid` VARCHAR(20) NOT NULL,
+  `post_type` ENUM('DONATE', 'REQUEST') NOT NULL,
+  `blood_group` ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') NOT NULL,
+  `hemoglobin_level` DECIMAL(4,1) NULL,
+  `units_needed` INT DEFAULT 1,
+  `area` VARCHAR(100) NOT NULL,
+  `city` VARCHAR(100) NOT NULL,
+  `hospital_name` VARCHAR(150) NULL,
+  `urgency` ENUM('NORMAL', 'URGENT', 'CRITICAL_EMERGENCY') DEFAULT 'NORMAL',
+  `contact_phone` VARCHAR(20) NOT NULL,
+  `status` ENUM('OPEN', 'FULFILLED', 'CLOSED') DEFAULT 'OPEN',
+  `notes` TEXT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_blood_posts` PRIMARY KEY (`post_id`),
+  CONSTRAINT `fk_blood_author` FOREIGN KEY (`author_uid`) 
+    REFERENCES `citizens`(`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `idx_blood_filter` (`blood_group`, `area`, `status`, `post_type`),
+  KEY `idx_blood_urgency` (`urgency`, `created_at` DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -------------------------------------------------------------
+-- 17. UNIVERSAL REAL-TIME MESSAGING SYSTEM (CROSS-ROLE COMMS)
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `messages` (
+  `message_id` BIGINT AUTO_INCREMENT NOT NULL,
+  `sender_uid` VARCHAR(20) NOT NULL,
+  `receiver_uid` VARCHAR(20) NOT NULL,
+  `message_text` TEXT NOT NULL,
+  `is_read` BOOLEAN DEFAULT FALSE,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_messages` PRIMARY KEY (`message_id`),
+  KEY `idx_msg_thread` (`sender_uid`, `receiver_uid`, `created_at`),
+  KEY `idx_msg_receiver` (`receiver_uid`, `is_read`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -------------------------------------------------------------
+-- 18. COMMUNITY HEALTH BLOGS / CLINICAL KNOWLEDGE FEED
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `health_blogs` (
+  `blog_id` INT AUTO_INCREMENT NOT NULL,
+  `author_id` INT NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `category` VARCHAR(100) NOT NULL,
+  `content` LONGTEXT NOT NULL,
+  `tags` VARCHAR(200) NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_health_blogs` PRIMARY KEY (`blog_id`),
+  CONSTRAINT `fk_blog_doctor` FOREIGN KEY (`author_id`) 
+    REFERENCES `doctors`(`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `idx_blog_category` (`category`),
+  KEY `idx_blog_created` (`created_at` DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- =============================================================
--- 16. EXPLICIT PERFORMANCE INDEXES (OPTIMIZATION)
+-- 19. EXPLICIT PERFORMANCE INDEXES (OPTIMIZATION)
 -- =============================================================
 
 -- Composite B-Tree Index for chronological patient prescriptions:
@@ -332,3 +390,4 @@ ON `diagnostic_reports`(`patient_uid`, `uploaded_at` DESC);
 -- Full-Text Index on medicines for high-speed natural language search:
 CREATE FULLTEXT INDEX IF NOT EXISTS `idx_ft_medicines` 
 ON `medicines`(`brand_name`, `generic_name`);
+

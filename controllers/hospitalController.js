@@ -29,7 +29,23 @@ async function getHospitalById(req, res) {
   }
 }
 
+async function getHospitalDoctors(req, res) {
+  try {
+    const { id } = req.params;
+    const doctors = await hospitalModel.getDoctorsByHospitalId(id);
+    res.json({
+      success: true,
+      count: doctors.length,
+      data: doctors
+    });
+  } catch (err) {
+    console.error('[HospitalController] Error fetching hospital doctors:', err.message);
+    res.status(500).json({ success: false, message: 'Server error retrieving doctors for hospital.' });
+  }
+}
+
 module.exports = {
   getHospitals,
-  getHospitalById
+  getHospitalById,
+  getHospitalDoctors
 };

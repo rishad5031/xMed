@@ -561,6 +561,9 @@ async function seedDatabase() {
     await query('TRUNCATE TABLE prescriptions;');
     await query('TRUNCATE TABLE patient_self_medications;');
     await query('TRUNCATE TABLE appointments;');
+    await query('TRUNCATE TABLE blood_posts;');
+    await query('TRUNCATE TABLE messages;');
+    await query('TRUNCATE TABLE health_blogs;');
     await query('SET FOREIGN_KEY_CHECKS = 1;');
 
     let totalPrescriptionsSeeded = 0;
@@ -598,11 +601,19 @@ async function seedDatabase() {
           const dosage = dosageInstructions[(cIdx + it) % dosageInstructions.length];
           const duration = durations[(r + it) % durations.length];
 
-          await query(`
-            INSERT INTO prescription_items (prescription_id, medicine_id, dosage_instruction, duration)
-            VALUES (?, ?, ?, ?);
-          `, [rxId, selectedMed.medicine_id, dosage, duration]);
-          totalItemsSeeded++;
+          try {
+            await query(`
+              INSERT INTO prescription_items (prescription_id, medicine_id, dosage_instruction, duration)
+              VALUES (?, ?, ?, ?);
+            `, [rxId, selectedMed.medicine_id, dosage, duration]);
+            totalItemsSeeded++;
+          } catch (itemErr) {
+            if (itemErr.sqlMessage && itemErr.sqlMessage.includes('ALLERGY CONFLICT')) {
+              // Trigger safely caught an allergy conflict
+            } else {
+              throw itemErr;
+            }
+          }
         }
       }
 
@@ -830,6 +841,441 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${totalDepts} Departments and ${totalBeds} Beds across 6 Hospitals.\n`);
 
+    // 7. Seed Blood Donation & Request Hub (50 Detailed Posts)
+    console.log('[7/9] Seeding Blood Donation & Request Exchange Hub (50 Unique Posts)...');
+    const hubBloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+    const hubAreas = ['Dhanmondi', 'Uttara', 'Mirpur', 'Gulshan', 'Mohakhali', 'Agrabad', 'Banani', 'Badda'];
+    const hospitalsList = [
+      'Dhanmondi Care Hospital',
+      'Uttara Central Specialized Hospital',
+      'Mirpur General Hospital',
+      'Gulshan Apex Medical Centre',
+      'Mohakhali National Health Institute',
+      'Chittagong Medical College Hospital',
+      'Square Hospital',
+      'United Hospital',
+      'Evercare Hospital',
+      'Kurmitola General Hospital'
+    ];
+
+    const bloodNotesLibrary = [
+      'Emergency bypass surgery at Central Hospital; family donors unavailable.',
+      'Regular voluntary donor, last donated 4 months ago. Healthy and ready.',
+      'Thalassemia major child requiring bi-weekly packed red blood cell transfusion.',
+      'Acute postpartum hemorrhage in maternity emergency ward; 2 bags required urgently.',
+      'Scheduled elective orthopedic hip replacement surgery; blood cross-match ready.',
+      'Dengue hemorrhagic fever patient with severe thrombocytopenia requiring immediate whole blood.',
+      'Voluntary donor with verified hemoglobin > 14.5 g/dL. Available on short notice.',
+      'Road traffic accident trauma victim in neuro-intensive care unit.',
+      'Oncology chemotherapy patient with severe secondary bone marrow suppression.',
+      'Healthy donor, non-smoker, universal plasma donor willing to travel across Dhaka.',
+      'Dialysis patient with chronic kidney disease and refractory anemia.',
+      'Severe gastrointestinal bleed secondary to peptic ulcer disease; CCU admission.'
+    ];
+
+    const bloodPostsData = [];
+    for (let i = 0; i < 50; i++) {
+      const authorUid = citizenUids[i % citizenUids.length] || `BD-2000-000${(i % 9) + 1}`;
+      const isRequest = i < 25; // 25 REQUEST, 25 DONATE
+      const postType = isRequest ? 'REQUEST' : 'DONATE';
+      const bloodGroup = hubBloodGroups[i % hubBloodGroups.length];
+      const area = hubAreas[i % hubAreas.length];
+      const hospitalName = isRequest ? hospitalsList[i % hospitalsList.length] : null;
+      
+      // Status distribution: 35 OPEN, 10 FULFILLED, 5 CLOSED
+      let status = 'OPEN';
+      if (i >= 35 && i < 45) status = 'FULFILLED';
+      else if (i >= 45) status = 'CLOSED';
+
+      // Urgency distribution
+      let urgency = 'NORMAL';
+      if (isRequest) {
+        if (i % 3 === 0) urgency = 'CRITICAL_EMERGENCY';
+        else if (i % 3 === 1) urgency = 'URGENT';
+        else urgency = 'NORMAL';
+      }
+
+      // Hemoglobin distribution: 12.0 - 16.0 for donors, null or lower for requests
+      let hemoglobin = null;
+      if (!isRequest) {
+        hemoglobin = parseFloat((12.5 + ((i * 3) % 35) * 0.1).toFixed(1));
+      } else if (i % 2 === 0) {
+        hemoglobin = parseFloat((7.8 + ((i * 2) % 25) * 0.1).toFixed(1));
+      }
+
+      const units = isRequest ? (1 + (i % 3)) : 1;
+      const phone = `+8801711${String(100000 + i).slice(-6)}`;
+      const note = bloodNotesLibrary[i % bloodNotesLibrary.length];
+
+      bloodPostsData.push({
+        author_uid: authorUid,
+        post_type: postType,
+        blood_group: bloodGroup,
+        hemoglobin_level: hemoglobin,
+        units_needed: units,
+        area: area,
+        city: 'Dhaka',
+        hospital_name: hospitalName,
+        urgency: urgency,
+        contact_phone: phone,
+        status: status,
+        notes: note
+      });
+    }
+
+    let totalBloodPosts = 0;
+    for (const bp of bloodPostsData) {
+      await query(`
+        INSERT INTO blood_posts 
+          (author_uid, post_type, blood_group, hemoglobin_level, units_needed, area, city, hospital_name, urgency, contact_phone, status, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      `, [
+        bp.author_uid, bp.post_type, bp.blood_group, bp.hemoglobin_level, bp.units_needed,
+        bp.area, bp.city, bp.hospital_name, bp.urgency, bp.contact_phone, bp.status, bp.notes
+      ]);
+      totalBloodPosts++;
+    }
+    console.log(`✓ Seeded ${totalBloodPosts} Blood Posts (25 DONATE & 25 REQUEST with 35 OPEN, 10 FULFILLED, 5 CLOSED).\n`);
+
+    // 8. Seed Multi-Threaded Cross-Role Messaging System (Every Citizen <-> 5 Distinct Doctors)
+    console.log('[8/9] Seeding Multi-Threaded Doctor-Patient Messages (100 Patients x 5 Doctors = 500 Threads)...');
+    
+    const dialogueArchetypes = [
+      {
+        topic: 'Hypertension Management',
+        messages: [
+          { role: 'cit', text: 'Good morning Doctor, I have been taking Amlodipine 5mg for 4 days as prescribed, but feel slightly lightheaded around noon. Should I adjust the timing?' },
+          { role: 'doc', text: 'Hello! Mild lightheadedness can happen initially as peripheral vascular resistance drops. Please check your blood pressure at noon and take the tablet right after breakfast with a glass of water.' },
+          { role: 'cit', text: 'Understood Doctor. Should I strictly restrict dietary salt, and are 30-minute morning brisk walks safe?' },
+          { role: 'doc', text: 'Keep sodium under 2g daily. Moderate walks are safe and strongly encouraged. If systolic drops below 100 mmHg, message me immediately.' }
+        ]
+      },
+      {
+        topic: 'Type 2 Diabetes Glycemic Monitoring',
+        messages: [
+          { role: 'cit', text: 'Doctor, my fasting blood glucose was 7.8 mmol/L and 2-hour post-meal was 11.2 mmol/L. I am taking Metformin 500mg twice daily.' },
+          { role: 'doc', text: 'Thank you for tracking. Since post-prandial remains above our 8.5 target, ensure you take Metformin with meals and minimize refined carbohydrates in your evening diet.' },
+          { role: 'cit', text: 'Should I schedule an HbA1c and kidney function test before our upcoming clinic review?' },
+          { role: 'doc', text: 'Yes, please complete an HbA1c and serum creatinine test next week, then upload the PDF report directly to your xMED vault.' },
+          { role: 'cit', text: 'Will do Doctor, uploaded last month’s lipid panel as well.' }
+        ]
+      },
+      {
+        topic: 'Seasonal Fever & Dengue Precautions',
+        messages: [
+          { role: 'cit', text: 'Hello Doctor, I developed a sudden fever of 102°F yesterday with retro-orbital eye pain and severe body ache. Could this be dengue?' },
+          { role: 'doc', text: 'Given seasonal trends, do NOT take any Ibuprofen or Aspirin. Take only Paracetamol 500mg up to every 6 hours and drink plenty of ORS and coconut water.' },
+          { role: 'cit', text: 'Should I get a Complete Blood Count (CBC) and Dengue NS1 antigen test done today?' },
+          { role: 'doc', text: 'Yes, get a CBC and NS1 antigen test today. If platelets drop below 100,000 or you notice severe abdominal pain, proceed to the hospital emergency triage.' }
+        ]
+      },
+      {
+        topic: 'Gastritis & Acid Reflux',
+        messages: [
+          { role: 'cit', text: 'Dr. Kabir, I have severe burning in my upper chest at night, despite taking Omeprazole 20mg daily.' },
+          { role: 'doc', text: 'Make sure you take Omeprazole 30 minutes before breakfast on an empty stomach. Avoid spicy dinners and do not lie flat within 2 hours of eating.' },
+          { role: 'cit', text: 'Can I take a chewable antacid if nighttime burning wakes me up?' },
+          { role: 'doc', text: 'Yes, an aluminum-magnesium hydroxide chewable antacid can be taken for breakthrough nocturnal acidity.' },
+          { role: 'cit', text: 'Thank you Doctor, adjusting my meal schedule tonight.' },
+          { role: 'doc', text: 'You are welcome. Keep a symptom diary for the next 7 days.' }
+        ]
+      },
+      {
+        topic: 'Pediatric Asthma & Bronchospasm',
+        messages: [
+          { role: 'cit', text: 'Doctor, my child has been coughing persistently at night and has a faint wheezing sound during running.' },
+          { role: 'doc', text: 'This suggests reactive airway bronchospasm. Please administer the Salbutamol 100mcg inhaler with a spacer: 2 puffs as directed.' },
+          { role: 'cit', text: 'How frequently can we repeat the inhaler puffs if coughing persists?' },
+          { role: 'doc', text: 'You can repeat 2 puffs after 20 minutes once. If chest indrawing or breathlessness appears, visit our emergency center immediately.' }
+        ]
+      },
+      {
+        topic: 'Allergic Dermatitis & Skin Rash',
+        messages: [
+          { role: 'cit', text: 'Hello Doctor, the red itchy rash on my forearms has flared up after using synthetic laundry powder.' },
+          { role: 'doc', text: 'Apply the Hydrocortisone cream thinly twice daily for 5 days only, followed by liberal amounts of plain petroleum jelly.' },
+          { role: 'cit', text: 'Can I take an antihistamine like Cetirizine 10mg at night for the itching?' },
+          { role: 'doc', text: 'Yes, Cetirizine 10mg at bedtime will relieve nighttime itching and help you rest without scratching.' }
+        ]
+      },
+      {
+        topic: 'Post-Operative Suture Care',
+        messages: [
+          { role: 'cit', text: 'Good afternoon Doctor, my abdominal surgical incision looks slightly pink, but there is no fever or pus.' },
+          { role: 'doc', text: 'Mild pink erythema is normal during surgical wound remodeling. Keep the area completely dry and clean with sterile dressing.' },
+          { role: 'cit', text: 'When should I visit the outpatient clinic for suture removal?' },
+          { role: 'doc', text: 'Please visit the surgical OPD this Thursday between 9 AM and 1 PM for stitch removal and scar assessment.' }
+        ]
+      },
+      {
+        topic: 'Dyslipidemia & Statin Instructions',
+        messages: [
+          { role: 'cit', text: 'Doctor, my fasting lipid profile shows LDL 155 mg/dL. I have started Atorvastatin 10mg nightly.' },
+          { role: 'doc', text: 'Atorvastatin works best when taken at bedtime to target peak hepatic cholesterol synthesis. Continue taking it nightly.' },
+          { role: 'cit', text: 'Should I be concerned about muscle soreness or liver enzymes?' },
+          { role: 'doc', text: 'Mild fatigue is rare, but report any severe unexplained muscle cramps. We will recheck liver enzymes and lipid levels in 8 weeks.' }
+        ]
+      },
+      {
+        topic: 'Migraine Headache Management',
+        messages: [
+          { role: 'cit', text: 'Dr. Tanvir, I get throbbing one-sided headaches preceded by bright zigzag lines in my visual field.' },
+          { role: 'doc', text: 'These are classic migraine episodes with aura. Take Naproxen 500mg immediately when the visual aura begins, before the pain peaks.' },
+          { role: 'cit', text: 'Should I avoid specific dietary triggers like aged cheese or caffeine?' },
+          { role: 'doc', text: 'Yes, maintain a regular sleep schedule, stay hydrated, and note down food triggers in your daily health journal.' }
+        ]
+      },
+      {
+        topic: 'Thyroid Hormone Adjustment',
+        messages: [
+          { role: 'cit', text: 'Doctor, my TSH is 5.8 mIU/L on Levothyroxine 50mcg. I still feel unusually cold and sluggish in the morning.' },
+          { role: 'doc', text: 'Your dose requires a slight adjustment. Increase Levothyroxine to 75mcg daily, taken with plain water 45 minutes before breakfast.' },
+          { role: 'cit', text: 'Can I take my calcium and vitamin D tablets together with the thyroid pill?' },
+          { role: 'doc', text: 'No, calcium binds to thyroxine and blocks absorption. Separate calcium supplements by at least 4 hours.' }
+        ]
+      }
+    ];
+
+    let totalMessagesSeeded = 0;
+    const messageBatch = [];
+
+    for (let cIdx = 0; cIdx < citizenUids.length; cIdx++) {
+      const patientUid = citizenUids[cIdx];
+
+      // Assign 5 distinct doctors for every patient
+      for (let k = 0; k < 5; k++) {
+        const docIndex = (cIdx * 3 + k) % doctorIds.length;
+        const doctorUid = `DOC-${1001 + docIndex}`;
+        const archetype = dialogueArchetypes[(cIdx * 5 + k) % dialogueArchetypes.length];
+
+        const daysAgo = 1 + ((cIdx * 7 + k * 3) % 13);
+        const threadBaseTime = new Date();
+        threadBaseTime.setDate(threadBaseTime.getDate() - daysAgo);
+
+        for (let m = 0; m < archetype.messages.length; m++) {
+          const item = archetype.messages[m];
+          const isCitizen = item.role === 'cit';
+          const senderUid = isCitizen ? patientUid : doctorUid;
+          const receiverUid = isCitizen ? doctorUid : patientUid;
+
+          // Sequential timestamps spaced by 30 to 90 minutes
+          const msgTime = new Date(threadBaseTime.getTime() + m * (45 * 60 * 1000) + (cIdx * 60000));
+
+          // Older messages are read; the final message has a realistic chance of being unread (for notification testing)
+          const isLastMessage = m === archetype.messages.length - 1;
+          const isRead = isLastMessage ? (((cIdx + k) % 3 === 0) ? 0 : 1) : 1;
+
+          messageBatch.push([senderUid, receiverUid, item.text, isRead, msgTime]);
+        }
+      }
+    }
+
+    // Batch insert messages in chunks of 300 to optimize throughput
+    const chunkSize = 300;
+    for (let i = 0; i < messageBatch.length; i += chunkSize) {
+      const chunk = messageBatch.slice(i, i + chunkSize);
+      const placeholders = chunk.map(() => '(?, ?, ?, ?, ?)').join(', ');
+      const flatParams = chunk.flat();
+
+      await query(`
+        INSERT INTO messages (sender_uid, receiver_uid, message_text, is_read, created_at)
+        VALUES ${placeholders};
+      `, flatParams);
+      totalMessagesSeeded += chunk.length;
+    }
+    console.log(`✓ Seeded ${totalMessagesSeeded} Cross-Role Messages across 500 Patient-Doctor conversation threads.\n`);
+
+    // 9. Seed Community Health Blogs (16+ Articles)
+    console.log('[9/9] Seeding Community Health Blogs & Clinical Knowledge Feed (16 Detailed Articles)...');
+    const blogsData = [
+      {
+        author_id: 1,
+        title: 'Recognizing Early Signs of Heart Disease: What Every Adult Should Know',
+        category: 'Cardiology & Vascular',
+        tags: 'Cardiology, Heart Attack, Angina, Prevention',
+        content: `Cardiovascular disease remains the leading cause of premature adult mortality in South Asia. While crushing central chest pain is the classic presentation of an acute myocardial infarction, early ischemia often manifests subtly as unexplained exertional fatigue, dull aching radiating into the lower jaw or left shoulder, or shortness of breath while ascending stairs.
+
+In diabetic patients and elderly women, autonomic neuropathy may completely mask chest pain, producing 'silent ischemia' that presents only as sudden dizziness, cold sweats, or indigestion-like epigastric discomfort. Early clinical screening using resting 12-lead electrocardiography (ECG), lipid profiling, and baseline echocardiograms allows physicians to initiate preventive statin and antiplatelet regimens before irreversible myocardial necrosis occurs.
+
+Regular aerobic physical activity—at least 150 minutes of moderate exercise per week—alongside strict blood pressure control (targeting systolic < 130 mmHg) reduces the relative risk of acute coronary syndrome by up to 40%. Consult your doctor if you experience exertional discomfort.`
+      },
+      {
+        author_id: 2,
+        title: 'Managing Asthma and Seasonal Allergies in Urban Environments',
+        category: 'Pulmonology & Respiratory',
+        tags: 'Asthma, Allergies, Inhaler, Air Quality',
+        content: `Urban air quality in densely populated cities frequently reaches hazardous particulate levels (PM2.5 > 150 µg/m³), triggering acute airway hyperreactivity, bronchial inflammation, and nocturnal bronchospasm. Asthma is not a disease of muscle constriction alone; it is fundamentally a chronic eosinophilic inflammatory disorder of the bronchial mucosa.
+
+Relying exclusively on short-acting rescue inhalers like Salbutamol provides temporary bronchodilation but fails to resolve the underlying mucosal edema. Maintenance treatment requires low-dose Inhaled Corticosteroids (ICS) paired with Long-Acting Beta Agonists (LABA), which suppress airway remodeling and reduce life-threatening exacerbation risks.
+
+Patients should use spacer devices to maximize pulmonary deposition and minimize oral candidiasis. In addition, installing HEPA air filters, washing bedding weekly in hot water, and wearing particulate-filtering masks outdoors during high-AQI days significantly cuts emergency room visits.`
+      },
+      {
+        author_id: 3,
+        title: 'Understanding Acid Reflux, Gastritis, and Long-Term Gut Health',
+        category: 'Gastroenterology',
+        tags: 'GERD, Gastritis, Omeprazole, Digestion',
+        content: `Gastroesophageal Reflux Disease (GERD) and peptic gastritis are among the most frequent clinical presentations in Bangladesh, often exacerbated by high dietary oil consumption, irregular meal timings, and widespread unprescribed consumption of NSAIDs. When the lower esophageal sphincter relaxes inappropriately, hydrochloric acid and pepsin regurgitate, producing burning retrosternal discomfort and mucosal erosion.
+
+While Proton Pump Inhibitors (PPIs) such as Omeprazole and Esomeprazole effectively suppress acid secretion, chronic unmonitored use spanning years can impair dietary calcium and Vitamin B12 absorption, while increasing susceptibility to Clostridium difficile enteritis. PPIs should be taken 30 to 45 minutes prior to the first meal of the day to achieve maximal receptor inhibition.
+
+Long-term resolution requires lifestyle modifications: elevating the head of the bed by 15 cm, refraining from lying down within three hours of dinner, maintaining ideal body weight, and undergoing diagnostic endoscopy if red-flag symptoms such as dysphagia, anemia, or unintentional weight loss occur.`
+      },
+      {
+        author_id: 4,
+        title: 'Essential Immunization Timelines and Childhood Nutrition Guidelines',
+        category: 'Pediatrics & Child Health',
+        tags: 'Pediatrics, Vaccines, Nutrition, Stunting',
+        content: `The first 1,000 days of life—from conception through the child’s second birthday—form the critical biological window for neurological development, linear bone growth, and lifelong immune competence. Strict adherence to the Expanded Programme on Immunization (EPI) schedule protects against formerly catastrophic childhood infections including measles, pertussis, diphtheria, and rotavirus diarrhea.
+
+Exclusive breastfeeding for the first six months provides irreplaceable secretory IgA antibodies, optimal whey-casein ratios, and protective lactoferrin. Introducing nutrient-dense complementary feeding at six months—incorporating mashed egg yolk, animal protein, green leafy vegetables, and fortified cereal—prevents stunting and iron-deficiency anemia.
+
+Parents should monitor development using standardized WHO growth charts. Ensure high-dose Vitamin A supplementation is received bi-annually and seek prompt clinical attention for persistent diarrhea or rapid respiratory rates (> 50 breaths/minute in infants).`
+      },
+      {
+        author_id: 5,
+        title: 'Protecting Your Skin: Daily Habits Against Sun Damage and Eczema',
+        category: 'Dermatology & Skin Care',
+        tags: 'Dermatology, Eczema, Sunscreen, Skin Health',
+        content: `The human skin barrier serves as our primary physical defense against microbial invasion and environmental ultraviolet radiation. In humid tropical climates, high solar UV indexes generate reactive oxygen species that degrade collagen fibers, leading to photoaging, hyperpigmentation, and increased risk of cutaneous malignancies.
+
+Applying broad-spectrum sunscreen with SPF 50+ and PA++++ every morning—and reapplying every 2 to 3 hours during prolonged sun exposure—is the single most effective dermatological intervention. For patients suffering from atopic dermatitis and eczema, the epidermal stratum corneum is genetically deficient in ceramides and filaggrin, causing trans-epidermal water loss and intense pruritus.
+
+Management centers on minimizing harsh surfactants, taking short lukewarm showers, and applying thick petroleum or ceramide-rich moisturizers to damp skin within 3 minutes of bathing. Topical corticosteroid ointments should be reserved for acute flares under physician supervision to prevent skin atrophy.`
+      },
+      {
+        author_id: 6,
+        title: 'Hydration and Electrolyte Balance in Humid Climates',
+        category: 'General & Preventive Health',
+        tags: 'Hydration, Electrolytes, Heatstroke, Wellness',
+        content: `Under tropical conditions where ambient temperature exceeds 35°C and relative humidity surpasses 80%, evaporative cooling via perspiration becomes significantly impaired. Profuse sweating rapidly depletes both intravascular volume and essential serum ions, particularly sodium, chloride, and potassium, leading to heat exhaustion and potential heatstroke.
+
+Drinking plain water alone during high sweat-loss activities can precipitate exercise-associated hyponatremia (water intoxication), characterized by headache, nausea, cerebral edema, and muscle cramping. Incorporating oral rehydration salts (ORS) containing glucose and electrolytes ensures rapid co-transport across the intestinal lumen into the bloodstream.
+
+Healthy adults require 2.5 to 3.5 liters of fluid daily during hot seasons. Monitor your hydration status using urine color: pale straw indicates eavolemia, while dark amber signifies urgent rehydration requirements. Avoid excessive caffeinated and sweetened beverages, which accelerate renal fluid excretion.`
+      },
+      {
+        author_id: 7,
+        title: 'Intermittent Fasting: Clinical Benefits vs Common Myths',
+        category: 'Endocrinology & Nutrition',
+        tags: 'Nutrition, Fasting, Metabolism, Weight Loss',
+        content: `Intermittent fasting (IF)—most commonly the 16:8 time-restricted feeding regimen—has transitioned from a fitness trend into a clinically studied metabolic intervention. By extending the overnight fasting interval to 16 hours, systemic insulin levels decline, triggering hepatic glycogen depletion and initiating metabolic switching toward free fatty acid beta-oxidation and ketogenesis.
+
+Cellular biology studies demonstrate that sustained fasting upregulates autophagy—the lysosomal degradation and recycling of senescent organelles and misfolded proteins—while improving peripheral insulin receptor sensitivity in skeletal muscle. This produces tangible improvements in fasting glucose, HbA1c, and visceral adipose tissue volume.
+
+However, fasting is contraindicated in Type 1 diabetics on insulin therapy, pregnant and lactating mothers, and individuals with a history of eating disorders. Fasting is not a license to overindulge during the 8-hour feeding window; nutrient density, high protein intake, and adequate micronutrients remain paramount.`
+      },
+      {
+        author_id: 8,
+        title: 'Early Warning Signs of Dengue & Fluid Management in Upazila Centers',
+        category: 'Infectious Disease',
+        tags: 'Dengue, Platelets, Fluid Therapy, Emergency',
+        content: `Dengue fever presents in three distinct phases: febrile, critical, and recovery. The most hazardous period is the critical phase, occurring around days 3 to 7 as the initial fever resolves. During this 24 to 48-hour window, systemic plasma leakage from endothelial dysfunction can trigger severe intravascular hypovolemia, shock, and organ hypoperfusion.
+
+Frequent clinical monitoring is essential: hematocrit elevation > 20% indicates hemoconcentration and significant plasma leakage, preceding a steep decline in platelet counts. Warning signs including persistent vomiting, severe abdominal pain, clinical fluid accumulation (pleural effusion or ascites), and lethargy require immediate admission.
+
+Judicious fluid administration with isotonic crystalloids (Normal Saline or Ringer’s Lactate) titrated strictly to clinical response avoids both hypovolemic shock and iatrogenic pulmonary edema. Routine prophylactic platelet transfusions are contraindicated unless active life-threatening mucosal hemorrhage occurs.`
+      },
+      {
+        author_id: 9,
+        title: 'Comprehensive Guide to Diabetes HbA1c Control and Renal Protection',
+        category: 'Endocrinology & Diabetology',
+        tags: 'Diabetes, HbA1c, Nephropathy, Metformin',
+        content: `Diabetic kidney disease (diabetic nephropathy) develops in approximately 30-40% of patients with chronic diabetes mellitus and represents the leading cause of end-stage renal disease worldwide. Persistent hyperglycemia leads to advanced glycation end-products (AGEs), mesangial expansion, and glomerular hyperfiltration.
+
+Routine annual screening for microalbuminuria (urine albumin-to-creatinine ratio) detects early subclinical glomerular damage years before serum creatinine rises. Initiating SGLT2 inhibitors (such as Empagliflozin or Dapagliflozin) or ACE inhibitors / ARBs reduces intraglomerular pressure, halting the progression of proteinuric renal failure.
+
+Targeting an individualized HbA1c of 6.5% to 7.0% in early disease preserves microvascular endothelial function. Patients must adhere to a low-glycemic Mediterranean-style diet, eliminate tobacco use, and achieve blood pressure under 130/80 mmHg for optimal nephroprotection.`
+      },
+      {
+        author_id: 10,
+        title: 'Managing Chronic Migraine: Triggers, Sleep Hygiene, and Acute Therapy',
+        category: 'Neurology & Brain Health',
+        tags: 'Migraine, Headache, Aura, Neurology',
+        content: `Migraine is a complex neurovascular disorder characterized by recurrent attacks of moderate-to-severe throbbing headache, typically unilateral, accompanied by photophobia, phonophobia, and nausea. In approximately 25% of patients, neurological aura precedes the headache phase by 20 to 60 minutes.
+
+Pathophysiologically, cortical spreading depression triggers activation of the trigeminovascular system, releasing calcitonin gene-related peptide (CGRP) and substance P, causing sterile neurogenic inflammation around cerebral blood vessels. Abortive therapy—such as Triptans or high-dose NSAIDs—must be taken at the earliest onset of pain to halt peripheral and central sensitization.
+
+Preventive pharmacotherapy is indicated when patients experience four or more debilitating headache days per month. Maintaining regular sleep-wake cycles, consistent hydration, and minimizing screen exposure under poor ambient lighting forms the cornerstone of non-pharmacological management.`
+      },
+      {
+        author_id: 1,
+        title: 'Hypertension: The Silent Killer and Practical Daily Home Monitoring',
+        category: 'Cardiology & Vascular',
+        tags: 'Hypertension, Blood Pressure, Monitoring, Salt',
+        content: `Systemic hypertension is termed the silent killer because severe arterial wall damage occurs over decades without producing perceptible symptoms. Elevated hydrostatic pressure accelerates atherosclerosis, causing coronary artery disease, hypertensive nephrosclerosis, and hemorrhagic stroke.
+
+Home blood pressure monitoring using an automated, validated upper-arm oscillometric cuff yields far more reliable prognostic data than isolated in-clinic measurements, avoiding 'white coat hypertension'. Patients should rest quietly for 5 minutes, keep their back supported and feet flat on the floor, and avoid caffeine or tobacco for 30 minutes prior to measurement.
+
+Adopting the DASH (Dietary Approaches to Stop Hypertension) diet—rich in potassium, magnesium, and dietary fiber, and restricting sodium intake to < 1,500 mg daily—lowers systolic blood pressure by up to 11 mmHg, rivaling single-agent pharmacotherapy.`
+      },
+      {
+        author_id: 2,
+        title: 'Rational Antibiotic Use: Combating Antimicrobial Resistance (AMR)',
+        category: 'Pharmacology & Public Health',
+        tags: 'Antibiotics, AMR, Microbiology, Infection',
+        content: `Antimicrobial Resistance (AMR) is one of the top ten global public health threats facing humanity. The routine over-the-counter dispensing of third-generation cephalosporins, macrolides, and fluoroquinolones for viral upper respiratory tract infections has selected for multi-drug resistant pathogens, including carbapenem-resistant Enterobacteriaceae.
+
+Antibiotics exert selective pressure: while susceptible bacteria perish, spontaneous genetic mutations and plasmid-mediated resistance genes allow resistant clones to proliferate and spread within community reservoirs. Viral infections—including acute bronchitis, common colds, and most diarrheal episodes—do not respond to antimicrobials.
+
+Physicians must practice antibiotic stewardship by obtaining microbiological cultures whenever feasible, selecting narrow-spectrum agents, and prescribing strictly indicated durations. Patients must complete their entire prescribed course and never self-administer leftover antibiotics.`
+      },
+      {
+        author_id: 3,
+        title: 'The Vital Importance of Voluntary Blood Donation in Bangladesh',
+        category: 'Hematology & Blood Banking',
+        tags: 'Blood Bank, Transfusion, Voluntary Donor, Hemoglobin',
+        content: `Voluntary, non-remunerated blood donation represents the ethical and clinical lifeblood of the healthcare system. Component separation allows a single whole blood unit to be processed into Packed Red Blood Cells (PRBCs) for acute trauma or severe anemia, Fresh Frozen Plasma (FFP) for coagulopathies, and Platelet Concentrates for oncology and dengue patients.
+
+Healthy adults aged 18 to 60 with a body weight of at least 48 kg and a screening hemoglobin level > 12.5 g/dL can donate whole blood every 120 days with zero negative health consequences. The human bone marrow replenishes lost fluid volume within 24 to 48 hours and erythrocyte mass within 4 to 6 weeks.
+
+Rigorous serological screening for transfusion-transmitted infections (HIV, Hepatitis B and C, Syphilis, and Malaria) ensures recipient safety. Participating in organized voluntary donor registries, such as xMED's real-time national hub, saves countless lives daily.`
+      },
+      {
+        author_id: 4,
+        title: 'Thyroid Disorders in Women: Hypothyroidism, Goiter, and Fertility',
+        category: 'Endocrinology & Women Health',
+        tags: 'Thyroid, TSH, Women Health, Levothyroxine',
+        content: `Thyroid disorders affect women five to eight times more frequently than men, primarily due to autoimmune susceptibility (Hashimoto’s thyroiditis). Thyroid hormones (T3 and T4) act as master metabolic regulators, governing basal metabolic rate, cardiac output, lipid oxidation, and ovarian steroidogenesis.
+
+Subclinical and overt hypothyroidism frequently causes menstrual irregularities, anovulation, and recurrent early pregnancy loss. Elevated thyroid-stimulating hormone (TSH) stimulates prolactin secretion, disrupting the pulsatile release of GnRH and luteinizing hormone.
+
+Women planning conception should target a preconception TSH between 0.5 and 2.5 mIU/L. During pregnancy, fetal reliance on maternal thyroxine for first-trimester cerebral cortex development necessitates prompt 30-50% dosage escalation of Levothyroxine upon pregnancy confirmation.`
+      },
+      {
+        author_id: 5,
+        title: 'Kidney Stones: Clinical Prevention, Dietary Oxalates, and Hydration',
+        category: 'Nephrology & Urology',
+        tags: 'Kidney Stones, Nephrology, Hydration, Calcium',
+        content: `Nephrolithiasis (kidney stones) predominantly presents as agonizing flank pain radiating to the groin, accompanied by microscopic hematuria, nausea, and dysuria. Over 80% of calculi are composed of calcium oxalate, formed when urinary concentrations of calcium and oxalate exceed solubility thresholds.
+
+The single most effective preventative intervention is maintaining a daily urinary volume > 2.5 liters, which dilutes lithogenic solutes. Restricting dietary calcium is a widespread clinical misconception; low calcium intake actually increases free oxalate absorption in the gut, elevating urinary oxalate and paradoxically increasing stone risk.
+
+Patients should consume normal dietary calcium with meals, restrict high-oxalate foods (spinach, beetroot, nuts), moderate animal purine intake, and increase urinary citrate excretion by regularly consuming fresh lemon water.`
+      },
+      {
+        author_id: 6,
+        title: 'Mental Health in Modern Life: Navigating Anxiety, Burnout, and Sleep',
+        category: 'Psychiatry & Behavioral Health',
+        tags: 'Mental Health, Anxiety, Stress, Sleep Hygiene',
+        content: `Chronic psychological stress activates the hypothalamic-pituitary-adrenal (HPA) axis, leading to sustained glucocorticoid secretion, systemic low-grade inflammation, and autonomic imbalance. Modern hyperconnectivity, prolonged work hours, and disrupted circadian rhythms have precipitated unprecedented rates of generalized anxiety and professional burnout.
+
+Sleep architecture is vital for neurocognitive restoration. During slow-wave and REM sleep, the cerebral glymphatic system clears metabolic byproducts, including amyloid beta. Exposure to blue-spectrum screen light within two hours of sleep suppresses nocturnal pineal melatonin release, delaying sleep onset and fragmenting sleep cycles.
+
+Adopting progressive muscle relaxation, cognitive reframing, and seeking early clinical counseling prevents acute stress from transitioning into major depressive disorder. Mental health is an indispensable pillar of comprehensive physical well-being.`
+      }
+    ];
+
+    let totalHealthBlogs = 0;
+    for (const b of blogsData) {
+      await query(`
+        INSERT INTO health_blogs (author_id, title, category, content, tags)
+        VALUES (?, ?, ?, ?, ?);
+      `, [b.author_id, b.title, b.category, b.content, b.tags]);
+      totalHealthBlogs++;
+    }
+    console.log(`✓ Seeded ${totalHealthBlogs} Community Health Blog Articles.\n`);
+
     console.log('======================================================');
     console.log('🎉 UNIFIED MIGRATION & SEEDING PIPELINE COMPLETED!');
     console.log('======================================================');
@@ -846,6 +1292,9 @@ async function seedDatabase() {
     console.log(`  • Patient Allergies:   ${totalPatientAllergies}`);
     console.log(`  • Departments:         ${totalDepts}`);
     console.log(`  • Ward Beds:           ${totalBeds}`);
+    console.log(`  • Blood Posts:         ${totalBloodPosts}`);
+    console.log(`  • Direct Messages:     ${totalMessagesSeeded}`);
+    console.log(`  • Health Blogs:        ${totalHealthBlogs}`);
     console.log(`  • Global Password:     ${rawPassword}`);
     console.log('======================================================\n');
 

@@ -335,12 +335,65 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.3 Alter medicines table to add total_prescribed_count
+    // 8.3 Blood Donation & Request Hub
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS blood_posts (
+        post_id INT AUTO_INCREMENT PRIMARY KEY,
+        author_uid VARCHAR(20) NOT NULL,
+        post_type ENUM('DONATE', 'REQUEST') NOT NULL,
+        blood_group ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') NOT NULL,
+        hemoglobin_level DECIMAL(4,1) NULL,
+        units_needed INT DEFAULT 1,
+        area VARCHAR(100) NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        hospital_name VARCHAR(150) NULL,
+        urgency ENUM('NORMAL', 'URGENT', 'CRITICAL_EMERGENCY') DEFAULT 'NORMAL',
+        contact_phone VARCHAR(20) NOT NULL,
+        status ENUM('OPEN', 'FULFILLED', 'CLOSED') DEFAULT 'OPEN',
+        notes TEXT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_blood_author FOREIGN KEY (author_uid) REFERENCES citizens(uid) ON DELETE CASCADE ON UPDATE CASCADE,
+        KEY idx_blood_filter (blood_group, area, status, post_type),
+        KEY idx_blood_urgency (urgency, created_at DESC)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 8.4 Universal Real-Time Messaging System
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS messages (
+        message_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        sender_uid VARCHAR(20) NOT NULL,
+        receiver_uid VARCHAR(20) NOT NULL,
+        message_text TEXT NOT NULL,
+        is_read BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        KEY idx_msg_thread (sender_uid, receiver_uid, created_at),
+        KEY idx_msg_receiver (receiver_uid, is_read)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 8.5 Community Health Blogs / Clinical Knowledge Feed
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS health_blogs (
+        blog_id INT AUTO_INCREMENT PRIMARY KEY,
+        author_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        content LONGTEXT NOT NULL,
+        tags VARCHAR(200) NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_blog_doctor FOREIGN KEY (author_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        KEY idx_blog_category (category),
+        KEY idx_blog_created (created_at DESC)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 8.6 Alter medicines table to add total_prescribed_count
     try {
       await connection.query(`ALTER TABLE medicines ADD COLUMN IF NOT EXISTS total_prescribed_count INT DEFAULT 0;`);
     } catch (e) {}
 
-    // 8.4 Targeted Indexes (Composite, B-Tree, Full-Text) & Constraints
+    // 8.7 Targeted Indexes (Composite, B-Tree, Full-Text) & Constraints
     console.log(`[xMED DB Init] Optimizing query plans with advanced indexes & constraints...`);
     try {
       await connection.query(`CREATE INDEX IF NOT EXISTS idx_presc_patient_created ON prescriptions(patient_uid, created_at DESC);`);

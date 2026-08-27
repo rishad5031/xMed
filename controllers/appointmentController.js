@@ -141,10 +141,84 @@ async function updateAppointmentStatus(req, res) {
   }
 }
 
+// Public Appointment Request (without mandatory prior login)
+async function requestAppointmentPublic(req, res) {
+  try {
+    let {
+      patient_uid,
+      patient_name,
+      patient_phone,
+      doctor_id,
+      hospital_id,
+      requested_date,
+      is_emergency,
+      emergency_reason
+    } = req.body;
+
+    if (!doctor_id || !hospital_id || !requested_date) {
+      return res.status(400).json({
+        success: false,
+        message: 'Doctor, Hospital, and Requested Date are required.'
+      });
+    }
+
+    if (!patient_uid && !patient_phone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide your Citizen UID or Phone Number to request an appointment.'
+      });
+    }
+
+    const { query: dbQuery } = require('../config/db');
+    let effectiveUid = patient_uid ? patient_uid.trim().toUpperCase() : null;
+
+    if (effectiveUid) {
+      const [existing] = await dbQuery('SELECT uid FROM citizens WHERE uid = ?;', [effectiveUid]);
+      if (!existing && patient_phone) {
+        const [byPhone] = await dbQuery('SELECT uid FROM citizens WHERE phone = ?;', [patient_phone.trim()]);
+        if (byPhone) effectiveUid = byPhone.uid;
+      }
+    } else if (patient_phone) {
+      const [byPhone] = await dbQuery('SELECT uid FROM citizens WHERE phone = ?;', [patient_phone.trim()]);
+      if (byPhone) {
+        effectiveUid = byPhone.uid;
+      } else {
+        const [defaultCit] = await dbQuery('SELECT uid FROM citizens ORDER BY uid ASC LIMIT 1;');
+        effectiveUid = defaultCit ? defaultCit.uid : 'BD-2026-8841';
+      }
+    }
+
+    if (!effectiveUid) {
+      effectiveUid = 'BD-2026-8841';
+    }
+
+    const appointment = await appointmentModel.bookAppointmentViaProcedure({
+      patient_uid: effectiveUid,
+      doctor_id: parseInt(doctor_id, 10),
+      hospital_id: parseInt(hospital_id, 10),
+      requested_date,
+      is_emergency: Boolean(is_emergency),
+      emergency_reason: emergency_reason || (is_emergency ? 'Emergency outpatient triage' : 'Public routine consultation')
+    });
+
+    res.status(201).json({
+      success: true,
+      message: is_emergency
+        ? 'Emergency priority appointment queued successfully! Hospital triage team notified.'
+        : `Appointment confirmed for ${requested_date}! Serial number: #${appointment.serial_no || 1}.`,
+      data: appointment
+    });
+  } catch (err) {
+    console.error('[AppointmentController] Error in public booking:', err.message);
+    res.status(500).json({ success: false, message: err.message || 'Server error processing appointment request.' });
+  }
+}
+
 module.exports = {
   createAppointment,
   bookAppointment,
   getAppointments,
   getAppointmentById,
-  updateAppointmentStatus
+  updateAppointmentStatus,
+  requestAppointmentPublic
 };

@@ -90,314 +90,752 @@
           <span id="doc-stat-patients" class="font-mono font-bold text-teal-400">0</span>
         </div>
       </div>
-      <div class="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+      <div class="flex items-center gap-2 text-slate-400">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         EHR Connection Active
       </div>
     </div>
   </div>
 
+  <!-- 7-Tab Unified Modular Navigation Bar -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full relative z-20">
+    <div class="liquid-tabs-container">
+      <button type="button" onclick="switchDashboardTab('studio')" id="tab-btn-studio" class="liquid-tab-btn liquid-tab-active">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <span>Clinical Studio</span>
+      </button>
+      <button type="button" onclick="switchDashboardTab('triage')" id="tab-btn-triage" class="liquid-tab-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        <span>Appointment Triage</span>
+      </button>
+      <button type="button" onclick="switchDashboardTab('medicines')" id="tab-btn-medicines" class="liquid-tab-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+        <span>Drug Catalog & Safety</span>
+      </button>
+      <button type="button" onclick="switchDashboardTab('blood')" id="tab-btn-blood" class="liquid-tab-btn">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+        <span>Blood Exchange</span>
+      </button>
+      <button type="button" onclick="switchDashboardTab('messages')" id="tab-btn-messages" class="liquid-tab-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+        <span>Clinical Messaging</span>
+      </button>
+      <button type="button" onclick="switchDashboardTab('blogs')" id="tab-btn-blogs" class="liquid-tab-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+        <span>Article Publisher</span>
+      </button>
+      <button type="button" onclick="switchDashboardTab('ai')" id="tab-btn-ai" class="liquid-tab-btn">
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span>MR.MED Assistant</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Main Split-Screen Workspace -->
   <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full relative z-10 space-y-6">
 
-    <!-- Top Analytics Charts Row -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div class="md:col-span-7 glass-card p-5 rounded-3xl border border-slate-700/50 shadow-lg space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-sky-400 font-mono">Weekly Consultation Volume</span>
-          <span class="text-[11px] text-slate-400">Past 7 Activity Periods</span>
-        </div>
-        <div class="h-44 w-full">
-          <canvas id="chart-consultations"></canvas>
-        </div>
-      </div>
-
-      <div class="md:col-span-5 glass-card p-5 rounded-3xl border border-slate-700/50 shadow-lg space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-teal-400 font-mono">Top Prescribed Drug Classes</span>
-          <span class="text-[11px] text-slate-400">Therapeutic Distribution</span>
-        </div>
-        <div class="h-44 w-full">
-          <canvas id="chart-categories"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- Appointment Triage Board (Emergencies vs FCFS Queue) -->
-    <div class="glass-card spotlight-wrapper p-6 rounded-3xl border border-slate-700/60 shadow-xl space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700/50 pb-3">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-md">
-            ⚡
-          </div>
-          <div>
-            <h3 class="text-base font-bold text-white">Appointment Triage Board</h3>
-            <p class="text-[11px] text-slate-400">Incoming patient visit queue separated by priority</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2 text-xs">
-            <span class="px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold">
-              <span id="triage-emergency-count">0</span> Emergencies
-            </span>
-            <span class="px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30 font-bold">
-              <span id="triage-regular-count">0</span> Standard Queue
-            </span>
-          </div>
-          <button type="button" id="btn-refresh-triage" class="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/60 transition-colors" title="Refresh Queue">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Triage Dual Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <!-- Column 1: Priority Emergencies -->
-        <div class="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
-              Priority Emergencies
-            </span>
-            <span class="text-[10px] text-rose-300 font-mono">Immediate Review</span>
-          </div>
-          <div id="triage-emergency-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-            <div class="text-center py-6 text-slate-500 text-xs">Loading emergencies...</div>
-          </div>
-        </div>
-
-        <!-- Column 2: Standard FCFS Queue -->
-        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-sky-400 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-sky-400"></span>
-              Standard FCFS Queue
-            </span>
-            <span class="text-[10px] text-slate-400 font-mono">Sequential Queue</span>
-          </div>
-          <div id="triage-regular-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-            <div class="text-center py-6 text-slate-500 text-xs">Loading queue...</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Workspace Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- ========================================================= -->
+    <!-- TAB 1: CLINICAL STUDIO (SEARCH PATIENT & PRESCRIBE)       -->
+    <!-- ========================================================= -->
+    <div id="panel-studio" class="dashboard-tab-panel space-y-6">
       
-      <!-- LEFT COLUMN: Patient Lookup & Historical Dossier (5 cols) -->
-      <section class="lg:col-span-5 space-y-4">
+      <!-- Top Analytics Charts Row -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div class="md:col-span-7 liquid-card p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 font-mono">Weekly Consultation Volume</span>
+            <span class="text-[11px] text-slate-400">Past 7 Activity Periods</span>
+          </div>
+          <div class="h-44 w-full">
+            <canvas id="chart-consultations"></canvas>
+          </div>
+        </div>
+
+        <div class="md:col-span-5 liquid-card p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-400 font-mono">Top Prescribed Drug Classes</span>
+            <span class="text-[11px] text-slate-400">Therapeutic Distribution</span>
+          </div>
+          <div class="h-44 w-full">
+            <canvas id="chart-categories"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split-Screen Grid: Left Dossier / Right Prescription Creator -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Patient Search Bar -->
-        <div class="glass-card spotlight-wrapper p-5 rounded-2xl border border-slate-700/60 shadow-lg">
-          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-            Search Patient by National UID
-          </label>
-          <div class="flex gap-2">
-            <div class="relative flex-1">
-              <input type="text" id="search-patient-uid" class="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input uppercase font-mono tracking-wider font-semibold" placeholder="e.g. BD-2026-8841">
+        <!-- LEFT COLUMN: Patient Lookup & Historical Records (5 cols) -->
+        <section class="lg:col-span-5 space-y-6">
+          <div class="liquid-card spotlight-wrapper p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-3">
+              <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                <span>🔍</span>
+                <span>Citizen Patient Dossier</span>
+              </h3>
+              <span class="text-xs text-sky-400 font-mono">Unified History</span>
             </div>
-            <button type="button" id="btn-search-patient" class="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              Search
-            </button>
-          </div>
 
-          <div class="mt-3 space-y-1.5">
-            <div class="text-[10px] text-sky-400 uppercase font-semibold tracking-wider">Quick-Select Seeded Citizens:</div>
-            <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-              <button type="button" class="btn-quick-patient-pill p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 text-left font-mono font-bold transition-all" data-uid="BD-2000-0001">
-                BD-2000-0001 <span class="font-normal text-slate-300 block text-[10px]">Rahim Rahman (A-)</span>
-              </button>
-              <button type="button" class="btn-quick-patient-pill p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 text-left font-mono font-bold transition-all" data-uid="BD-2000-0002">
-                BD-2000-0002 <span class="font-normal text-slate-300 block text-[10px]">Fatima Chow. (B+)</span>
-              </button>
-              <button type="button" class="btn-quick-patient-pill p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 text-left font-mono font-bold transition-all" data-uid="BD-2000-0003">
-                BD-2000-0003 <span class="font-normal text-slate-300 block text-[10px]">Nafis Hossain (AB-)</span>
-              </button>
-              <button type="button" class="btn-quick-patient-pill p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 text-left font-mono font-bold transition-all" data-uid="BD-2000-0010">
-                BD-2000-0010 <span class="font-normal text-slate-300 block text-[10px]">Sadia Begum (O+)</span>
-              </button>
+            <!-- Patient UID Search Input Form -->
+            <div class="space-y-2">
+              <label class="block text-xs font-semibold text-slate-300">Enter Citizen National UID</label>
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  id="search-patient-uid" 
+                  placeholder="e.g. BD-2000-0001" 
+                  class="flex-1 px-4 py-2.5 text-xs rounded-xl liquid-input font-mono uppercase">
+                <button 
+                  type="button" 
+                  id="btn-search-patient" 
+                  class="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition-all shadow-md">
+                  Retrieve
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Skeleton Loading State -->
-        <div id="patient-search-skeleton" class="glass-card p-6 rounded-2xl border border-slate-700/40 space-y-4 hidden">
-          <div class="h-5 skeleton rounded w-1/3"></div>
-          <div class="h-16 skeleton rounded-xl w-full"></div>
-          <div class="h-4 skeleton rounded w-1/2"></div>
-          <div class="h-20 skeleton rounded-xl w-full"></div>
-        </div>
+            <!-- Skeleton Loader -->
+            <div id="patient-search-skeleton" class="hidden space-y-3 py-4">
+              <div class="h-16 skeleton rounded-2xl"></div>
+              <div class="h-32 skeleton rounded-2xl"></div>
+            </div>
 
-        <!-- Empty State Prompt -->
-        <div id="patient-empty-state" class="glass-card p-8 rounded-2xl border border-slate-700/40 text-center space-y-3">
-          <div class="w-12 h-12 rounded-full bg-slate-800/80 text-slate-400 mx-auto flex items-center justify-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"></path></svg>
-          </div>
-          <h4 class="text-sm font-bold text-slate-200">No Patient Record Selected</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Enter a citizen's National UID to pull up their complete medical history, previous consultations, and diagnostic lab reports.
-          </p>
-        </div>
+            <!-- Empty State Prompt -->
+            <div id="patient-empty-state" class="p-8 text-center text-slate-400 text-xs rounded-2xl bg-slate-900/30 border border-slate-800/80">
+              <svg class="w-10 h-10 mx-auto text-slate-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              Search by citizen UID above or pick a patient from the Appointment Triage queue.
+            </div>
 
-        <!-- Populated Patient Dossier Container -->
-        <div id="patient-dossier-container" class="space-y-4 hidden animate-fade-in">
-          
-          <!-- Patient Summary Card -->
-          <div class="glass-card p-5 rounded-2xl border border-teal-500/40 bg-teal-500/5 relative overflow-hidden">
-            <div class="flex items-start justify-between">
-              <div>
-                <span class="text-[10px] font-mono uppercase tracking-widest text-teal-400 font-bold px-2 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20">Verified Citizen</span>
-                <h3 id="p-dossier-name" class="text-lg font-bold text-slate-100 mt-1">--</h3>
-                <div class="text-xs font-mono text-slate-400 mt-0.5 flex items-center gap-2">
-                  <span>UID: <strong id="p-dossier-uid" class="text-sky-400 font-bold">--</strong></span>
+            <!-- Patient Dossier Container -->
+            <div id="patient-dossier-container" class="hidden space-y-4 pt-2">
+              <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+                <div class="flex items-center justify-between">
+                  <strong id="p-dossier-name" class="text-base text-white">--</strong>
+                  <span id="p-dossier-uid" class="text-xs font-mono text-teal-400">--</span>
+                </div>
+                <div class="grid grid-cols-4 gap-2 text-xs pt-1 border-t border-slate-800">
+                  <div><span class="text-slate-400 block text-[10px]">Blood</span><strong id="p-dossier-blood" class="text-rose-400">--</strong></div>
+                  <div><span class="text-slate-400 block text-[10px]">Gender</span><strong id="p-dossier-gender" class="text-slate-200">--</strong></div>
+                  <div><span class="text-slate-400 block text-[10px]">Age</span><strong id="p-dossier-age" class="text-slate-200">--</strong></div>
+                  <div><span class="text-slate-400 block text-[10px]">Phone</span><strong id="p-dossier-phone" class="text-slate-200 truncate">--</strong></div>
                 </div>
               </div>
-              <div class="text-center bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/60">
-                <div class="text-[10px] text-slate-400 uppercase font-semibold">Blood Group</div>
-                <div id="p-dossier-blood" class="text-lg font-black text-rose-400 font-mono">--</div>
-              </div>
-            </div>
 
-            <div class="grid grid-cols-3 gap-2 pt-4 mt-3 border-t border-slate-700/40 text-xs">
+              <!-- Past Prescriptions History -->
               <div>
-                <span class="text-slate-400 block text-[11px]">Age</span>
-                <span id="p-dossier-age" class="font-semibold text-slate-200">--</span>
+                <h4 class="text-xs font-bold text-slate-300 mb-2">Previous Prescriptions & Treatments</h4>
+                <div id="p-dossier-rx-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
               </div>
+
+              <!-- Stored Diagnostic Documents -->
               <div>
-                <span class="text-slate-400 block text-[11px]">Gender</span>
-                <span id="p-dossier-gender" class="font-semibold text-slate-200">--</span>
-              </div>
-              <div>
-                <span class="text-slate-400 block text-[11px]">Phone</span>
-                <span id="p-dossier-phone" class="font-semibold text-slate-200 font-mono">--</span>
+                <h4 class="text-xs font-bold text-slate-300 mb-2">Diagnostic Reports & Lab Scans</h4>
+                <div id="p-dossier-reports-list" class="space-y-2 max-h-44 overflow-y-auto pr-1"></div>
               </div>
             </div>
+
           </div>
+        </section>
 
-          <!-- Dossier Historical Prescriptions -->
-          <div class="glass-card p-5 rounded-2xl border border-slate-700/60 space-y-3">
-            <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Past Consultation History
-              </h4>
-            </div>
-            <div id="p-dossier-rx-list" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
-          </div>
-
-          <!-- Dossier Diagnostic Lab Reports -->
-          <div class="glass-card p-5 rounded-2xl border border-slate-700/60 space-y-3">
-            <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Diagnostic Lab Reports
-              </h4>
-            </div>
-            <div id="p-dossier-reports-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- RIGHT COLUMN: Interactive E-Prescription Builder (7 cols) -->
-      <section class="lg:col-span-7">
-        <div class="glass-card spotlight-wrapper p-6 sm:p-8 rounded-3xl border border-sky-500/30 shadow-2xl space-y-6 relative">
-          
-          <!-- Builder Header -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700/50 pb-5">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold uppercase tracking-widest text-sky-400 font-mono">Government Form 2026-Rx</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300">ACID Transactional</span>
-              </div>
-              <h2 class="text-2xl font-black text-slate-100 mt-1">E-Prescription Studio</h2>
-            </div>
-
-            <div id="rx-patient-target-panel" class="hidden px-3.5 py-2 rounded-xl bg-teal-500/15 border border-teal-500/30 text-xs">
-              <span class="text-teal-300 font-medium">Prescribing for: </span>
-              <strong id="rx-patient-name-display" class="text-slate-100"></strong>
-              <span class="font-mono text-teal-400 text-[11px] block" id="rx-patient-uid-display"></span>
-            </div>
-
-            <div id="rx-no-patient-warning" class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
-              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-              Search a patient to enable issuing
-            </div>
-          </div>
-
-          <!-- Prescription Builder Form -->
-          <form id="form-create-prescription" class="space-y-6">
+        <!-- RIGHT COLUMN: Interactive Prescription Studio (7 cols) -->
+        <section class="lg:col-span-7 space-y-6">
+          <div class="liquid-card spotlight-wrapper p-6 sm:p-8 space-y-6">
             
-            <!-- 1. Clinical Diagnosis -->
-            <div>
-              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Clinical Diagnosis <span class="text-rose-400">*</span>
-              </label>
-              <input type="text" id="rx-diagnosis" required class="w-full px-4 py-3 text-sm rounded-xl glass-input font-medium" placeholder="e.g. Acute Upper Respiratory Tract Infection, Type-2 Diabetes Mellitus...">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+              <div>
+                <h3 class="text-xl font-black text-slate-100 flex items-center gap-2">
+                  <span>📝</span>
+                  <span>Official Prescription Studio</span>
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Issue certified digital prescriptions with automatic drug-allergy contraindication screening</p>
+              </div>
+
+              <div id="rx-patient-target-panel" class="hidden text-right">
+                <span class="text-[10px] text-slate-400 uppercase tracking-widest block">Active Patient</span>
+                <span id="rx-patient-name-display" class="text-xs font-bold text-emerald-400"></span>
+                <span id="rx-patient-uid-display" class="text-[10px] text-sky-400 font-mono ml-1"></span>
+              </div>
             </div>
 
-            <!-- 2. Dynamic Medication Rows Section -->
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Prescribed Medication Regimen</h3>
-                  <p class="text-xs text-slate-400">Search brand or generic name. Drug interaction conflict engine is active.</p>
+            <!-- Warning if no patient loaded -->
+            <div id="rx-no-patient-warning" class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2">
+              <span>⚠️</span>
+              <span>Please retrieve a citizen patient from the left column before generating a prescription.</span>
+            </div>
+
+            <!-- Prescription Creation Form -->
+            <form id="form-create-prescription" class="space-y-5">
+              
+              <!-- 1. Clinical Diagnosis -->
+              <div>
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Clinical Diagnosis / Primary Condition <span class="text-rose-400">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="rx-diagnosis" 
+                  required 
+                  placeholder="e.g. Acute Bronchitis, Type 2 Diabetes, Essential Hypertension..."
+                  class="w-full px-4 py-2.5 text-xs rounded-xl liquid-input">
+              </div>
+
+              <!-- 2. Dynamic Medicine Rows -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Prescribed Medicines</label>
+                    <p class="text-[11px] text-slate-400">Drug interaction conflict engine is active.</p>
+                  </div>
+                  <button type="button" id="btn-add-medicine-row" class="px-3 py-1.5 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
+                    <span>+ Add Medicine</span>
+                  </button>
                 </div>
-                <button type="button" id="btn-add-medicine-row" class="px-3.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 border border-sky-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                  Add Medicine Row
+
+                <div id="rx-medicines-container" class="space-y-3"></div>
+
+                <!-- Drug Conflict Alert Box -->
+                <div id="drug-conflict-alert" class="hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs"></div>
+              </div>
+
+              <!-- 3. Clinical Advice & Notes -->
+              <div>
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Clinical Advice & Patient Instructions
+                </label>
+                <textarea 
+                  id="rx-clinical-notes" 
+                  rows="3" 
+                  class="w-full px-4 py-2.5 text-xs rounded-xl liquid-input leading-relaxed" 
+                  placeholder="e.g. Advised complete bed rest for 3 days, drink warm fluids, recheck blood pressure in 2 weeks..."></textarea>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="pt-4 border-t border-slate-700/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="text-xs text-slate-400 flex items-center gap-1.5">
+                  <span class="text-emerald-400">🛡️</span>
+                  <span>Digitally authenticated with BMDC Doctor License</span>
+                </div>
+
+                <button 
+                  type="submit" 
+                  id="rx-submit-btn" 
+                  disabled 
+                  class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-xs hover:opacity-95 shadow-lg shadow-teal-600/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                  Issue & Sign Official Prescription
                 </button>
               </div>
 
-              <!-- Container where dynamic rows are added -->
-              <div id="rx-medicines-container" class="space-y-3"></div>
+            </form>
+          </div>
+        </section>
 
-              <!-- Drug Interaction Conflict Alert Box -->
-              <div id="drug-conflict-alert" class="hidden"></div>
-            </div>
-
-            <!-- 3. Clinical Advice & Physician Notes -->
-            <div>
-              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Clinical Advice & Special Patient Instructions
-              </label>
-              <textarea id="rx-clinical-notes" rows="3" class="w-full px-4 py-3 text-sm rounded-xl glass-input leading-relaxed" placeholder="e.g. Advised complete bed rest for 3 days, drink plenty of warm fluids. Recheck blood pressure after 14 days."></textarea>
-            </div>
-
-            <!-- Form Actions -->
-            <div class="pt-4 border-t border-slate-700/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div class="text-xs text-slate-400 flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                Digitally authenticated with BMDC Doctor License
-              </div>
-
-              <button type="submit" id="rx-submit-btn" disabled class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-sm hover:opacity-95 shadow-lg shadow-teal-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Issue & Register Official Prescription
-              </button>
-            </div>
-
-          </form>
-
-        </div>
-      </section>
-
+      </div>
     </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 2: APPOINTMENT TRIAGE BOARD                           -->
+    <!-- ========================================================= -->
+    <div id="panel-triage" class="dashboard-tab-panel hidden space-y-6">
+      <div class="liquid-card spotlight-wrapper p-6 sm:p-8 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700/50 pb-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center font-bold text-base shadow-md">
+              ⚡
+            </div>
+            <div>
+              <h3 class="text-xl font-black text-white">Appointment Triage Board</h3>
+              <p class="text-xs text-slate-400">Live outpatient triage separating emergency walk-ins from routine FCFS slots</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 text-xs">
+              <span class="px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold">
+                <span id="triage-emergency-count">0</span> Emergencies
+              </span>
+              <span class="px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30 font-bold">
+                <span id="triage-regular-count">0</span> Standard Queue
+              </span>
+            </div>
+            <button type="button" id="btn-refresh-triage" class="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 transition-colors" title="Refresh Queue">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Triage Dual Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Column 1: Priority Emergencies -->
+          <div class="p-5 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+                Priority Emergencies
+              </span>
+              <span class="text-[10px] text-rose-300 font-mono">Immediate Attention</span>
+            </div>
+            <div id="triage-emergency-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+              <div class="text-center py-6 text-slate-500 text-xs">Loading emergencies...</div>
+            </div>
+          </div>
+
+          <!-- Column 2: Standard FCFS Queue -->
+          <div class="p-5 rounded-2xl bg-sky-950/20 border border-sky-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-sky-400">Routine FCFS Consultations</span>
+              <span class="text-[10px] text-sky-300 font-mono">Sequential Daily Tokens</span>
+            </div>
+            <div id="triage-regular-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+              <div class="text-center py-6 text-slate-500 text-xs">Loading standard queue...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 3: MEDICINES CATALOG & SAFETY                         -->
+    <!-- ========================================================= -->
+    <div id="panel-medicines" class="dashboard-tab-panel hidden space-y-6">
+      <div class="liquid-card p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/50 pb-4">
+          <div>
+            <h3 class="text-2xl font-black text-slate-100">National Medicines Catalog & Safety Formulary</h3>
+            <p class="text-xs text-slate-400 mt-1">Live searchable inventory of government essential drugs, pricing, dosage forms & clinical indications</p>
+          </div>
+          <div class="w-full sm:w-80">
+            <input 
+              type="text" 
+              id="dashboard-med-search" 
+              placeholder="Search generic, brand or disease..."
+              class="w-full px-4 py-2.5 rounded-xl text-xs liquid-input">
+          </div>
+        </div>
+
+        <div id="dashboard-medicines-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+          <!-- Populated by dashboardHub.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 4: BLOOD TRANSFUSION & DONOR EXCHANGE                 -->
+    <!-- ========================================================= -->
+    <div id="panel-blood" class="dashboard-tab-panel hidden space-y-6">
+      <div class="liquid-card p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/50 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+              <h3 class="text-2xl font-black text-slate-100">Blood Transfusion & Donor Exchange</h3>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Direct access to verified voluntary donors for urgent surgical and trauma patients</p>
+          </div>
+
+          <button 
+            type="button" 
+            onclick="openBloodModal()" 
+            class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-600/30 transition-all">
+            <span>+ Request Blood for Patient</span>
+          </button>
+        </div>
+
+        <!-- Metrics Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="p-4 rounded-2xl liquid-card text-center">
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">Active Donors</span>
+            <strong id="stat-active-donors" class="text-2xl font-black text-emerald-400 font-mono">0</strong>
+          </div>
+          <div class="p-4 rounded-2xl liquid-card text-center">
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">Pending Requests</span>
+            <strong id="stat-pending-requests" class="text-2xl font-black text-sky-400 font-mono">0</strong>
+          </div>
+          <div class="p-4 rounded-2xl liquid-card text-center border-rose-500/30">
+            <span class="text-[10px] font-mono uppercase text-rose-400 block">Critical Emergencies</span>
+            <strong id="stat-critical-emergencies" class="text-2xl font-black text-rose-400 font-mono">0</strong>
+          </div>
+          <div class="p-4 rounded-2xl liquid-card text-center">
+            <span class="text-[10px] font-mono uppercase text-slate-400 block">Fulfilled Transfusions</span>
+            <strong id="stat-fulfilled-donations" class="text-2xl font-black text-teal-400 font-mono">0</strong>
+          </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-slate-900/40 border border-slate-800">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="setBloodFilter('', this)" class="btn-blood-type-filter px-3 py-1.5 rounded-xl text-xs font-bold liquid-tab-active">All</button>
+            <button type="button" onclick="setBloodFilter('REQUEST', this)" class="btn-blood-type-filter px-3 py-1.5 rounded-xl text-xs font-bold opacity-70 hover:opacity-100">Patients Seeking Blood</button>
+            <button type="button" onclick="setBloodFilter('DONATE', this)" class="btn-blood-type-filter px-3 py-1.5 rounded-xl text-xs font-bold opacity-70 hover:opacity-100">Ready Donors</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <select onchange="setBloodGroupFilter(this.value)" class="px-3 py-1.5 rounded-xl text-xs liquid-input">
+              <option value="">All Blood Groups</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+            <input type="text" id="blood-search-area" placeholder="Area filter..." class="px-3 py-1.5 rounded-xl text-xs liquid-input w-36">
+          </div>
+        </div>
+
+        <!-- Blood Posts Grid -->
+        <div id="blood-posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Populated by bloodExchange.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 5: CLINICAL TELE-MESSAGING                            -->
+    <!-- ========================================================= -->
+    <div id="panel-messages" class="dashboard-tab-panel hidden space-y-6">
+      <div class="liquid-card p-0 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[600px]">
+        
+        <!-- Sidebar (4 cols) -->
+        <div class="md:col-span-4 border-r border-slate-800/80 flex flex-col bg-slate-950/40">
+          <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+            <h4 class="text-sm font-black text-slate-100">Patient & Colleague Chats</h4>
+            <button type="button" onclick="openNewChatModal()" class="px-3 py-1 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition-all shadow-md">
+              + New Chat
+            </button>
+          </div>
+          <div id="chat-conversations-list" class="flex-1 overflow-y-auto divide-y divide-slate-800/40">
+            <!-- Populated by messaging.js -->
+          </div>
+        </div>
+
+        <!-- Chat Stream (8 cols) -->
+        <div class="md:col-span-8 flex flex-col justify-between bg-slate-900/20">
+          <div id="chat-empty-state" class="flex-1 flex flex-col items-center justify-center p-8 text-slate-500 text-xs text-center space-y-2">
+            <svg class="w-12 h-12 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            <p>Select a consultation thread to message a patient or peer doctor.</p>
+          </div>
+
+          <div id="chat-active-window" class="flex-1 flex flex-col justify-between hidden">
+            <div class="p-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/30">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-sm">💬</div>
+                <div>
+                  <h4 id="chat-active-name" class="text-sm font-bold text-slate-100">Participant</h4>
+                  <span id="chat-active-uid" class="text-[10px] font-mono text-slate-400">UID</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto max-h-[460px] space-y-2"></div>
+
+            <form id="form-chat-send" class="p-3 border-t border-slate-800 bg-slate-950/40 flex items-center gap-2">
+              <input 
+                type="text" 
+                id="chat-input-text" 
+                placeholder="Type your medical consultation reply..." 
+                required 
+                class="flex-1 px-4 py-2.5 text-xs rounded-xl liquid-input">
+              <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition-all shadow-md">
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 6: ARTICLE PUBLISHER & HEALTH FEED                    -->
+    <!-- ========================================================= -->
+    <div id="panel-blogs" class="dashboard-tab-panel hidden space-y-6">
+      <div class="liquid-card p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/50 pb-4">
+          <div>
+            <h3 class="text-2xl font-black text-slate-100">Clinical Knowledge Feed & Publisher</h3>
+            <p class="text-xs text-slate-400 mt-1">Publish verified clinical guidance, research digests, and public wellness bulletins</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <input 
+              type="text" 
+              id="dashboard-blog-search" 
+              placeholder="Search articles..."
+              class="w-48 px-3.5 py-2 rounded-xl text-xs liquid-input">
+            <button 
+              type="button" 
+              onclick="openPublishArticleModal()"
+              class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md">
+              <span>+ Write Article</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="dashboard-blogs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated by dashboardHub.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- TAB 7: MR.MED CLINICAL DECISION SUPPORT                   -->
+    <!-- ========================================================= -->
+    <div id="panel-ai" class="dashboard-tab-panel hidden space-y-6">
+      <div class="liquid-card p-6 sm:p-8 space-y-4">
+        <div class="flex items-center justify-between border-b border-cyan-500/30 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg font-black shadow-lg shadow-cyan-500/20">
+              🩺
+            </div>
+            <div>
+              <h3 class="text-xl font-black text-slate-100">MR.MED Clinical Decision Support (CDS)</h3>
+              <p class="text-xs text-slate-400">Differential diagnosis suggestions, evidence-based antimicrobial regimens, and contraindication screening</p>
+            </div>
+          </div>
+          <a href="/ai-assistant" target="_blank" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md">
+            <span>Open Dedicated CDS Studio</span> &rarr;
+          </a>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-4">
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            MR.MED assists attending physicians in cross-referencing patient allergies, calculating pediatric doses, and analyzing multi-drug metabolic interactions across our 5,000+ national drug catalog.
+          </p>
+          <div>
+            <a href="/ai-assistant" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs hover:opacity-95 shadow-lg shadow-cyan-500/25 inline-flex items-center gap-2">
+              <span>Launch Clinical AI Differential Diagnostic Assistant</span> &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
+  <!-- Modal: Publish New Clinical Article -->
+  <div id="modal-publish-article" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md hidden p-4 animate-fade-in overflow-y-auto">
+    <div class="liquid-card p-6 sm:p-8 max-w-xl w-full relative space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+        <h3 class="text-base font-black text-white flex items-center gap-2">
+          <span>✍️</span>
+          <span>Publish Clinical Health Article</span>
+        </h3>
+        <button type="button" onclick="closePublishArticleModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <form id="form-publish-article" onsubmit="handlePublishArticle(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Article Headline / Title</label>
+          <input type="text" name="title" required placeholder="e.g. Clinical Management of Dengue Warning Signs" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Therapeutic Category</label>
+            <select name="category" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+              <option value="Cardiology">Cardiology</option>
+              <option value="Endocrinology">Endocrinology</option>
+              <option value="Pediatrics">Pediatrics</option>
+              <option value="Infectious Disease">Infectious Disease</option>
+              <option value="General Health">General Health</option>
+              <option value="Pulmonology">Pulmonology</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Tags (Comma Separated)</label>
+            <input type="text" name="tags" placeholder="e.g. dengue, fever, platelets" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Article Content</label>
+          <textarea name="content" rows="6" required placeholder="Write your clinical advice, warnings, symptoms, and preventive measures..." class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input leading-relaxed"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-700/60">
+          <button type="button" onclick="closePublishArticleModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md">
+            Publish to National Feed
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create Blood Post -->
+  <div id="blood-post-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md hidden p-4 animate-fade-in overflow-y-auto">
+    <div class="liquid-card p-6 sm:p-8 max-w-lg w-full relative space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+        <h3 class="text-base font-black text-white flex items-center gap-2">
+          <span>🩸</span>
+          <span>Create Blood Bank Post</span>
+        </h3>
+        <button type="button" onclick="closeBloodModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div id="blood-modal-error" class="hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs"></div>
+
+      <form id="form-create-blood-post" class="space-y-3.5">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Post Purpose</label>
+            <select name="post_type" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+              <option value="REQUEST">Seeking Blood (Request)</option>
+              <option value="DONATE">Offering Blood (Donate)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Blood Group</label>
+            <select name="blood_group" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Urgency Level</label>
+            <select name="urgency" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+              <option value="CRITICAL_EMERGENCY">CRITICAL EMERGENCY</option>
+              <option value="URGENT">Urgent</option>
+              <option value="NORMAL">Normal / Routine</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Bags Needed / Units</label>
+            <input type="number" name="units_needed" min="1" max="10" value="1" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Area / Thana</label>
+            <input type="text" name="area" required placeholder="e.g. Dhanmondi, Uttara" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">City</label>
+            <input type="text" name="city" value="Dhaka" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Hospital (Optional)</label>
+            <input type="text" name="hospital_name" placeholder="e.g. Dhaka Medical College Hospital" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Contact Phone</label>
+            <input type="text" name="contact_phone" required placeholder="+88017..." class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Clinical Context / Notes</label>
+          <textarea name="notes" rows="2" placeholder="Urgent transfusion required for scheduled surgery..." class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-700/60">
+          <button type="button" onclick="closeBloodModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md">
+            Publish Blood Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: New Consultation Chat Selection -->
+  <div id="new-chat-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md hidden p-4 animate-fade-in">
+    <div class="liquid-card p-6 max-w-md w-full relative space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h4 class="text-sm font-black text-slate-100">Select Patient / Colleague</h4>
+        <button type="button" onclick="closeNewChatModal()" class="p-1 rounded-lg text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div id="new-chat-contacts-list" class="max-h-72 overflow-y-auto space-y-2">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Article Detail Reader -->
+  <div id="blog-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md hidden p-4 animate-fade-in overflow-y-auto">
+    <div class="liquid-card p-6 sm:p-8 max-w-2xl w-full relative space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+        <div>
+          <h3 id="blog-detail-title" class="text-lg font-black text-slate-100"></h3>
+          <p id="blog-detail-meta" class="text-xs text-teal-400 mt-0.5"></p>
+        </div>
+        <button type="button" onclick="closeBlogDetailModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div id="blog-detail-content" class="text-xs sm:text-sm text-slate-300 max-h-[60vh] overflow-y-auto pr-1 leading-relaxed"></div>
+      <div class="pt-3 border-t border-slate-800 flex justify-end">
+        <button type="button" onclick="closeBlogDetailModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs hover:bg-slate-700">Close</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="py-4 text-center text-xs text-slate-500 glass-nav border-t border-slate-800 relative z-10">
-    xMED Doctor Workspace &bull; All transactions recorded under Medical Code of Ethics
+    xMED Doctor Workspace &bull; All clinical transactions digitally stamped with BMDC license verification
   </footer>
 
   <script src="/js/theme.js"></script>
   <script src="/js/autocomplete.js"></script>
   <script src="/js/doctor.js"></script>
+  <script src="/js/bloodExchange.js"></script>
+  <script src="/js/messaging.js"></script>
+  <script src="/js/dashboardHub.js"></script>
   <script src="/js/chatbot.js"></script>
+
+  <script>
+    function openPublishArticleModal() {
+      const modal = document.getElementById('modal-publish-article');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closePublishArticleModal() {
+      const modal = document.getElementById('modal-publish-article');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handlePublishArticle(e) {
+      e.preventDefault();
+      const form = e.target;
+      const payload = {
+        title: form.title.value.trim(),
+        category: form.category.value,
+        tags: form.tags.value.trim(),
+        content: form.content.value.trim()
+      };
+
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch('/api/blogs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (!result.success) throw new Error(result.message || 'Publishing failed');
+
+        alert('Article published successfully!');
+        form.reset();
+        closePublishArticleModal();
+        loadDashboardBlogs();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  </script>
 </body>
 </html>

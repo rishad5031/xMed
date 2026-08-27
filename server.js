@@ -17,6 +17,8 @@ const analyticsController = require('./controllers/analyticsController');
 const hospitalController = require('./controllers/hospitalController');
 const appointmentController = require('./controllers/appointmentController');
 const drugController = require('./controllers/drugController');
+const bloodController = require('./controllers/bloodController');
+const messageController = require('./controllers/messageController');
 const aiRoutes = require('./routes/aiRoutes');
 const { authenticateToken, isDoctor, isPatient } = require('./middleware/authMiddleware');
 const upload = require('./middleware/uploadMiddleware');
@@ -170,13 +172,27 @@ app.get('/api/patients/:uid/history', analyticsController.getPatientUnifiedHisto
 // --- Hospital & Doctor Directory ---
 app.get('/api/hospitals', hospitalController.getHospitals);
 app.get('/api/hospitals/:id', hospitalController.getHospitalById);
+app.get('/api/hospitals/:id/doctors', hospitalController.getHospitalDoctors);
 
 // --- Priority & Emergency FCFS Appointments ---
 app.post('/api/appointments', authenticateToken, appointmentController.createAppointment);
 app.post('/api/appointments/book', appointmentController.bookAppointment);
+app.post('/api/appointments/request', appointmentController.requestAppointmentPublic);
 app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
 app.get('/api/appointments/:id', authenticateToken, appointmentController.getAppointmentById);
 app.put('/api/appointments/:id/status', authenticateToken, isDoctor, appointmentController.updateAppointmentStatus);
+
+// --- Blood Donation & Request Hub ---
+app.post('/api/blood/posts', bloodController.createPost);
+app.get('/api/blood/posts', bloodController.getPosts);
+app.patch('/api/blood/posts/:id/status', bloodController.updateStatus);
+app.get('/api/blood/stats', bloodController.getStats);
+
+// --- Universal Real-Time Messaging Hub ---
+app.get('/api/messages/conversations', messageController.getConversations);
+app.get('/api/messages/thread/:targetUid', messageController.getThread);
+app.post('/api/messages/send', messageController.sendMessage);
+app.get('/api/messages/contacts', messageController.getContacts);
 
 // --- Enterprise System Audit Trail ---
 app.get('/api/admin/audit-logs', async (req, res) => {
@@ -205,6 +221,7 @@ app.get('/api/admin/audit-logs', async (req, res) => {
 // --- Clinical Blogs ---
 app.get('/api/blogs', blogController.getBlogs);
 app.get('/api/blogs/:id', blogController.getBlogById);
+app.post('/api/blogs', authenticateToken, isDoctor, blogController.createBlog);
 
 // --- MR.MED AI Assistant Routes (Server-Side Proxy) ---
 app.use('/api/ai', aiRoutes);
