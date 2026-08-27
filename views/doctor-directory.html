@@ -54,14 +54,20 @@
         <span class="text-[10px] px-2.5 py-0.5 rounded-full brand-badge font-semibold">Directory</span>
       </a>
 
-      <nav class="flex items-center gap-3 text-xs font-semibold">
+      <nav class="hidden md:flex items-center gap-4 text-xs font-semibold">
         <a href="/" class="nav-link transition-colors">Home</a>
         <a href="/#blood-hub" class="nav-link transition-colors text-rose-400">Blood Bank</a>
-        <a href="/patient-dashboard" class="nav-link transition-colors">Patient Vault</a>
-        <a href="/doctor-dashboard" class="nav-link transition-colors">Doctor Studio</a>
+        <a href="/#clinical-blogs" class="nav-link transition-colors">Insights</a>
         <a href="/ai-assistant" class="px-3 py-1.5 rounded-xl bg-teal-500/10 text-teal-300 border border-teal-500/30 hover:bg-teal-500/20 transition-all font-bold">MR.MED AI</a>
-        <button type="button" class="theme-toggle-btn p-2 rounded-xl glass-card text-slate-300 hover:text-white transition-colors" aria-label="Toggle Theme"></button>
       </nav>
+
+      <div class="flex items-center gap-3">
+        <button type="button" class="theme-toggle-btn p-2 rounded-xl glass-card text-slate-300 hover:text-white transition-colors" aria-label="Toggle Theme"></button>
+        <div id="navbar-auth-actions" class="flex items-center gap-2.5">
+          <a href="/login" class="nav-signin-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">Sign In</a>
+          <a href="/register" class="nav-register-btn px-4 py-2 rounded-xl text-white text-xs font-bold shadow-lg transition-all">Get Citizen UID</a>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -222,6 +228,7 @@
   </footer>
 
   <script src="/js/theme.js"></script>
+  <script src="/js/auth-state.js"></script>
   <script src="/js/directory.js"></script>
 </body>
 </html>

@@ -656,7 +656,12 @@ function setupLogout() {
   const logoutBtn = document.getElementById('btn-logout');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-      Auth.clearSession();
+      if (window.AuthState && typeof window.AuthState.logout === 'function') {
+        window.AuthState.logout();
+      } else {
+        Auth.clearSession();
+        window.location.href = '/login';
+      }
     });
   }
 }

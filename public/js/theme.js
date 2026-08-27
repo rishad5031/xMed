@@ -175,10 +175,10 @@ function copyToClipboard(text, label = 'UID') {
 
 // 5. Auth & Session Management
 const Auth = {
-  getToken: () => localStorage.getItem('xmed_token'),
+  getToken: () => localStorage.getItem('xmed_token') || localStorage.getItem('token'),
   getUser: () => {
     try {
-      const u = localStorage.getItem('xmed_user');
+      const u = localStorage.getItem('xmed_user') || localStorage.getItem('user');
       return u ? JSON.parse(u) : null;
     } catch {
       return null;
@@ -186,14 +186,21 @@ const Auth = {
   },
   setSession: (token, user) => {
     localStorage.setItem('xmed_token', token);
+    localStorage.setItem('token', token);
     localStorage.setItem('xmed_user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
+    if (user && user.uid) {
+      localStorage.setItem('user_uid', user.uid);
+    }
     document.cookie = `xmed_token=${token}; path=/; max-age=604800; SameSite=Lax`;
   },
   clearSession: () => {
     localStorage.removeItem('xmed_token');
+    localStorage.removeItem('token');
     localStorage.removeItem('xmed_user');
-    document.cookie = 'xmed_token=; path=/; max-age=0';
-    window.location.href = '/login';
+    localStorage.removeItem('user');
+    localStorage.removeItem('user_uid');
+    document.cookie = 'xmed_token=; path=/; max-age=0; SameSite=Lax';
   },
   requireRole: (expectedRole, redirectPath = '/login') => {
     const token = Auth.getToken();

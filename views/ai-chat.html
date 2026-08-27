@@ -56,12 +56,14 @@
 
       <div class="flex items-center gap-3">
         <button type="button" class="theme-toggle-btn p-2.5 rounded-xl glass-card text-slate-300 hover:text-white transition-colors" aria-label="Toggle Theme"></button>
-        <a href="/" class="px-4 py-2 rounded-xl glass-card text-xs font-bold text-slate-200 hover:text-white hover:border-cyan-500/40 transition-all">
+        <a href="/" class="px-3.5 py-2 rounded-xl glass-card text-xs font-bold text-slate-200 hover:text-white hover:border-cyan-500/40 transition-all">
           Home
         </a>
-        <a href="/login" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-bold text-xs hover:opacity-90 shadow-lg shadow-cyan-500/25 transition-all">
-          Portal Login
-        </a>
+        <div id="navbar-auth-actions" class="flex items-center gap-2.5">
+          <a href="/login" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-bold text-xs hover:opacity-90 shadow-lg shadow-cyan-500/25 transition-all">
+            Portal Login
+          </a>
+        </div>
       </div>
     </div>
   </header>
@@ -293,5 +295,6 @@
     }
   </script>
   <script src="/js/theme.js"></script>
+  <script src="/js/auth-state.js"></script>
 </body>
 </html>

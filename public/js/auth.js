@@ -104,6 +104,7 @@ function setupAuthForms() {
 
         if (data.success) {
           Auth.setSession(data.token, data.user);
+          if (window.AuthState) window.AuthState.setSession(data.token, data.user);
           showToast(`Welcome back, ${data.user.full_name}!`, 'success');
           setTimeout(() => {
             window.location.href = '/patient-dashboard';
@@ -140,6 +141,7 @@ function setupAuthForms() {
 
         if (data.success) {
           Auth.setSession(data.token, data.user);
+          if (window.AuthState) window.AuthState.setSession(data.token, data.user);
           showToast(`Welcome Dr. ${data.user.full_name}!`, 'success');
           setTimeout(() => {
             window.location.href = '/doctor-dashboard';

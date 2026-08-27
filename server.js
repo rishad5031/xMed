@@ -136,7 +136,9 @@ app.post('/api/auth/login', (req, res) => {
   }
   return authController.loginCitizen(req, res);
 });
-app.get('/api/auth/me', authenticateToken, authController.getCurrentUser);
+app.get('/api/auth/me', authController.getSessionStatus);
+app.get('/api/auth/profile', authenticateToken, authController.getCurrentUser);
+app.post('/api/auth/logout', authController.logout);
 
 // --- Doctor Portal Routes ---
 app.get('/api/doctor/patient/:uid', authenticateToken, isDoctor, doctorController.searchPatientByUid);

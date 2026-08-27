@@ -42,9 +42,9 @@
         <button type="button" onclick="openBloodModal()" class="btn-liquid-primary text-xs cursor-pointer">
           <span>Post Blood Need</span>
         </button>
-        <a href="/login" class="nav-signin-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">
-          Sign In
-        </a>
+        <div id="navbar-auth-actions" class="flex items-center gap-2.5">
+          <a href="/login" class="nav-signin-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">Sign In</a>
+        </div>
       </div>
     </div>
   </header>
@@ -260,6 +260,7 @@
   </div>
 
   <script src="/js/theme.js"></script>
+  <script src="/js/auth-state.js"></script>
   <script src="/js/chatbot.js"></script>
   <script src="/js/bloodExchange.js"></script>
 </body>

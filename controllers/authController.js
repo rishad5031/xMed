@@ -247,17 +247,106 @@ async function loginDoctor(req, res) {
 }
 
 // -------------------------------------------------------------
+// Safe Session Status Probe: GET /api/auth/me
+// -------------------------------------------------------------
+async function getSessionStatus(req, res) {
+  try {
+    let token = null;
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else if (req.query && req.query.token) {
+      token = req.query.token;
+    } else if (req.headers.cookie) {
+      const cookies = req.headers.cookie.split(';');
+      for (const c of cookies) {
+        const [name, val] = c.trim().split('=');
+        if (name === 'xmed_token') {
+          token = decodeURIComponent(val);
+          break;
+        }
+      }
+    }
+
+    if (!token) {
+      return res.status(200).json({ authenticated: false, user: null });
+    }
+
+    let decoded = null;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res.status(200).json({ authenticated: false, user: null, message: 'Invalid or expired token.' });
+    }
+
+    if (!decoded) {
+      return res.status(200).json({ authenticated: false, user: null });
+    }
+
+    if (decoded.role === 'doctor') {
+      const doctorId = decoded.doctor_id || decoded.id;
+      const doctor = await doctorModel.findById(doctorId);
+      if (!doctor) {
+        return res.status(200).json({ authenticated: false, user: null });
+      }
+      return res.status(200).json({
+        authenticated: true,
+        user: {
+          doctor_id: doctor.doctor_id,
+          uid: doctor.uid || `DOC-${doctor.doctor_id}`,
+          name: doctor.name || doctor.full_name,
+          full_name: doctor.full_name || doctor.name,
+          email: doctor.email,
+          phone: doctor.phone,
+          specialization: doctor.specialization,
+          hospital_id: doctor.hospital_id,
+          hospital_name: doctor.hospital_name || 'Central Hospital',
+          role: 'doctor'
+        }
+      });
+    } else {
+      const citizenUid = decoded.uid;
+      const citizen = await citizenModel.findByUid(citizenUid);
+      if (!citizen) {
+        return res.status(200).json({ authenticated: false, user: null });
+      }
+      return res.status(200).json({
+        authenticated: true,
+        user: {
+          uid: citizen.uid,
+          name: citizen.name || citizen.full_name,
+          full_name: citizen.full_name || citizen.name,
+          email: citizen.email,
+          phone: citizen.phone,
+          gender: citizen.gender,
+          blood_group: citizen.blood_group,
+          area: citizen.area,
+          city: citizen.city,
+          role: 'patient'
+        }
+      });
+    }
+  } catch (error) {
+    console.error('[Auth Error] getSessionStatus:', error);
+    return res.status(200).json({ authenticated: false, user: null });
+  }
+}
+
+// -------------------------------------------------------------
 // Current Authenticated User Profile
 // -------------------------------------------------------------
 async function getCurrentUser(req, res) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
     if (req.user.role === 'doctor') {
-      const doctor = await doctorModel.findById(req.user.id);
+      const doctorId = req.user.doctor_id || req.user.id;
+      const doctor = await doctorModel.findById(doctorId);
       if (!doctor) return res.status(404).json({ success: false, message: 'Doctor not found.' });
-      const stats = await doctorModel.getDoctorStats(req.user.id);
       return res.json({
         success: true,
-        user: { ...doctor, stats, role: 'doctor' }
+        user: { ...doctor, role: 'doctor' }
       });
     } else {
       const citizen = await citizenModel.findByUid(req.user.uid);
@@ -266,13 +355,13 @@ async function getCurrentUser(req, res) {
         success: true,
         user: {
           uid: citizen.uid,
-          full_name: citizen.full_name,
+          name: citizen.name || citizen.full_name,
+          full_name: citizen.full_name || citizen.name,
           dob: citizen.dob,
           gender: citizen.gender,
           blood_group: citizen.blood_group,
           phone: citizen.phone,
           email: citizen.email,
-          created_at: citizen.created_at,
           role: 'patient'
         }
       });
@@ -283,10 +372,29 @@ async function getCurrentUser(req, res) {
   }
 }
 
+// -------------------------------------------------------------
+// Logout Session: POST /api/auth/logout
+// -------------------------------------------------------------
+async function logout(req, res) {
+  try {
+    res.clearCookie('xmed_token', { path: '/' });
+    return res.json({
+      success: true,
+      message: 'Logged out successfully.',
+      authenticated: false
+    });
+  } catch (error) {
+    console.error('[Auth Error] logout:', error);
+    return res.status(500).json({ success: false, message: 'Logout failed.' });
+  }
+}
+
 module.exports = {
   registerCitizen,
   loginCitizen,
   registerDoctor,
   loginDoctor,
-  getCurrentUser
+  getCurrentUser,
+  getSessionStatus,
+  logout
 };
