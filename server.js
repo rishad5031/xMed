@@ -82,6 +82,18 @@ app.get('/patient-dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'patient-dashboard.html'));
 });
 
+app.get('/doctors', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'doctor-directory.html'));
+});
+
+app.get('/appointments', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'doctor-directory.html'));
+});
+
+app.get('/directory', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'doctor-directory.html'));
+});
+
 app.get('/prescription-view', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'prescription-view.html'));
 });
@@ -151,9 +163,34 @@ app.get('/api/hospitals/:id', hospitalController.getHospitalById);
 
 // --- Priority & Emergency FCFS Appointments ---
 app.post('/api/appointments', authenticateToken, appointmentController.createAppointment);
+app.post('/api/appointments/book', appointmentController.bookAppointment);
 app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
 app.get('/api/appointments/:id', authenticateToken, appointmentController.getAppointmentById);
 app.put('/api/appointments/:id/status', authenticateToken, isDoctor, appointmentController.updateAppointmentStatus);
+
+// --- Enterprise System Audit Trail ---
+app.get('/api/admin/audit-logs', async (req, res) => {
+  try {
+    const { table_name, action_type, limit = 50, offset = 0 } = req.query;
+    const { query: dbQuery } = require('./config/db');
+    let sql = 'SELECT * FROM system_audit_logs WHERE 1=1';
+    const params = [];
+    if (table_name) {
+      sql += ' AND table_name = ?';
+      params.push(table_name);
+    }
+    if (action_type) {
+      sql += ' AND action_type = ?';
+      params.push(action_type);
+    }
+    sql += ' ORDER BY timestamp DESC LIMIT ? OFFSET ?';
+    params.push(parseInt(limit, 10), parseInt(offset, 10));
+    const logs = await dbQuery(sql, params);
+    res.json({ success: true, count: logs.length, data: logs });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 // --- Clinical Blogs ---
 app.get('/api/blogs', blogController.getBlogs);

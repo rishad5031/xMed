@@ -234,8 +234,87 @@ CREATE TABLE IF NOT EXISTS `daily_analytics_summary` (
   CONSTRAINT `uq_summary_date` UNIQUE (`summary_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- -------------------------------------------------------------
+-- 13. ALLERGY SAFETY & DRUG CONTRAINDICATIONS
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `allergens` (
+  `allergen_id` INT AUTO_INCREMENT NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_allergens` PRIMARY KEY (`allergen_id`),
+  CONSTRAINT `uq_allergen_name` UNIQUE (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `patient_allergies` (
+  `patient_uid` VARCHAR(20) NOT NULL,
+  `allergen_id` INT NOT NULL,
+  `severity` ENUM('MILD', 'MODERATE', 'SEVERE') NOT NULL,
+  `noted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_patient_allergies` PRIMARY KEY (`patient_uid`, `allergen_id`),
+  CONSTRAINT `fk_pa_patient` FOREIGN KEY (`patient_uid`) 
+    REFERENCES `citizens`(`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_pa_allergen` FOREIGN KEY (`allergen_id`) 
+    REFERENCES `allergens`(`allergen_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `medicine_allergens` (
+  `medicine_id` INT NOT NULL,
+  `allergen_id` INT NOT NULL,
+  CONSTRAINT `pk_medicine_allergens` PRIMARY KEY (`medicine_id`, `allergen_id`),
+  CONSTRAINT `fk_ma_medicine` FOREIGN KEY (`medicine_id`) 
+    REFERENCES `medicines`(`medicine_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_ma_allergen` FOREIGN KEY (`allergen_id`) 
+    REFERENCES `allergens`(`allergen_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -------------------------------------------------------------
+-- 14. ENTERPRISE SYSTEM AUDIT LOGS (IMMUTABLE AUDIT TRAIL)
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `system_audit_logs` (
+  `log_id` BIGINT AUTO_INCREMENT NOT NULL,
+  `table_name` VARCHAR(50) NOT NULL,
+  `action_type` ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+  `record_id` VARCHAR(50) NOT NULL,
+  `performed_by` VARCHAR(50) DEFAULT 'SYSTEM',
+  `old_data` JSON NULL,
+  `new_data` JSON NULL,
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_system_audit_logs` PRIMARY KEY (`log_id`),
+  KEY `idx_audit_table_record` (`table_name`, `record_id`),
+  KEY `idx_audit_timestamp` (`timestamp` DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -------------------------------------------------------------
+-- 15. HOSPITAL DEPARTMENTS & WARD BED MANAGEMENT
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `departments` (
+  `department_id` INT AUTO_INCREMENT NOT NULL,
+  `hospital_id` INT NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_departments` PRIMARY KEY (`department_id`),
+  CONSTRAINT `fk_dept_hospital` FOREIGN KEY (`hospital_id`) 
+    REFERENCES `hospitals`(`hospital_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `idx_dept_hospital` (`hospital_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `hospital_beds` (
+  `bed_id` INT AUTO_INCREMENT NOT NULL,
+  `department_id` INT NOT NULL,
+  `bed_number` VARCHAR(20) NOT NULL,
+  `status` ENUM('AVAILABLE', 'OCCUPIED', 'MAINTENANCE') DEFAULT 'AVAILABLE',
+  `current_patient_uid` VARCHAR(20) NULL,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_hospital_beds` PRIMARY KEY (`bed_id`),
+  CONSTRAINT `fk_bed_dept` FOREIGN KEY (`department_id`) 
+    REFERENCES `departments`(`department_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_bed_patient` FOREIGN KEY (`current_patient_uid`) 
+    REFERENCES `citizens`(`uid`) ON DELETE SET NULL ON UPDATE CASCADE,
+  KEY `idx_bed_dept_status` (`department_id`, `status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- =============================================================
--- 13. EXPLICIT PERFORMANCE INDEXES (OPTIMIZATION)
+-- 16. EXPLICIT PERFORMANCE INDEXES (OPTIMIZATION)
 -- =============================================================
 
 -- Composite B-Tree Index for chronological patient prescriptions:

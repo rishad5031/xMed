@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadDoctorProfile();
   initDoctorAnalytics();
+  initDoctorTriageBoard();
   setupPatientSearch();
   setupPrescriptionForm();
   setupLogout();
@@ -621,5 +622,211 @@ function setupLogout() {
     logoutBtn.addEventListener('click', () => {
       Auth.clearSession();
     });
+  }
+}
+
+function initDoctorTriageBoard() {
+  const refreshBtn = document.getElementById('btn-refresh-triage');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', loadDoctorTriageQueue);
+  }
+  loadDoctorTriageQueue();
+}
+
+async function loadDoctorTriageQueue() {
+  const token = Auth.getToken();
+  const emergList = document.getElementById('triage-emergency-list');
+  const regList = document.getElementById('triage-regular-list');
+  const emergCountEl = document.getElementById('triage-emergency-count');
+  const regCountEl = document.getElementById('triage-regular-count');
+
+  if (!emergList || !regList) return;
+
+  try {
+    const res = await fetch('/api/appointments', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const json = await res.json();
+
+    if (json.success && Array.isArray(json.data)) {
+      const emergencies = json.data.filter(a => Boolean(a.is_emergency) || a.priority_level >= 2);
+      const regulars = json.data.filter(a => !a.is_emergency && a.priority_level < 2);
+
+      if (emergCountEl) emergCountEl.textContent = emergencies.length;
+      if (regCountEl) regCountEl.textContent = regulars.length;
+
+      renderEmergencyTriage(emergList, emergencies);
+      renderRegularTriage(regList, regulars);
+    }
+  } catch (err) {
+    console.error('Error loading triage queue:', err);
+  }
+}
+
+function renderEmergencyTriage(container, items) {
+  if (!items || items.length === 0) {
+    container.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">No pending emergency visits.</div>';
+    return;
+  }
+
+  container.innerHTML = items.map(apt => {
+    const isAccepted = apt.status === 'ACCEPTED';
+    const isCompleted = apt.status === 'COMPLETED';
+    const isPending = apt.status === 'PENDING';
+    const dateStr = apt.requested_date ? new Date(apt.requested_date).toISOString().slice(0, 10) : 'Today';
+
+    return `
+      <div class="p-3 rounded-xl bg-slate-900/80 border border-rose-500/40 text-xs space-y-2">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="font-bold text-white flex items-center gap-1.5">
+              <span>${escapeHtml(apt.patient_name)}</span>
+              <span class="text-[10px] font-mono text-rose-400 font-bold">${escapeHtml(apt.patient_uid)}</span>
+            </div>
+            <div class="text-[10px] text-slate-400">Date: ${dateStr} &bull; Time: ${apt.scheduled_time || 'Immediate'} &bull; Serial #${apt.serial_no || 1}</div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${isAccepted ? 'bg-emerald-500/20 text-emerald-300' : isCompleted ? 'bg-sky-500/20 text-sky-300' : 'bg-rose-500/20 text-rose-300'}">
+            ${apt.status}
+          </span>
+        </div>
+
+        ${apt.emergency_reason ? `
+          <div class="p-2 rounded-lg bg-rose-950/60 border border-rose-800/60 text-[11px] text-rose-200 font-medium leading-snug">
+            🚨 ${escapeHtml(apt.emergency_reason)}
+          </div>
+        ` : ''}
+
+        <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-800">
+          <button 
+            onclick="selectPatientForPrescription('${escapeHtml(apt.patient_uid)}')"
+            class="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 hover:bg-sky-500 hover:text-white text-[11px] font-semibold transition-colors"
+          >
+            Start Rx Dossier
+          </button>
+          <div class="flex items-center gap-1.5">
+            ${isPending ? `
+              <button 
+                onclick="updateTriageStatus(${apt.appointment_id}, 'ACCEPTED', 3)"
+                class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold transition-all shadow-sm"
+              >
+                Accept Priority
+              </button>
+              <button 
+                onclick="updateTriageStatus(${apt.appointment_id}, 'REJECTED')"
+                class="px-2 py-1 rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[11px] font-medium"
+              >
+                Reject
+              </button>
+            ` : isAccepted ? `
+              <button 
+                onclick="updateTriageStatus(${apt.appointment_id}, 'COMPLETED')"
+                class="px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-[11px] font-bold"
+              >
+                Mark Done
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRegularTriage(container, items) {
+  if (!items || items.length === 0) {
+    container.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">No pending queue requests.</div>';
+    return;
+  }
+
+  container.innerHTML = items.map(apt => {
+    const isAccepted = apt.status === 'ACCEPTED';
+    const isCompleted = apt.status === 'COMPLETED';
+    const isPending = apt.status === 'PENDING';
+    const dateStr = apt.requested_date ? new Date(apt.requested_date).toISOString().slice(0, 10) : 'Today';
+
+    return `
+      <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs space-y-2">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="font-bold text-white flex items-center gap-1.5">
+              <span>${escapeHtml(apt.patient_name)}</span>
+              <span class="text-[10px] font-mono text-sky-400">${escapeHtml(apt.patient_uid)}</span>
+            </div>
+            <div class="text-[10px] text-slate-400">Date: ${dateStr} &bull; Time: ${apt.scheduled_time || 'Shift Slot'} &bull; Serial #${apt.serial_no || '--'}</div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${isAccepted ? 'bg-emerald-500/20 text-emerald-300' : isCompleted ? 'bg-sky-500/20 text-sky-300' : 'bg-slate-800 text-slate-400'}">
+            ${apt.status}
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/80">
+          <button 
+            onclick="selectPatientForPrescription('${escapeHtml(apt.patient_uid)}')"
+            class="px-2.5 py-1 rounded-lg bg-sky-500/15 text-sky-300 hover:bg-sky-500 hover:text-white text-[11px] font-semibold transition-colors"
+          >
+            Start Rx Dossier
+          </button>
+          <div class="flex items-center gap-1.5">
+            ${isPending ? `
+              <button 
+                onclick="updateTriageStatus(${apt.appointment_id}, 'ACCEPTED')"
+                class="px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-[11px] font-bold transition-all"
+              >
+                Accept
+              </button>
+              <button 
+                onclick="updateTriageStatus(${apt.appointment_id}, 'REJECTED')"
+                class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-400 hover:text-rose-300 text-[11px]"
+              >
+                Reject
+              </button>
+            ` : isAccepted ? `
+              <button 
+                onclick="updateTriageStatus(${apt.appointment_id}, 'COMPLETED')"
+                class="px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-[11px] font-bold"
+              >
+                Mark Done
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function updateTriageStatus(appointmentId, status, priorityLevel) {
+  const token = Auth.getToken();
+  try {
+    const payload = { status };
+    if (priorityLevel !== undefined) payload.priority_level = priorityLevel;
+
+    const res = await fetch(`/api/appointments/${appointmentId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.success) {
+      showToast(`Appointment status updated to ${status}.`, 'success');
+      loadDoctorTriageQueue();
+    } else {
+      showToast(json.message || 'Failed to update appointment.', 'error');
+    }
+  } catch (err) {
+    showToast('Error updating appointment status.', 'error');
+  }
+}
+
+function selectPatientForPrescription(patientUid) {
+  const searchInput = document.getElementById('search-patient-uid');
+  if (searchInput) {
+    searchInput.value = patientUid;
+    const searchBtn = document.getElementById('btn-search-patient');
+    if (searchBtn) searchBtn.click();
+    window.scrollTo({ top: searchInput.offsetTop - 100, behavior: 'smooth' });
   }
 }

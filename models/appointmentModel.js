@@ -31,6 +31,32 @@ async function createAppointment({
   return await getAppointmentById(result.insertId);
 }
 
+async function bookAppointmentViaProcedure({
+  patient_uid,
+  doctor_id,
+  hospital_id,
+  requested_date,
+  is_emergency = false,
+  emergency_reason = null
+}) {
+  const sql = `CALL sp_book_appointment(?, ?, ?, ?, ?, ?, @p_apt_id, @p_serial, @p_priority);`;
+  const results = await query(sql, [
+    patient_uid,
+    parseInt(doctor_id, 10),
+    parseInt(hospital_id, 10),
+    requested_date,
+    Boolean(is_emergency),
+    emergency_reason || 'General Consultation'
+  ]);
+
+  // MariaDB/MySQL returns procedure result sets as nested arrays
+  if (Array.isArray(results) && results.length > 0) {
+    const firstSet = Array.isArray(results[0]) ? results[0] : results;
+    if (firstSet.length > 0) return firstSet[0];
+  }
+  return null;
+}
+
 async function getAppointmentById(appointment_id) {
   const sql = `
     SELECT 
@@ -156,6 +182,7 @@ async function updateAppointmentStatus(appointment_id, { status, scheduled_time,
 
 module.exports = {
   createAppointment,
+  bookAppointmentViaProcedure,
   getAppointmentById,
   getAppointments,
   updateAppointmentStatus

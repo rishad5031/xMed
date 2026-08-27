@@ -715,6 +715,121 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${totalAppointmentsSeeded} Multi-Status Appointments across 6 Hospitals.\n`);
 
+    // 7. Seed Allergens & Patient Contraindications
+    console.log('[7/8] Seeding Allergens, Drug Contraindications & Patient Allergy Profiles...');
+    const allergenList = ['Penicillin', 'Sulfa drugs', 'Aspirin', 'Cephalosporins', 'NSAIDs'];
+    const allergenMap = new Map();
+
+    for (const alg of allergenList) {
+      await query(`INSERT INTO allergens (name) VALUES (?) ON DUPLICATE KEY UPDATE name = VALUES(name);`, [alg]);
+      const [row] = await query(`SELECT allergen_id FROM allergens WHERE name = ? LIMIT 1;`, [alg]);
+      allergenMap.set(alg, row.allergen_id);
+    }
+
+    // Map medicines to allergens
+    const penId = allergenMap.get('Penicillin');
+    const aspId = allergenMap.get('Aspirin');
+    const sulId = allergenMap.get('Sulfa drugs');
+    const nsaId = allergenMap.get('NSAIDs');
+
+    let totalMedAllergens = 0;
+    for (const m of medicines) {
+      const g = (m.generic_name || '').toLowerCase();
+      const b = (m.brand_name || '').toLowerCase();
+
+      if (g.includes('amoxicillin') || g.includes('ampicillin') || g.includes('penicillin') || b.includes('augmentin') || b.includes('moxacil')) {
+        await query(`INSERT IGNORE INTO medicine_allergens (medicine_id, allergen_id) VALUES (?, ?);`, [m.medicine_id, penId]);
+        totalMedAllergens++;
+      } else if (g.includes('aspirin') || g.includes('acetylsalicylic') || b.includes('ecospirin') || b.includes('disprin')) {
+        await query(`INSERT IGNORE INTO medicine_allergens (medicine_id, allergen_id) VALUES (?, ?);`, [m.medicine_id, aspId]);
+        totalMedAllergens++;
+      } else if (g.includes('sulfa') || g.includes('cotrimoxazole') || g.includes('sulfamethoxazole')) {
+        await query(`INSERT IGNORE INTO medicine_allergens (medicine_id, allergen_id) VALUES (?, ?);`, [m.medicine_id, sulId]);
+        totalMedAllergens++;
+      } else if (g.includes('ibuprofen') || g.includes('naproxen') || g.includes('diclofenac') || b.includes('advil') || b.includes('voltarol')) {
+        await query(`INSERT IGNORE INTO medicine_allergens (medicine_id, allergen_id) VALUES (?, ?);`, [m.medicine_id, nsaId]);
+        totalMedAllergens++;
+      }
+    }
+
+    // Seed test patient allergies (including BD-2000-0001 Penicillin SEVERE)
+    const patientAllergySeeds = [
+      { uid: 'BD-2000-0001', allergen: 'Penicillin', severity: 'SEVERE' },
+      { uid: 'BD-2000-0002', allergen: 'Aspirin', severity: 'MODERATE' },
+      { uid: 'BD-2000-0003', allergen: 'Sulfa drugs', severity: 'SEVERE' },
+      { uid: 'BD-2000-0004', allergen: 'NSAIDs', severity: 'SEVERE' },
+      { uid: 'BD-2000-0005', allergen: 'Penicillin', severity: 'MILD' },
+      { uid: 'BD-2026-8841', allergen: 'Penicillin', severity: 'SEVERE' }
+    ];
+
+    let totalPatientAllergies = 0;
+    for (const pa of patientAllergySeeds) {
+      const aId = allergenMap.get(pa.allergen);
+      if (aId) {
+        await query(`
+          INSERT INTO patient_allergies (patient_uid, allergen_id, severity)
+          VALUES (?, ?, ?)
+          ON DUPLICATE KEY UPDATE severity = VALUES(severity);
+        `, [pa.uid, aId, pa.severity]);
+        totalPatientAllergies++;
+      }
+    }
+    console.log(`✓ Seeded ${allergenList.length} Allergens, ${totalMedAllergens} Drug Mappings, and ${totalPatientAllergies} Patient Profiles.\n`);
+
+    // 8. Seed Hospital Departments & Ward Beds
+    console.log('[8/8] Seeding Hospital Departments & Real-Time Ward Beds...');
+    const departmentNames = [
+      'Cardiology Ward',
+      'Intensive Care Unit (ICU)',
+      'General Medicine Ward',
+      'Emergency Resuscitation',
+      'Pediatrics Ward',
+      'Orthopedic Trauma'
+    ];
+
+    let totalDepts = 0;
+    let totalBeds = 0;
+
+    for (let hIdx = 0; hIdx < hospitalIds.length; hIdx++) {
+      const hId = hospitalIds[hIdx];
+
+      for (let dIdx = 0; dIdx < departmentNames.length; dIdx++) {
+        const dName = departmentNames[dIdx];
+        const [existingDept] = await query('SELECT department_id FROM departments WHERE hospital_id = ? AND name = ? LIMIT 1;', [hId, dName]);
+        
+        let deptId;
+        if (existingDept) {
+          deptId = existingDept.department_id;
+        } else {
+          const deptRes = await query('INSERT INTO departments (hospital_id, name) VALUES (?, ?);', [hId, dName]);
+          deptId = deptRes.insertId;
+        }
+        totalDepts++;
+
+        // Seed 4 beds per department
+        for (let b = 1; b <= 4; b++) {
+          const bedNumber = `B-${hId}${dIdx + 1}-0${b}`;
+          let status = 'AVAILABLE';
+          let patientUid = null;
+
+          if (b === 1) {
+            status = 'OCCUPIED';
+            patientUid = citizenUids[(hIdx * 10 + dIdx * 2) % citizenUids.length];
+          } else if (b === 4 && dIdx % 2 === 0) {
+            status = 'MAINTENANCE';
+          }
+
+          await query(`
+            INSERT INTO hospital_beds (department_id, bed_number, status, current_patient_uid)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE status = VALUES(status), current_patient_uid = VALUES(current_patient_uid);
+          `, [deptId, bedNumber, status, patientUid]);
+          totalBeds++;
+        }
+      }
+    }
+    console.log(`✓ Seeded ${totalDepts} Departments and ${totalBeds} Beds across 6 Hospitals.\n`);
+
     console.log('======================================================');
     console.log('🎉 UNIFIED MIGRATION & SEEDING PIPELINE COMPLETED!');
     console.log('======================================================');
@@ -726,6 +841,11 @@ async function seedDatabase() {
     console.log(`  • Prescription Items:  ${totalItemsSeeded}`);
     console.log(`  • Self-Medications:    ${totalSelfMedsSeeded}`);
     console.log(`  • Appointments:        ${totalAppointmentsSeeded} (FCFS + Emergencies)`);
+    console.log(`  • Allergens:           ${allergenList.length}`);
+    console.log(`  • Drug Contraindics:   ${totalMedAllergens}`);
+    console.log(`  • Patient Allergies:   ${totalPatientAllergies}`);
+    console.log(`  • Departments:         ${totalDepts}`);
+    console.log(`  • Ward Beds:           ${totalBeds}`);
     console.log(`  • Global Password:     ${rawPassword}`);
     console.log('======================================================\n');
 

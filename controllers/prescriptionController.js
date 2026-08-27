@@ -75,7 +75,16 @@ async function createPrescription(req, res) {
   } catch (error) {
     // 5. Automatic rollback on any error
     await connection.rollback();
-    console.error('[PrescriptionController] createPrescription transaction rollback:', error);
+    console.error('[PrescriptionController] createPrescription transaction rollback:', error.message);
+
+    if (error.sqlState === '45000' || (error.sqlMessage && error.sqlMessage.includes('ALLERGY CONFLICT'))) {
+      return res.status(400).json({
+        success: false,
+        conflict: true,
+        message: 'Prescription blocked due to recorded patient allergy.'
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: 'Database transaction failure: rolled back changes.',

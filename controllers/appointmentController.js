@@ -35,6 +35,48 @@ async function createAppointment(req, res) {
   }
 }
 
+// Atomic Concurrency-Controlled Booking via Stored Procedure sp_book_appointment
+async function bookAppointment(req, res) {
+  try {
+    const { doctor_id, hospital_id, requested_date, is_emergency, emergency_reason } = req.body;
+    const patient_uid = (req.user && req.user.role === 'patient') ? req.user.uid : req.body.patient_uid;
+
+    if (!patient_uid || !doctor_id || !hospital_id || !requested_date) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: patient_uid, doctor_id, hospital_id, and requested_date are required.'
+      });
+    }
+
+    const appointment = await appointmentModel.bookAppointmentViaProcedure({
+      patient_uid: patient_uid.trim().toUpperCase(),
+      doctor_id,
+      hospital_id,
+      requested_date,
+      is_emergency: Boolean(is_emergency),
+      emergency_reason
+    });
+
+    if (!appointment) {
+      return res.status(500).json({ success: false, message: 'Failed to complete atomic appointment booking.' });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: appointment.is_emergency 
+        ? `Emergency visit booked! Serial #${appointment.serial_no} (Priority ${appointment.priority_level})`
+        : `Visit confirmed! Serial #${appointment.serial_no} at ${appointment.scheduled_time || 'scheduled shift'}.`,
+      data: appointment
+    });
+  } catch (err) {
+    console.error('[AppointmentController] bookAppointment procedure error:', err.message);
+    if (err.sqlState === '45000') {
+      return res.status(400).json({ success: false, message: err.sqlMessage || 'Booking rejected by database constraint.' });
+    }
+    res.status(500).json({ success: false, message: 'Server error processing appointment booking.' });
+  }
+}
+
 async function getAppointments(req, res) {
   try {
     const filter = { ...req.query };
@@ -101,6 +143,7 @@ async function updateAppointmentStatus(req, res) {
 
 module.exports = {
   createAppointment,
+  bookAppointment,
   getAppointments,
   getAppointmentById,
   updateAppointmentStatus

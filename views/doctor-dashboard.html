@@ -115,6 +115,68 @@
       </div>
     </div>
 
+    <!-- Appointment Triage Board (Emergencies vs FCFS Queue) -->
+    <div class="glass-card spotlight-wrapper p-6 rounded-3xl border border-slate-700/60 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700/50 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-md">
+            ⚡
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Appointment Triage Board</h3>
+            <p class="text-[11px] text-slate-400">Incoming patient visit queue separated by priority</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold">
+              <span id="triage-emergency-count">0</span> Emergencies
+            </span>
+            <span class="px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30 font-bold">
+              <span id="triage-regular-count">0</span> Standard Queue
+            </span>
+          </div>
+          <button type="button" id="btn-refresh-triage" class="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/60 transition-colors" title="Refresh Queue">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Triage Dual Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Column 1: Priority Emergencies -->
+        <div class="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+              Priority Emergencies
+            </span>
+            <span class="text-[10px] text-rose-300 font-mono">Immediate Review</span>
+          </div>
+          <div id="triage-emergency-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+            <div class="text-center py-6 text-slate-500 text-xs">Loading emergencies...</div>
+          </div>
+        </div>
+
+        <!-- Column 2: Standard FCFS Queue -->
+        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-sky-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+              Standard FCFS Queue
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">Sequential Queue</span>
+          </div>
+          <div id="triage-regular-list" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+            <div class="text-center py-6 text-slate-500 text-xs">Loading queue...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Workspace Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       

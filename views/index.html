@@ -54,6 +54,10 @@
 
       <!-- Quick Nav Links -->
       <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+        <a href="/doctors" class="text-sky-300 hover:text-white font-bold flex items-center gap-1.5 transition-colors">
+          <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+          Book Appointment
+        </a>
         <a href="#features" class="hover:text-purple-400 transition-colors">Platform Capabilities</a>
         <a href="#clinical-blogs" class="hover:text-teal-400 transition-colors">Doctors Insights</a>
         <a href="/ai-assistant" class="text-cyan-300 hover:text-cyan-200 font-bold flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/30 hover:border-cyan-400/60 shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-all">
@@ -107,13 +111,17 @@
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-          <a href="/login" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-teal-500 text-white font-bold text-sm hover:opacity-95 shadow-xl shadow-sky-500/25 transition-all flex items-center justify-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-            Access Clinical Portal
+          <a href="/doctors" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white font-bold text-sm hover:opacity-95 shadow-xl shadow-indigo-500/25 transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Book Appointment
           </a>
-          <a href="/register" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl glass-card text-slate-200 hover:text-white font-bold text-sm border border-slate-700/60 hover:border-sky-500/50 shadow-lg transition-all flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-            Register for Citizen UID
+          <a href="/login" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl glass-card text-slate-200 hover:text-white font-bold text-sm border border-slate-700/60 hover:border-sky-500/50 shadow-lg transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+            Clinical Portal
+          </a>
+          <a href="/register" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl glass-card text-slate-200 hover:text-white font-bold text-sm border border-slate-700/60 hover:border-teal-500/50 shadow-lg transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+            Get Citizen UID
           </a>
         </div>
 

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!Auth.requireRole('patient')) return;
 
   loadPatientDashboard();
+  loadPatientAppointments();
   loadPatientVitals();
   setupReportUpload();
   setupSelfMedicationModal();
@@ -658,4 +659,81 @@ function setupLogout() {
       Auth.clearSession();
     });
   }
+}
+
+async function loadPatientAppointments() {
+  const container = document.getElementById('patient-appointments-container');
+  if (!container) return;
+
+  try {
+    const token = Auth.getToken();
+    const res = await fetch('/api/appointments', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const json = await res.json();
+
+    if (json.success && Array.isArray(json.data)) {
+      renderPatientAppointments(json.data);
+    } else {
+      container.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">No appointments scheduled.</div>';
+    }
+  } catch (err) {
+    container.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">Failed to load appointments.</div>';
+  }
+}
+
+function renderPatientAppointments(appointments) {
+  const container = document.getElementById('patient-appointments-container');
+  if (!container) return;
+
+  if (!appointments || appointments.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-6 text-slate-500 text-xs">
+        No appointments booked yet. <a href="/doctors" class="text-sky-400 hover:underline font-bold">Find a doctor</a> to schedule your visit.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = appointments.map(apt => {
+    let statusClass = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+    if (apt.status === 'ACCEPTED') statusClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+    if (apt.status === 'COMPLETED') statusClass = 'bg-sky-500/10 text-sky-400 border-sky-500/30';
+    if (apt.status === 'CANCELLED' || apt.status === 'REJECTED') statusClass = 'bg-rose-500/10 text-rose-400 border-rose-500/30';
+
+    const isEmerg = Boolean(apt.is_emergency);
+    const dateStr = apt.requested_date ? new Date(apt.requested_date).toISOString().slice(0, 10) : 'Upcoming';
+
+    return `
+      <div class="p-3.5 rounded-2xl bg-slate-900/60 border ${isEmerg ? 'border-red-500/40 bg-red-950/10' : 'border-slate-800'} flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-white text-sm">${escapeHtml(apt.doctor_name || 'Doctor')}</span>
+            <span class="text-[11px] text-sky-400 font-medium">${escapeHtml(apt.doctor_specialization || 'Specialist')}</span>
+            ${isEmerg ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">🚨 EMERGENCY</span>' : ''}
+          </div>
+          <div class="text-[11px] text-slate-400">
+            <span>${escapeHtml(apt.hospital_name || 'Hospital')}</span>
+            <span class="text-slate-500">&bull; ${escapeHtml(apt.hospital_area || 'Area')}</span>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center gap-2">
+            <span>Date: <strong class="text-slate-200 font-mono">${dateStr}</strong></span>
+            <span>&bull;</span>
+            <span>Estimated Time: <strong class="text-slate-200 font-mono">${apt.scheduled_time || 'Pending triage'}</strong></span>
+          </div>
+          ${apt.emergency_reason ? `<div class="text-[10px] text-red-300 italic">Emergency note: ${escapeHtml(apt.emergency_reason)}</div>` : ''}
+        </div>
+
+        <div class="flex items-center gap-3 self-end sm:self-center">
+          <div class="text-right">
+            <div class="text-[10px] uppercase font-bold text-slate-500">Queue Serial</div>
+            <div class="text-base font-black text-sky-300 font-mono">#${apt.serial_no ? String(apt.serial_no).padStart(2, '0') : '--'}</div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${statusClass}">
+            ${apt.status}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
 }

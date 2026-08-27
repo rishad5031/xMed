@@ -272,3 +272,70 @@ WHERE sm.`patient_uid` = 'BD-2000-0001'
 
 ORDER BY `event_date` DESC;
 
+-- =============================================================
+-- SECTION 8: ENTERPRISE DATA INTEGRITY & ADVANCED DBMS QUERIES
+-- =============================================================
+
+-- 8.1 Allergy Conflict Detection & Patient Safety Check
+-- Identifies medicines contra-indicated for a patient based on severe allergies
+SELECT 
+  pa.`patient_uid`,
+  c.`name` AS `patient_name`,
+  a.`name` AS `allergen_name`,
+  pa.`severity`,
+  m.`medicine_id`,
+  m.`brand_name`,
+  m.`generic_name`
+FROM `patient_allergies` pa
+JOIN `citizens` c ON pa.`patient_uid` = c.`uid`
+JOIN `allergens` a ON pa.`allergen_id` = a.`allergen_id`
+JOIN `medicine_allergens` ma ON a.`allergen_id` = ma.`allergen_id`
+JOIN `medicines` m ON ma.`medicine_id` = m.`medicine_id`
+WHERE pa.`patient_uid` = 'BD-2000-0001';
+
+-- 8.2 Enterprise Immutable Audit Trail Inspection
+-- Retrieves latest automated trigger audit entries with before/after state diffs
+SELECT 
+  `log_id`,
+  `table_name`,
+  `action_type`,
+  `record_id`,
+  `performed_by`,
+  `old_data`,
+  `new_data`,
+  `timestamp`
+FROM `system_audit_logs`
+ORDER BY `timestamp` DESC
+LIMIT 20;
+
+-- 8.3 Hospital Ward & Department Bed Capacity Analytics
+-- Computes real-time bed availability and occupancy rates by hospital department
+SELECT 
+  h.`name` AS `hospital_name`,
+  d.`name` AS `department_name`,
+  COUNT(b.`bed_id`) AS `total_beds`,
+  SUM(CASE WHEN b.`status` = 'AVAILABLE' THEN 1 ELSE 0 END) AS `available_beds`,
+  SUM(CASE WHEN b.`status` = 'OCCUPIED' THEN 1 ELSE 0 END) AS `occupied_beds`,
+  SUM(CASE WHEN b.`status` = 'MAINTENANCE' THEN 1 ELSE 0 END) AS `maintenance_beds`,
+  ROUND((SUM(CASE WHEN b.`status` = 'OCCUPIED' THEN 1 ELSE 0 END) / COUNT(b.`bed_id`)) * 100, 2) AS `occupancy_rate_percent`
+FROM `hospitals` h
+JOIN `departments` d ON h.`hospital_id` = d.`hospital_id`
+JOIN `hospital_beds` b ON d.`department_id` = b.`department_id`
+GROUP BY h.`hospital_id`, d.`department_id`, h.`name`, d.`name`
+ORDER BY `occupancy_rate_percent` DESC;
+
+-- 8.4 Atomic Concurrency-Controlled Appointment Booking Call
+-- Invokes stored procedure with SELECT FOR UPDATE row locking & serial assignment
+CALL `sp_book_appointment`(
+  'BD-2000-0001',   -- p_patient_uid
+  5,                -- p_doctor_id (e.g. Dr. Tanvir Ahmed)
+  1,                -- p_hospital_id (Dhanmondi Care Hospital)
+  CURRENT_DATE,     -- p_date
+  FALSE,            -- p_is_emergency
+  'Routine cardiology blood pressure checkup and ECG review', -- p_reason
+  @appointment_id,
+  @serial_no,
+  @priority_level
+);
+
+

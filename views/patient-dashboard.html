@@ -247,8 +247,35 @@
 
       </section>
 
-      <!-- RIGHT COLUMN: Chronological Medical Timeline (7 cols) -->
-      <section class="lg:col-span-7">
+      <!-- RIGHT COLUMN: Appointments & Medical Timeline (7 cols) -->
+      <section class="lg:col-span-7 space-y-6">
+        
+        <!-- My Appointments Panel -->
+        <div class="glass-card spotlight-wrapper p-6 rounded-3xl border border-slate-700/60 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-sky-500/20 border border-sky-400/40 text-sky-400 flex items-center justify-center font-bold text-sm">
+                📅
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-slate-100">My Appointments</h3>
+                <p class="text-[11px] text-slate-400">Upcoming visits, serial numbers & queue status</p>
+              </div>
+            </div>
+
+            <a href="/doctors" class="px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md shadow-sky-500/20">
+              <span>+</span>
+              <span>Book Visit</span>
+            </a>
+          </div>
+
+          <!-- Appointments List Container -->
+          <div id="patient-appointments-container" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+            <div class="text-center py-6 text-slate-500 text-xs">Loading appointments...</div>
+          </div>
+        </div>
+
+        <!-- Medical Timeline Card -->
         <div class="glass-card spotlight-wrapper p-6 sm:p-8 rounded-3xl border border-slate-700/60 shadow-xl space-y-6">
           
           <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">

@@ -21,7 +21,8 @@ async function initializeDatabase() {
     connection = await mysql.createConnection(config);
     console.log(`[xMED DB Init] Connected to MySQL server successfully.`);
 
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
+    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;`);
+    await connection.query(`ALTER DATABASE \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;`);
     await connection.query(`USE \`${DB_NAME}\`;`);
 
     console.log(`[xMED DB Init] Verifying and updating core tables in strict FK dependency order...`);
@@ -250,6 +251,79 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    // 8.1.1 Allergens & Drug Contraindications
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS allergens (
+        allergen_id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS patient_allergies (
+        patient_uid VARCHAR(20) NOT NULL,
+        allergen_id INT NOT NULL,
+        severity ENUM('MILD', 'MODERATE', 'SEVERE') NOT NULL,
+        noted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (patient_uid, allergen_id),
+        CONSTRAINT fk_pa_patient FOREIGN KEY (patient_uid) REFERENCES citizens(uid) ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT fk_pa_allergen FOREIGN KEY (allergen_id) REFERENCES allergens(allergen_id) ON DELETE CASCADE ON UPDATE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS medicine_allergens (
+        medicine_id INT NOT NULL,
+        allergen_id INT NOT NULL,
+        PRIMARY KEY (medicine_id, allergen_id),
+        CONSTRAINT fk_ma_medicine FOREIGN KEY (medicine_id) REFERENCES medicines(medicine_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT fk_ma_allergen FOREIGN KEY (allergen_id) REFERENCES allergens(allergen_id) ON DELETE CASCADE ON UPDATE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 8.1.2 Enterprise System Audit Logs
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS system_audit_logs (
+        log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        table_name VARCHAR(50) NOT NULL,
+        action_type ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+        record_id VARCHAR(50) NOT NULL,
+        performed_by VARCHAR(50) DEFAULT 'SYSTEM',
+        old_data JSON NULL,
+        new_data JSON NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        KEY idx_audit_table_record (table_name, record_id),
+        KEY idx_audit_timestamp (timestamp DESC)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 8.1.3 Hospital Departments & Bed Management
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS departments (
+        department_id INT AUTO_INCREMENT PRIMARY KEY,
+        hospital_id INT NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_dept_hospital FOREIGN KEY (hospital_id) REFERENCES hospitals(hospital_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        KEY idx_dept_hospital (hospital_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS hospital_beds (
+        bed_id INT AUTO_INCREMENT PRIMARY KEY,
+        department_id INT NOT NULL,
+        bed_number VARCHAR(20) NOT NULL,
+        status ENUM('AVAILABLE', 'OCCUPIED', 'MAINTENANCE') DEFAULT 'AVAILABLE',
+        current_patient_uid VARCHAR(20) NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        CONSTRAINT fk_bed_dept FOREIGN KEY (department_id) REFERENCES departments(department_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT fk_bed_patient FOREIGN KEY (current_patient_uid) REFERENCES citizens(uid) ON DELETE SET NULL ON UPDATE CASCADE,
+        KEY idx_bed_dept_status (department_id, status)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
     // 8.2 Daily Analytics Summary (for Event Scheduler)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS daily_analytics_summary (
@@ -381,6 +455,139 @@ async function initializeDatabase() {
       END;
     `);
 
+    // Trigger 6: Allergy Conflict Safety Check (Pre-Insert on prescription_items)
+    await connection.query(`DROP TRIGGER IF EXISTS trg_check_allergy_before_prescribe;`);
+    await connection.query(`
+      CREATE TRIGGER trg_check_allergy_before_prescribe
+      BEFORE INSERT ON prescription_items
+      FOR EACH ROW
+      BEGIN
+        DECLARE v_patient_uid VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+        DECLARE v_conflict_count INT DEFAULT 0;
+
+        SELECT patient_uid INTO v_patient_uid
+        FROM prescriptions
+        WHERE prescription_id = NEW.prescription_id
+        LIMIT 1;
+
+        IF v_patient_uid IS NOT NULL THEN
+          SELECT COUNT(*) INTO v_conflict_count
+          FROM patient_allergies pa
+          JOIN medicine_allergens ma ON pa.allergen_id = ma.allergen_id
+          WHERE pa.patient_uid = v_patient_uid COLLATE utf8mb4_general_ci
+            AND ma.medicine_id = NEW.medicine_id
+            AND pa.severity = 'SEVERE';
+
+          IF v_conflict_count > 0 THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'PATIENT ALLERGY CONFLICT: Prescription aborted for patient safety.';
+          END IF;
+        END IF;
+      END;
+    `);
+
+    // Trigger 7: System Audit Logging for Citizens Update
+    await connection.query(`DROP TRIGGER IF EXISTS trg_audit_citizens_update;`);
+    await connection.query(`
+      CREATE TRIGGER trg_audit_citizens_update
+      AFTER UPDATE ON citizens
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO system_audit_logs (
+          table_name, action_type, record_id, performed_by, old_data, new_data
+        ) VALUES (
+          'citizens', 'UPDATE', NEW.uid, 'SYSTEM',
+          JSON_OBJECT('name', OLD.name, 'phone', OLD.phone, 'email', OLD.email, 'area', OLD.area),
+          JSON_OBJECT('name', NEW.name, 'phone', NEW.phone, 'email', NEW.email, 'area', NEW.area)
+        );
+      END;
+    `);
+
+    // Trigger 8: System Audit Logging for Citizens Delete
+    await connection.query(`DROP TRIGGER IF EXISTS trg_audit_citizens_delete;`);
+    await connection.query(`
+      CREATE TRIGGER trg_audit_citizens_delete
+      AFTER DELETE ON citizens
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO system_audit_logs (
+          table_name, action_type, record_id, performed_by, old_data, new_data
+        ) VALUES (
+          'citizens', 'DELETE', OLD.uid, 'SYSTEM',
+          JSON_OBJECT('name', OLD.name, 'phone', OLD.phone, 'email', OLD.email),
+          NULL
+        );
+      END;
+    `);
+
+    // Trigger 9: System Audit Logging for Prescriptions Update
+    await connection.query(`DROP TRIGGER IF EXISTS trg_audit_prescriptions_update;`);
+    await connection.query(`
+      CREATE TRIGGER trg_audit_prescriptions_update
+      AFTER UPDATE ON prescriptions
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO system_audit_logs (
+          table_name, action_type, record_id, performed_by, old_data, new_data
+        ) VALUES (
+          'prescriptions', 'UPDATE', CAST(NEW.prescription_id AS CHAR), CAST(NEW.doctor_id AS CHAR),
+          JSON_OBJECT('diagnosis', OLD.diagnosis, 'clinical_notes', OLD.clinical_notes),
+          JSON_OBJECT('diagnosis', NEW.diagnosis, 'clinical_notes', NEW.clinical_notes)
+        );
+      END;
+    `);
+
+    // Trigger 10: System Audit Logging for Prescriptions Delete
+    await connection.query(`DROP TRIGGER IF EXISTS trg_audit_prescriptions_delete;`);
+    await connection.query(`
+      CREATE TRIGGER trg_audit_prescriptions_delete
+      AFTER DELETE ON prescriptions
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO system_audit_logs (
+          table_name, action_type, record_id, performed_by, old_data, new_data
+        ) VALUES (
+          'prescriptions', 'DELETE', CAST(OLD.prescription_id AS CHAR), CAST(OLD.doctor_id AS CHAR),
+          JSON_OBJECT('patient_uid', OLD.patient_uid, 'diagnosis', OLD.diagnosis),
+          NULL
+        );
+      END;
+    `);
+
+    // Trigger 11: System Audit Logging for Appointments Update
+    await connection.query(`DROP TRIGGER IF EXISTS trg_audit_appointments_update;`);
+    await connection.query(`
+      CREATE TRIGGER trg_audit_appointments_update
+      AFTER UPDATE ON appointments
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO system_audit_logs (
+          table_name, action_type, record_id, performed_by, old_data, new_data
+        ) VALUES (
+          'appointments', 'UPDATE', CAST(NEW.appointment_id AS CHAR), 'DOCTOR_OR_PATIENT',
+          JSON_OBJECT('status', OLD.status, 'serial_no', OLD.serial_no, 'priority_level', OLD.priority_level),
+          JSON_OBJECT('status', NEW.status, 'serial_no', NEW.serial_no, 'priority_level', NEW.priority_level)
+        );
+      END;
+    `);
+
+    // Trigger 12: System Audit Logging for Appointments Delete
+    await connection.query(`DROP TRIGGER IF EXISTS trg_audit_appointments_delete;`);
+    await connection.query(`
+      CREATE TRIGGER trg_audit_appointments_delete
+      AFTER DELETE ON appointments
+      FOR EACH ROW
+      BEGIN
+        INSERT INTO system_audit_logs (
+          table_name, action_type, record_id, performed_by, old_data, new_data
+        ) VALUES (
+          'appointments', 'DELETE', CAST(OLD.appointment_id AS CHAR), 'SYSTEM',
+          JSON_OBJECT('patient_uid', OLD.patient_uid, 'status', OLD.status),
+          NULL
+        );
+      END;
+    `);
+
     // 8.6 Stored Procedures with ACID Transactions
     console.log(`[xMED DB Init] Compiling stored procedures with ACID transaction handlers...`);
 
@@ -490,6 +697,100 @@ async function initializeDatabase() {
         GROUP BY p.prescription_id
         ORDER BY p.created_at DESC
         LIMIT p_limit OFFSET p_offset;
+      END;
+    `);
+
+    // Stored Procedure 3: sp_book_appointment (Atomic Booking with Concurrency Row-Locking)
+    await connection.query(`DROP PROCEDURE IF EXISTS sp_book_appointment;`);
+    await connection.query(`
+      CREATE PROCEDURE sp_book_appointment(
+        IN p_patient_uid VARCHAR(20),
+        IN p_doctor_id INT,
+        IN p_hospital_id INT,
+        IN p_date DATE,
+        IN p_is_emergency BOOLEAN,
+        IN p_reason TEXT,
+        OUT p_appointment_id INT,
+        OUT p_serial_no INT,
+        OUT p_priority_level INT
+      )
+      BEGIN
+        DECLARE v_doc_exists INT DEFAULT 0;
+        DECLARE v_next_serial INT DEFAULT 1;
+        DECLARE v_priority INT DEFAULT 1;
+        DECLARE v_scheduled_time TIME DEFAULT NULL;
+        DECLARE v_shift_start TIME DEFAULT '09:00:00';
+
+        DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+          ROLLBACK;
+          RESIGNAL;
+        END;
+
+        START TRANSACTION;
+
+        -- Explicit row locking on the doctor record for concurrency control
+        SELECT doctor_id, shift_start
+        INTO v_doc_exists, v_shift_start
+        FROM doctors
+        WHERE doctor_id = p_doctor_id
+        FOR UPDATE;
+
+        IF v_doc_exists IS NULL OR v_doc_exists = 0 THEN
+          SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid doctor_id specified for appointment.';
+        END IF;
+
+        IF p_is_emergency THEN
+          SET v_priority = 2;
+        ELSE
+          SET v_priority = 1;
+        END IF;
+
+        -- Compute next sequential serial number for requested date
+        SELECT IFNULL(MAX(serial_no), 0) + 1 INTO v_next_serial
+        FROM appointments
+        WHERE doctor_id = p_doctor_id AND requested_date = p_date;
+
+        -- Estimated scheduled appointment time based on slot queue (15 mins/slot)
+        SET v_scheduled_time = ADDTIME(IFNULL(v_shift_start, '09:00:00'), SEC_TO_TIME((v_next_serial - 1) * 15 * 60));
+
+        INSERT INTO appointments (
+          patient_uid, doctor_id, hospital_id, requested_date, scheduled_time,
+          serial_no, status, is_emergency, emergency_reason, priority_level
+        ) VALUES (
+          p_patient_uid, p_doctor_id, p_hospital_id, p_date, v_scheduled_time,
+          v_next_serial, 'PENDING', p_is_emergency, p_reason, v_priority
+        );
+
+        SET p_appointment_id = LAST_INSERT_ID();
+        SET p_serial_no = v_next_serial;
+        SET p_priority_level = v_priority;
+
+        COMMIT;
+
+        SELECT 
+          a.appointment_id,
+          a.patient_uid,
+          c.name AS patient_name,
+          a.doctor_id,
+          d.name AS doctor_name,
+          d.specialization,
+          a.hospital_id,
+          h.name AS hospital_name,
+          h.area AS hospital_area,
+          a.requested_date,
+          a.scheduled_time,
+          a.serial_no,
+          a.status,
+          a.is_emergency,
+          a.emergency_reason,
+          a.priority_level,
+          a.applied_at
+        FROM appointments a
+        JOIN citizens c ON a.patient_uid = c.uid
+        JOIN doctors d ON a.doctor_id = d.doctor_id
+        JOIN hospitals h ON a.hospital_id = h.hospital_id
+        WHERE a.appointment_id = p_appointment_id;
       END;
     `);
 
