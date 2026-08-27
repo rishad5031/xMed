@@ -113,6 +113,14 @@ app.get('/ai-chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'ai-chat.html'));
 });
 
+app.get('/blood', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'blood-bank.html'));
+});
+
+app.get('/blood-bank', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'blood-bank.html'));
+});
+
 // =============================================================
 // REST API ROUTES
 // =============================================================

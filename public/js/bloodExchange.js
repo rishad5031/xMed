@@ -85,10 +85,10 @@ async function loadBloodPosts() {
         : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-black blood-donor-badge">DONOR AVAILABLE</span>`;
 
       return `
-        <div class="liquid-card p-5 liquid-hover flex flex-col justify-between space-y-4 animate-liquid-entrance ${isCritical ? 'border-rose-500/40 shadow-rose-900/20' : ''}">
+        <div class="liquid-glass-card p-5.5 flex flex-col justify-between space-y-4 ${isCritical ? 'border-rose-500/50 shadow-rose-900/30' : ''}">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
-              <span class="blood-group-pill text-sm">${post.blood_group}</span>
+              <span class="blood-group-pill text-sm font-black">${post.blood_group}</span>
               <div class="flex items-center gap-1.5">
                 ${urgencyBadge}
                 ${typeBadge}
@@ -107,27 +107,27 @@ async function loadBloodPosts() {
             </div>
 
             ${post.hemoglobin_level ? `
-              <div class="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono inline-block">
-                Hemoglobin: <strong>${post.hemoglobin_level} g/dL</strong> (Verified Safe)
+              <div class="text-xs px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono inline-block">
+                Hemoglobin: <strong>${post.hemoglobin_level} g/dL</strong> (Safe & Verified)
               </div>
             ` : ''}
 
             ${post.notes ? `
-              <div class="text-xs p-2.5 rounded-xl bg-slate-950/40 border border-slate-800 text-slate-300 leading-relaxed italic">
+              <div class="text-xs p-3 rounded-2xl bg-black/20 border border-white/10 text-slate-200 leading-relaxed italic">
                 "${post.notes}"
               </div>
             ` : ''}
           </div>
 
-          <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-            <a href="tel:${post.contact_phone}" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-rose-600/25 transition-all">
+          <div class="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+            <a href="tel:${post.contact_phone}" class="btn-liquid-primary py-2 px-3 text-xs flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
               <span>Call ${post.contact_phone}</span>
             </a>
 
-            <button type="button" onclick="startDirectChat('${post.author_uid}', '${post.author_name}')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1 transition-colors">
+            <button type="button" onclick="startDirectChat('${post.author_uid}', '${post.author_name}')" class="btn-liquid-secondary py-2 px-3 text-xs flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-              <span>Chat</span>
+              <span>Message</span>
             </button>
           </div>
         </div>
@@ -215,13 +215,88 @@ async function handlePublishBloodPost(e) {
   }
 }
 
+function startDirectChat(authorUid, authorName) {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  if (!token || !user) {
+    showLoginRequiredModal('To send a direct message to this donor or requester, please sign in with your xMED account.');
+    return;
+  }
+
+  // If in dashboard, switch to messages tab and open thread
+  if (typeof switchDashboardTab === 'function') {
+    switchDashboardTab('messages');
+    if (typeof openChatThread === 'function') {
+      openChatThread(authorUid, authorName);
+    }
+  } else {
+    // If on public landing page or public blood page, redirect to dashboard
+    window.location.href = '/patient-dashboard?tab=messages&chatWith=' + encodeURIComponent(authorUid);
+  }
+}
+
 function openBloodModal() {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  if (!token || !user) {
+    showLoginRequiredModal('To create a blood request or register as a blood donor, please sign in with your verified xMED account.');
+    return;
+  }
   const modal = document.getElementById('blood-post-modal');
   if (modal) modal.classList.remove('hidden');
 }
 
 function closeBloodModal() {
   const modal = document.getElementById('blood-post-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function showLoginRequiredModal(customMessage) {
+  let modal = document.getElementById('liquid-login-required-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'liquid-login-required-modal';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in';
+    modal.innerHTML = `
+      <div class="liquid-glass-panel p-6 sm:p-8 max-w-md w-full relative space-y-5 text-center">
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/30 border border-emerald-500/40 flex items-center justify-center text-3xl shadow-lg">
+          🔒
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="text-xl font-black text-slate-100 tracking-tight">Authentication Required</h3>
+          <p id="liquid-login-required-msg" class="text-xs text-slate-300 leading-relaxed max-w-xs mx-auto">
+            ${customMessage || 'To request or offer blood, or to message donors directly, please sign in to your xMED account.'}
+          </p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 text-left space-y-1">
+          <div class="font-bold flex items-center gap-1.5">
+            <span>🛡️</span> <span>Public Transparency Notice</span>
+          </div>
+          <p class="text-slate-300">
+            Anyone can freely view, filter, and call emergency contact numbers directly without an account. Posting and messaging require verified authentication to protect clinical safety.
+          </p>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeLoginRequiredModal()" class="btn-liquid-secondary flex-1 py-3 text-xs font-semibold rounded-xl">
+            Dismiss
+          </button>
+          <a href="/login" class="btn-liquid-primary flex-1 py-3 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5">
+            <span>Sign In</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </a>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  } else {
+    const msgEl = document.getElementById('liquid-login-required-msg');
+    if (msgEl && customMessage) msgEl.textContent = customMessage;
+    modal.classList.remove('hidden');
+  }
+}
+
+function closeLoginRequiredModal() {
+  const modal = document.getElementById('liquid-login-required-modal');
   if (modal) modal.classList.add('hidden');
 }
 

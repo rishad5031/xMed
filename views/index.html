@@ -70,9 +70,9 @@
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           Free Govt Drugs
         </a>
-        <a href="/login" class="nav-link transition-colors flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-          Blood Hub
+        <a href="#blood-hub" class="nav-link font-bold flex items-center gap-1.5 transition-colors text-rose-400 hover:text-rose-300">
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+          <span>Blood Bank</span>
         </a>
         <a href="#clinical-blogs" class="nav-link transition-colors">Doctors Insights</a>
         <a href="/ai-assistant" class="nav-mrmed-btn font-bold flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all">
@@ -627,6 +627,122 @@
     </section>
 
     <!-- ========================================================= -->
+    <!-- PUBLIC BLOOD DONATION & REQUEST HUB                       -->
+    <!-- Free & Unrestricted Access for All Citizens               -->
+    <!-- ========================================================= -->
+    <section id="blood-hub" class="py-20 border-t border-slate-800/80 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <!-- Header & Live Telemetry Summary -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              <span>National Blood Exchange &bull; Public Transparency</span>
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight">
+              Voluntary Community Blood Bank
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              Open public access to real-time donor offers, acute clinical emergency requests, and direct hospital contact lines. Anyone can browse and call directly; sign in is required only to post needs or message users.
+            </p>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center gap-3">
+            <button type="button" onclick="openBloodModal()" class="btn-liquid-primary flex items-center gap-2 text-xs cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>Request / Offer Blood</span>
+            </button>
+            <a href="/login" class="btn-liquid-secondary text-xs flex items-center gap-1.5">
+              <span>Sign In to Post</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4 Real-Time Statistics Counters -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="liquid-glass-card p-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl flex-shrink-0">
+              🩸
+            </div>
+            <div>
+              <div id="stat-active-donors" class="text-xl font-black text-slate-100">0</div>
+              <div class="text-[11px] text-slate-400 font-medium">Verified Active Donors</div>
+            </div>
+          </div>
+          <div class="liquid-glass-card p-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-xl flex-shrink-0">
+              🚨
+            </div>
+            <div>
+              <div id="stat-pending-requests" class="text-xl font-black text-rose-400">0</div>
+              <div class="text-[11px] text-slate-400 font-medium">Pending Patient Needs</div>
+            </div>
+          </div>
+          <div class="liquid-glass-card p-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-xl flex-shrink-0">
+              ⚠️
+            </div>
+            <div>
+              <div id="stat-critical-emergencies" class="text-xl font-black text-amber-400">0</div>
+              <div class="text-[11px] text-slate-400 font-medium">Critical Emergencies</div>
+            </div>
+          </div>
+          <div class="liquid-glass-card p-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-xl flex-shrink-0">
+              ✅
+            </div>
+            <div>
+              <div id="stat-fulfilled-donations" class="text-xl font-black text-teal-300">0</div>
+              <div class="text-[11px] text-slate-400 font-medium">Units Fulfilled</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls Bar -->
+        <div class="liquid-glass-panel p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <!-- Type Filter Tabs -->
+          <div class="flex items-center gap-1.5 p-1 bg-black/20 rounded-xl border border-white/5 w-full md:w-auto overflow-x-auto">
+            <button type="button" onclick="setBloodFilter('', this)" class="btn-blood-type-filter px-3.5 py-1.5 rounded-lg text-xs font-bold liquid-tab-active cursor-pointer">
+              All Posts
+            </button>
+            <button type="button" onclick="setBloodFilter('REQUEST', this)" class="btn-blood-type-filter px-3.5 py-1.5 rounded-lg text-xs font-bold opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+              Blood Needed
+            </button>
+            <button type="button" onclick="setBloodFilter('DONATE', this)" class="btn-blood-type-filter px-3.5 py-1.5 rounded-lg text-xs font-bold opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+              Donors Available
+            </button>
+          </div>
+
+          <!-- Blood Group Quick Pills -->
+          <div class="flex items-center gap-1 overflow-x-auto py-1 max-w-full">
+            <button type="button" onclick="setBloodGroupFilter('')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 transition-colors cursor-pointer">All</button>
+            <button type="button" onclick="setBloodGroupFilter('A+')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">A+</button>
+            <button type="button" onclick="setBloodGroupFilter('A-')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">A-</button>
+            <button type="button" onclick="setBloodGroupFilter('B+')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">B+</button>
+            <button type="button" onclick="setBloodGroupFilter('B-')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">B-</button>
+            <button type="button" onclick="setBloodGroupFilter('AB+')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">AB+</button>
+            <button type="button" onclick="setBloodGroupFilter('AB-')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">AB-</button>
+            <button type="button" onclick="setBloodGroupFilter('O+')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">O+</button>
+            <button type="button" onclick="setBloodGroupFilter('O-')" class="px-2 py-1 rounded-lg text-xs font-mono font-bold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors cursor-pointer">O-</button>
+          </div>
+
+          <!-- Area Search Input -->
+          <div class="relative w-full md:w-56">
+            <input type="text" id="blood-search-area" placeholder="Filter by Area (e.g. Uttara)..." class="liquid-input w-full px-3.5 py-2 text-xs outline-none">
+          </div>
+        </div>
+
+        <!-- 50 Live Blood Posts Grid (Loaded Dynamically without login) -->
+        <div id="blood-posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[300px]">
+          <!-- Loaded by bloodExchange.js -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
     <!-- DOCTORS CLINICAL BLOG & INSIGHTS SECTION                  -->
     <!-- ========================================================= -->
     <section id="clinical-blogs" class="py-20 border-t border-slate-800/80 bg-slate-900/20">
@@ -712,10 +828,105 @@
     </div>
   </footer>
 
+  <!-- Modal: Create Blood Post (For authenticated citizens & doctors) -->
+  <div id="blood-post-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md hidden p-4 animate-fade-in overflow-y-auto">
+    <div class="liquid-glass-panel p-6 sm:p-8 max-w-lg w-full relative space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <h3 class="text-base font-black text-slate-100 flex items-center gap-2">
+          <span>🩸</span>
+          <span>Create Blood Bank Post</span>
+        </h3>
+        <button type="button" onclick="closeBloodModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer">✕</button>
+      </div>
+
+      <div id="blood-modal-error" class="hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs"></div>
+
+      <form id="form-create-blood-post" class="space-y-3.5">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Post Purpose</label>
+            <select name="post_type" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+              <option value="REQUEST">Seeking Blood (Request)</option>
+              <option value="DONATE">Offering Blood (Donate)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Blood Group</label>
+            <select name="blood_group" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Urgency Level</label>
+            <select name="urgency" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+              <option value="NORMAL">Normal / Routine</option>
+              <option value="URGENT">Urgent</option>
+              <option value="CRITICAL_EMERGENCY">CRITICAL EMERGENCY</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Bags Needed / Units</label>
+            <input type="number" name="units_needed" min="1" max="10" value="1" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Area / Thana</label>
+            <input type="text" name="area" required placeholder="e.g. Dhanmondi, Uttara" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">City</label>
+            <input type="text" name="city" value="Dhaka" required class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Hospital (Optional)</label>
+            <input type="text" name="hospital_name" placeholder="e.g. Dhanmondi Care Hospital" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">Contact Phone</label>
+            <input type="text" name="contact_phone" required placeholder="+88017..." class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Hemoglobin (If Offering to Donate)</label>
+          <input type="number" step="0.1" name="hemoglobin_level" placeholder="e.g. 13.5 g/dL" class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Clinical Context / Notes</label>
+          <textarea name="notes" rows="2" placeholder="Provide patient condition, surgery time, or donor availability details..." class="w-full px-3.5 py-2.5 text-xs rounded-xl liquid-input"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-white/10">
+          <button type="button" onclick="closeBloodModal()" class="btn-liquid-secondary text-xs cursor-pointer">Cancel</button>
+          <button type="submit" class="btn-liquid-primary text-xs cursor-pointer">
+            Publish Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="/js/theme.js"></script>
   <script src="/js/blog.js"></script>
   <script src="/js/chatbot.js"></script>
   <script src="/js/governmentDrugs.js"></script>
   <script src="/js/publicBooking.js"></script>
+  <script src="/js/bloodExchange.js"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@ async function createPost(req, res) {
     const author_uid = req.user ? req.user.uid : req.body.author_uid;
 
     if (!author_uid) {
-      return res.status(400).json({ success: false, message: 'Author citizen UID is required.' });
+      return res.status(401).json({ success: false, message: 'Authentication required. Please sign in to publish a blood post.' });
     }
 
     const {
