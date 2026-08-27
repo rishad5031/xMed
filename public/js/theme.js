@@ -13,9 +13,11 @@ function applyTheme(theme) {
   if (theme === 'light') {
     html.classList.add('light');
     html.classList.remove('dark');
+    html.setAttribute('data-theme', 'light');
   } else {
     html.classList.add('dark');
     html.classList.remove('light');
+    html.setAttribute('data-theme', 'dark');
   }
   localStorage.setItem('xmed_theme', theme);
   updateThemeToggleButtons(theme);

@@ -7,11 +7,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 /* CSS Variables */
-:root {
+:root, [data-theme="light"] {
+  --color-primary: #092328;
+  --color-secondary: #12544F;
+  --color-accent: #2A835F;
+  --color-tint: #8BBB92;
+  --color-bg: #F8FAF9;
+  --color-surface: #FFFFFF;
+  --color-text-main: #092328;
+  --color-text-muted: #12544F;
+}
+
+/* Dark theme palette (Default) - Preserved Exactly */
+:root, [data-theme="dark"], html.dark {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Dark theme palette (Default) */
   --bg-primary: #020617;
   --bg-surface: rgba(15, 23, 42, 0.78);
   --border-surface: rgba(255, 255, 255, 0.12);
@@ -28,15 +39,24 @@
 }
 
 /* Light Theme Variables */
-html.light {
-  --bg-primary: #f8fafc;
-  --bg-surface: rgba(255, 255, 255, 0.92);
-  --border-surface: rgba(203, 213, 225, 0.95);
-  --border-focus: #0284c7;
-  --text-primary: #0f172a;
-  --text-secondary: #1e293b;
-  --text-muted: #475569;
-  --spotlight-color: rgba(2, 132, 199, 0.07);
+html.light, [data-theme="light"], html[data-theme="light"] {
+  --color-primary: #092328;
+  --color-secondary: #12544F;
+  --color-accent: #2A835F;
+  --color-tint: #8BBB92;
+  --color-bg: #F8FAF9;
+  --color-surface: #FFFFFF;
+  --color-text-main: #092328;
+  --color-text-muted: #12544F;
+
+  --bg-primary: #F8FAF9;
+  --bg-surface: #FFFFFF;
+  --border-surface: rgba(139, 187, 146, 0.45);
+  --border-focus: #2A835F;
+  --text-primary: #092328;
+  --text-secondary: #12544F;
+  --text-muted: #12544F;
+  --spotlight-color: rgba(42, 131, 95, 0.08);
 }
 
 /* Global Reset & Base */
@@ -72,84 +92,282 @@ body.page-ai {
   background-size: cover;
 }
 
-/* Light Mode Overlays for Backgrounds */
-html.light body {
-  background: #f8fafc url('/images/bg-cyan.png') no-repeat center center fixed;
-  background-size: cover;
-  background-blend-mode: overlay;
-  background-color: rgba(248, 250, 252, 0.94);
-  color: #0f172a;
+/* =============================================================
+   xMED SPECIFIED LIGHT MODE DESIGN SYSTEM IMPLEMENTATION
+   ============================================================= */
+
+/* Light Mode Overlays & Clean Surfaces */
+html.light body,
+[data-theme="light"] body {
+  background-color: #F8FAF9 !important;
+  background-image: radial-gradient(circle at 12% 18%, rgba(139, 187, 146, 0.18) 0%, transparent 45%),
+                    radial-gradient(circle at 88% 82%, rgba(42, 131, 95, 0.10) 0%, transparent 50%) !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  color: #092328 !important;
 }
 
-html.light body.page-welcome {
-  background: #faf5ff url('/images/bg-purple.png') no-repeat center center fixed;
-  background-size: cover;
-  background-blend-mode: overlay;
-  background-color: rgba(253, 248, 255, 0.94);
+html.light body.page-welcome,
+[data-theme="light"] body.page-welcome {
+  background-color: #F8FAF9 !important;
+  background-image: radial-gradient(circle at 15% 15%, rgba(139, 187, 146, 0.22) 0%, transparent 45%),
+                    radial-gradient(circle at 85% 85%, rgba(42, 131, 95, 0.12) 0%, transparent 50%) !important;
 }
 
-html.light body.page-ai {
-  background: #fefce8 url('/images/bg-yellow.png') no-repeat center center fixed;
-  background-size: cover;
-  background-blend-mode: overlay;
-  background-color: rgba(254, 252, 232, 0.92);
+html.light body.page-ai,
+[data-theme="light"] body.page-ai {
+  background-color: #F8FAF9 !important;
+  background-image: radial-gradient(circle at 20% 20%, rgba(42, 131, 95, 0.14) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(139, 187, 146, 0.2) 0%, transparent 50%) !important;
+}
+
+/* Glassmorphic Surfaces & Cards in Light Mode */
+html.light .glass-card,
+html.light .glass-card-sm,
+[data-theme="light"] .glass-card,
+[data-theme="light"] .glass-card-sm {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(139, 187, 146, 0.55) !important; /* Soft Sage #8BBB92 border */
+  box-shadow: 0 4px 20px -2px rgba(9, 35, 40, 0.05), 0 2px 6px -1px rgba(9, 35, 40, 0.03) !important;
+  color: #092328 !important;
+}
+
+html.light .glass-card:hover,
+html.light .glass-card-sm:hover,
+[data-theme="light"] .glass-card:hover,
+[data-theme="light"] .glass-card-sm:hover {
+  border-color: #2A835F !important; /* Rich Jade Green */
+  box-shadow: 0 8px 28px -4px rgba(9, 35, 40, 0.10) !important;
+}
+
+/* Navigation Bar in Light Mode */
+html.light .glass-nav,
+html.light header,
+[data-theme="light"] .glass-nav,
+[data-theme="light"] header {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-bottom: 1.5px solid rgba(139, 187, 146, 0.45) !important;
+  box-shadow: 0 2px 14px rgba(9, 35, 40, 0.04) !important;
+}
+
+/* Form Controls & Inputs in Light Mode */
+html.light .glass-input,
+html.light input[type="text"],
+html.light input[type="password"],
+html.light input[type="email"],
+html.light input[type="date"],
+html.light select,
+html.light textarea,
+[data-theme="light"] .glass-input,
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(139, 187, 146, 0.6) !important;
+  color: #092328 !important;
+}
+
+html.light .glass-input:focus,
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus,
+[data-theme="light"] .glass-input:focus,
+[data-theme="light"] input:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] textarea:focus {
+  border-color: #2A835F !important; /* Rich Jade Green focus indicator */
+  box-shadow: 0 0 0 3px rgba(42, 131, 95, 0.22) !important;
+  outline: none !important;
+}
+
+html.light ::placeholder,
+[data-theme="light"] ::placeholder {
+  color: #5c7874 !important;
+}
+
+/* Containers mapped to Crisp Surfaces (#FFFFFF / #F8FAF9) */
+html.light div[class*="bg-slate-950"],
+html.light div[class*="bg-slate-900"],
+[data-theme="light"] div[class*="bg-slate-950"],
+[data-theme="light"] div[class*="bg-slate-900"] {
+  background-color: #FFFFFF !important;
+  border-color: rgba(139, 187, 146, 0.45) !important;
+}
+
+html.light div[class*="bg-slate-800"],
+[data-theme="light"] div[class*="bg-slate-800"] {
+  background-color: #F8FAF9 !important;
+  border-color: rgba(139, 187, 146, 0.4) !important;
+}
+
+html.light *[class*="border-slate-800"],
+html.light *[class*="border-slate-700"],
+[data-theme="light"] *[class*="border-slate-800"],
+[data-theme="light"] *[class*="border-slate-700"] {
+  border-color: rgba(139, 187, 146, 0.45) !important;
 }
 
 /* =============================================================
-   LIGHT MODE CONTRAST & TYPOGRAPHY FIX (NO WASHED-OUT TEXT)
+   LIGHT MODE TYPOGRAPHY & WCAG AA CONTRAST
+   - Deep Cyan (#092328): Primary headers & titles (16.5:1 ratio)
+   - Muted Pine Teal (#12544F): Secondary branding & subtitles (8.7:1 ratio)
+   - Rich Jade Green (#2A835F): Accents, CTAs & badges (4.9:1 ratio)
    ============================================================= */
-html.light .text-slate-400 {
-  color: #475569 !important; /* Rich readable slate-600 */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6,
+html.light .text-white,
+html.light .text-slate-100,
+html.light .text-slate-200,
+html.light .text-slate-300,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] .text-white,
+[data-theme="light"] .text-slate-100,
+[data-theme="light"] .text-slate-200,
+[data-theme="light"] .text-slate-300 {
+  color: #092328 !important;
 }
 
-html.light .text-slate-300 {
-  color: #334155 !important; /* High-contrast slate-700 */
+html.light .text-slate-400,
+html.light .text-slate-500,
+html.light th,
+[data-theme="light"] .text-slate-400,
+[data-theme="light"] .text-slate-500,
+[data-theme="light"] th {
+  color: #12544F !important;
 }
 
-html.light .text-slate-200 {
-  color: #1e293b !important; /* Bold slate-800 */
+html.light .text-sky-400,
+html.light .text-sky-300,
+html.light .text-teal-400,
+html.light .text-cyan-400,
+html.light .text-cyan-300,
+[data-theme="light"] .text-sky-400,
+[data-theme="light"] .text-sky-300,
+[data-theme="light"] .text-teal-400,
+[data-theme="light"] .text-cyan-400,
+[data-theme="light"] .text-cyan-300 {
+  color: #2A835F !important;
 }
 
-html.light .text-slate-100 {
-  color: #0f172a !important; /* Jet black slate-900 */
+/* =============================================================
+   LIGHT MODE BUTTONS & CALL-TO-ACTIONS
+   ============================================================= */
+/* Primary Buttons: Deep Cyan / Slate Teal (#092328) */
+html.light .btn-primary,
+html.light a.bg-gradient-to-r,
+[data-theme="light"] .btn-primary {
+  background: #092328 !important;
+  color: #FFFFFF !important;
+  border-color: #092328 !important;
 }
 
-html.light .text-slate-500 {
-  color: #475569 !important;
+html.light .btn-primary:hover,
+html.light a.bg-gradient-to-r:hover,
+[data-theme="light"] .btn-primary:hover {
+  background: #12544F !important;
+  box-shadow: 0 4px 16px rgba(9, 35, 40, 0.22) !important;
 }
 
-/* Section Grading & Demarcation in Light Mode */
-html.light .glass-card {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border: 1.5px solid #cbd5e1 !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+/* Accent Action & Confirm Buttons: Rich Jade Green (#2A835F) */
+html.light .btn-accent,
+html.light .btn-success,
+html.light #submitBookingBtn,
+html.light button.bg-emerald-600,
+html.light button.bg-emerald-500,
+[data-theme="light"] .btn-accent,
+[data-theme="light"] .btn-success,
+[data-theme="light"] #submitBookingBtn {
+  background: #2A835F !important;
+  color: #FFFFFF !important;
+  border-color: #2A835F !important;
 }
 
-html.light .glass-nav {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border-bottom: 1.5px solid #e2e8f0 !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+html.light .btn-accent:hover,
+html.light #submitBookingBtn:hover,
+html.light button.bg-emerald-600:hover,
+html.light button.bg-emerald-500:hover,
+[data-theme="light"] .btn-accent:hover {
+  background: #1e6347 !important;
+  box-shadow: 0 4px 16px rgba(42, 131, 95, 0.3) !important;
 }
 
-html.light .glass-input {
-  background: #ffffff !important;
-  border: 1.5px solid #cbd5e1 !important;
-  color: #0f172a !important;
-  font-weight: 500 !important;
+/* Secondary Buttons & Tints: Soft Sage / Light Mint (#8BBB92) */
+html.light .btn-secondary,
+html.light a[class*="bg-sky-500/10"],
+html.light a[class*="bg-sky-500/15"],
+html.light a[class*="bg-sky-500/20"],
+html.light button[class*="bg-sky-500/10"],
+html.light button[class*="bg-sky-500/15"],
+html.light button[class*="bg-sky-500/20"],
+html.light button[class*="bg-teal-500/10"],
+[data-theme="light"] .btn-secondary {
+  background: rgba(139, 187, 146, 0.22) !important;
+  border: 1px solid #8BBB92 !important;
+  color: #12544F !important;
 }
 
-html.light .glass-input::placeholder {
-  color: #64748b !important;
+html.light .btn-secondary:hover,
+html.light a[class*="bg-sky-500/10"]:hover,
+html.light a[class*="bg-sky-500/15"]:hover,
+html.light a[class*="bg-sky-500/20"]:hover,
+html.light button[class*="bg-sky-500/10"]:hover,
+html.light button[class*="bg-sky-500/15"]:hover,
+html.light button[class*="bg-sky-500/20"]:hover,
+html.light button[class*="bg-teal-500/10"]:hover,
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(139, 187, 146, 0.38) !important;
+  color: #092328 !important;
 }
 
-html.light div[class*="bg-slate-900"] {
-  background-color: rgba(241, 245, 249, 0.95) !important;
-  border-color: #cbd5e1 !important;
+/* Badges & Status Indicators */
+html.light span[class*="bg-sky-500/10"],
+html.light span[class*="bg-sky-500/15"],
+html.light span[class*="bg-sky-500/20"],
+html.light span[class*="bg-teal-500/10"],
+html.light span[class*="bg-teal-500/15"],
+html.light span[class*="bg-cyan-500/10"],
+html.light span[class*="bg-cyan-500/20"],
+[data-theme="light"] span[class*="bg-sky-500/10"] {
+  background: rgba(139, 187, 146, 0.22) !important;
+  color: #12544F !important;
+  border-color: #8BBB92 !important;
 }
 
-html.light div[class*="bg-slate-800"] {
-  background-color: rgba(226, 232, 240, 0.85) !important;
-  border-color: #cbd5e1 !important;
+html.light span[class*="bg-emerald-500/10"],
+html.light span[class*="bg-emerald-500/15"],
+html.light span[class*="bg-emerald-500/20"],
+[data-theme="light"] span[class*="bg-emerald-500/10"] {
+  background: rgba(42, 131, 95, 0.15) !important;
+  color: #2A835F !important;
+  border-color: rgba(42, 131, 95, 0.35) !important;
+}
+
+/* Emergency Badges & Red Indicators in Light Mode */
+html.light .badge-emergency,
+html.light span[class*="bg-rose-500/15"],
+html.light span[class*="bg-rose-500/20"],
+html.light span[class*="bg-red-500/20"],
+[data-theme="light"] .badge-emergency {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #b91c1c !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Modals & Dialogs */
+html.light #bookingModal > div,
+html.light #modal-self-med > div,
+[data-theme="light"] #bookingModal > div,
+[data-theme="light"] #modal-self-med > div {
+  background: #FFFFFF !important;
+  border: 1.5px solid #8BBB92 !important;
+  box-shadow: 0 24px 60px -10px rgba(9, 35, 40, 0.25) !important;
 }
 
 /* Ambient Radial Glow and Grid */
@@ -251,9 +469,9 @@ html.light div[class*="bg-slate-800"] {
     transition: transform 0.08s ease-out, background-color 0.2s ease;
   }
 
-  html.light #cursor-dot {
-    background: #0284c7;
-    box-shadow: 0 0 8px rgba(2, 132, 199, 0.7);
+  html.light #cursor-dot, [data-theme="light"] #cursor-dot {
+    background: #2A835F;
+    box-shadow: 0 0 8px rgba(42, 131, 95, 0.7);
   }
 
   #cursor-aura {
@@ -274,9 +492,9 @@ html.light div[class*="bg-slate-800"] {
                 background 0.2s ease;
   }
 
-  html.light #cursor-aura {
-    border-color: rgba(2, 132, 199, 0.5);
-    background: radial-gradient(circle, rgba(2, 132, 199, 0.08) 0%, rgba(13, 148, 136, 0) 70%);
+  html.light #cursor-aura, [data-theme="light"] #cursor-aura {
+    border-color: rgba(42, 131, 95, 0.6);
+    background: radial-gradient(circle, rgba(139, 187, 146, 0.22) 0%, rgba(42, 131, 95, 0) 70%);
   }
 
   /* Hover state on interactive elements */

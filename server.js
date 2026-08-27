@@ -106,6 +106,10 @@ app.get('/ai-assistant', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'ai-chat.html'));
 });
 
+app.get('/ai-chat', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'ai-chat.html'));
+});
+
 // =============================================================
 // REST API ROUTES
 // =============================================================

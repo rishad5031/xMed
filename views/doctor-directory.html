@@ -11,7 +11,15 @@
       theme: {
         extend: {
           colors: {
-            brand: { 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1' }
+            brand: { 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1' },
+            lightTheme: {
+              primary: '#092328',
+              secondary: '#12544F',
+              accent: '#2A835F',
+              tint: '#8BBB92',
+              bg: '#F8FAF9',
+              surface: '#FFFFFF'
+            }
           }
         }
       }
@@ -46,11 +54,12 @@
         <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300 font-semibold border border-sky-500/20">Directory</span>
       </a>
 
-      <nav class="flex items-center gap-4 text-xs font-semibold">
+      <nav class="flex items-center gap-3 text-xs font-semibold">
         <a href="/" class="text-slate-400 hover:text-white transition-colors">Home</a>
         <a href="/patient-dashboard" class="text-slate-400 hover:text-sky-400 transition-colors">Patient Vault</a>
         <a href="/doctor-dashboard" class="text-slate-400 hover:text-indigo-400 transition-colors">Doctor Studio</a>
         <a href="/ai-assistant" class="px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all">MR.MED AI</a>
+        <button type="button" class="theme-toggle-btn p-2 rounded-xl glass-card text-slate-300 hover:text-white transition-colors" aria-label="Toggle Theme"></button>
       </nav>
     </div>
   </header>
@@ -206,6 +215,7 @@
     <p>xMED National Healthcare Informatics &bull; Ministry of Health & Family Welfare</p>
   </footer>
 
+  <script src="/js/theme.js"></script>
   <script src="/js/directory.js"></script>
 </body>
 </html>
