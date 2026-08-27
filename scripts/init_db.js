@@ -24,39 +24,108 @@ async function initializeDatabase() {
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
     await connection.query(`USE \`${DB_NAME}\`;`);
 
-    console.log(`[xMED DB Init] Verifying and updating core tables...`);
+    console.log(`[xMED DB Init] Verifying and updating core tables in strict FK dependency order...`);
 
-    // 1. citizens
+    // 1. hospitals
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS citizens (
-        uid VARCHAR(20) PRIMARY KEY,
-        full_name VARCHAR(100) NOT NULL,
-        dob DATE NOT NULL,
-        gender ENUM('Male', 'Female', 'Other') NOT NULL,
-        blood_group ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') NOT NULL,
-        phone VARCHAR(15) UNIQUE NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      CREATE TABLE IF NOT EXISTS hospitals (
+        hospital_id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        area VARCHAR(100) NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        address TEXT NOT NULL,
+        contact_number VARCHAR(20),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        KEY idx_hospital_area (area),
+        KEY idx_hospital_city (city)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 2. doctors
+    // 2. doctors (Enhanced Schema)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS doctors (
         doctor_id INT AUTO_INCREMENT PRIMARY KEY,
-        license_no VARCHAR(50) UNIQUE NOT NULL,
-        full_name VARCHAR(100) NOT NULL,
-        specialization VARCHAR(100) NOT NULL,
-        phone VARCHAR(15) NOT NULL,
+        uid VARCHAR(20) UNIQUE NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        full_name VARCHAR(100) NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
+        phone VARCHAR(20) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
+        license_number VARCHAR(50) UNIQUE NOT NULL,
+        license_no VARCHAR(50) NULL,
+        specialization VARCHAR(100) NOT NULL,
+        hospital_id INT NULL,
+        consultation_fee DECIMAL(10,2) DEFAULT 500.00,
+        working_days VARCHAR(100) DEFAULT 'Sat,Sun,Mon,Tue,Wed',
+        shift_start TIME DEFAULT '09:00:00',
+        shift_end TIME DEFAULT '17:00:00',
+        max_daily_slots INT DEFAULT 20,
+        biography TEXT,
         verified BOOLEAN DEFAULT TRUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_doc_hospital FOREIGN KEY (hospital_id) REFERENCES hospitals(hospital_id) ON DELETE SET NULL ON UPDATE CASCADE,
+        KEY idx_doctor_specialization (specialization),
+        KEY idx_doctor_hospital (hospital_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
-    // 3. medicines
+    // Migrate existing doctors table if needed
+    try {
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS uid VARCHAR(20) NULL;`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS name VARCHAR(100) NULL;`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS license_number VARCHAR(50) NULL;`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS hospital_id INT NULL;`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS consultation_fee DECIMAL(10,2) DEFAULT 500.00;`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS working_days VARCHAR(100) DEFAULT 'Sat,Sun,Mon,Tue,Wed';`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS shift_start TIME DEFAULT '09:00:00';`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS shift_end TIME DEFAULT '17:00:00';`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS max_daily_slots INT DEFAULT 20;`);
+      await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS biography TEXT NULL;`);
+      await connection.query(`UPDATE doctors SET name = full_name WHERE name IS NULL OR name = '';`);
+      await connection.query(`UPDATE doctors SET full_name = name WHERE full_name IS NULL OR full_name = '';`);
+      await connection.query(`UPDATE doctors SET license_number = license_no WHERE license_number IS NULL OR license_number = '';`);
+      await connection.query(`UPDATE doctors SET license_no = license_number WHERE license_no IS NULL OR license_no = '';`);
+      await connection.query(`UPDATE doctors SET uid = CONCAT('DOC-', 1000 + doctor_id) WHERE uid IS NULL OR uid = '';`);
+    } catch (e) {
+      console.log(`[xMED DB Init] Doctor migration notice:`, e.message);
+    }
+
+    // 3. citizens (Patients Schema with Location Details)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS citizens (
+        uid VARCHAR(20) PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        full_name VARCHAR(100) NULL,
+        dob DATE NOT NULL,
+        gender ENUM('Male', 'Female', 'Other') NOT NULL,
+        blood_group ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') NOT NULL,
+        phone VARCHAR(20) UNIQUE NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        area VARCHAR(100) NOT NULL DEFAULT 'Dhanmondi',
+        city VARCHAR(100) NOT NULL DEFAULT 'Dhaka',
+        address TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        KEY idx_citizen_area (area),
+        KEY idx_citizen_city (city),
+        KEY idx_citizen_blood (blood_group)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Migrate existing citizens table if needed
+    try {
+      await connection.query(`ALTER TABLE citizens ADD COLUMN IF NOT EXISTS name VARCHAR(100) NULL;`);
+      await connection.query(`ALTER TABLE citizens ADD COLUMN IF NOT EXISTS area VARCHAR(100) NOT NULL DEFAULT 'Dhanmondi';`);
+      await connection.query(`ALTER TABLE citizens ADD COLUMN IF NOT EXISTS city VARCHAR(100) NOT NULL DEFAULT 'Dhaka';`);
+      await connection.query(`ALTER TABLE citizens ADD COLUMN IF NOT EXISTS address TEXT NULL;`);
+      await connection.query(`UPDATE citizens SET name = full_name WHERE name IS NULL OR name = '';`);
+      await connection.query(`UPDATE citizens SET full_name = name WHERE full_name IS NULL OR full_name = '';`);
+      await connection.query(`UPDATE citizens SET address = CONCAT('House ', SUBSTRING(uid, 9), ', Road 4, ', area, ', ', city) WHERE address IS NULL OR address = '';`);
+    } catch (e) {
+      console.log(`[xMED DB Init] Citizen migration notice:`, e.message);
+    }
+
+    // 4. medicines
     await connection.query(`
       CREATE TABLE IF NOT EXISTS medicines (
         medicine_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -66,24 +135,12 @@ async function initializeDatabase() {
         strength VARCHAR(50) NOT NULL,
         category VARCHAR(50) DEFAULT 'General',
         origin VARCHAR(50) DEFAULT 'Global',
+        total_prescribed_count INT DEFAULT 0,
         FULLTEXT INDEX ft_medicine (brand_name, generic_name)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // Alter column to VARCHAR(50) if it was previously an ENUM
-    try {
-      await connection.query(`ALTER TABLE medicines MODIFY COLUMN dosage_form VARCHAR(50) NOT NULL;`);
-    } catch (e) {}
-
-    // Ensure category and origin columns exist
-    try {
-      await connection.query(`ALTER TABLE medicines ADD COLUMN category VARCHAR(50) DEFAULT 'General';`);
-    } catch (e) {}
-    try {
-      await connection.query(`ALTER TABLE medicines ADD COLUMN origin VARCHAR(50) DEFAULT 'Global';`);
-    } catch (e) {}
-
-    // 4. prescriptions
+    // 5. prescriptions
     await connection.query(`
       CREATE TABLE IF NOT EXISTS prescriptions (
         prescription_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,7 +154,7 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 5. prescription_items
+    // 6. prescription_items
     await connection.query(`
       CREATE TABLE IF NOT EXISTS prescription_items (
         item_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -110,7 +167,32 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 6. diagnostic_reports
+    // 7. appointments (Priority & Emergency FCFS Table)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS appointments (
+        appointment_id INT AUTO_INCREMENT PRIMARY KEY,
+        patient_uid VARCHAR(20) NOT NULL,
+        doctor_id INT NOT NULL,
+        hospital_id INT NOT NULL,
+        requested_date DATE NOT NULL,
+        scheduled_time TIME NULL,
+        serial_no INT NULL,
+        status ENUM('PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED', 'CANCELLED') DEFAULT 'PENDING',
+        is_emergency BOOLEAN DEFAULT FALSE,
+        emergency_reason TEXT NULL,
+        priority_level INT DEFAULT 1,
+        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT fk_apt_patient FOREIGN KEY (patient_uid) REFERENCES citizens(uid) ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT fk_apt_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        CONSTRAINT fk_apt_hospital FOREIGN KEY (hospital_id) REFERENCES hospitals(hospital_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        KEY idx_apt_patient (patient_uid),
+        KEY idx_apt_doctor (doctor_id),
+        KEY idx_apt_hospital (hospital_id),
+        KEY idx_apt_date_status_pri (requested_date, status, priority_level)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 8. diagnostic_reports
     await connection.query(`
       CREATE TABLE IF NOT EXISTS diagnostic_reports (
         report_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,7 +204,7 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 6.1 patient_self_medications (Self-Reported / Emergency OTC Medications)
+    // 9. patient_self_medications (Self-Reported / Emergency OTC Medications)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS patient_self_medications (
         log_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -136,7 +218,7 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 7. blogs
+    // 10. blogs
     await connection.query(`
       CREATE TABLE IF NOT EXISTS blogs (
         blog_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -268,6 +350,34 @@ async function initializeDatabase() {
             'clinical_notes', NEW.clinical_notes
           )
         );
+      END;
+    `);
+
+    // Trigger 4: Compatibility Trigger for Doctors
+    await connection.query(`DROP TRIGGER IF EXISTS trg_doctors_compat_bi;`);
+    await connection.query(`
+      CREATE TRIGGER trg_doctors_compat_bi
+      BEFORE INSERT ON doctors
+      FOR EACH ROW
+      BEGIN
+        IF NEW.name IS NULL AND NEW.full_name IS NOT NULL THEN SET NEW.name = NEW.full_name; END IF;
+        IF NEW.full_name IS NULL AND NEW.name IS NOT NULL THEN SET NEW.full_name = NEW.name; END IF;
+        IF NEW.license_number IS NULL AND NEW.license_no IS NOT NULL THEN SET NEW.license_number = NEW.license_no; END IF;
+        IF NEW.license_no IS NULL AND NEW.license_number IS NOT NULL THEN SET NEW.license_no = NEW.license_number; END IF;
+        IF NEW.uid IS NULL THEN SET NEW.uid = CONCAT('DOC-', FLOOR(1000 + RAND() * 8999)); END IF;
+      END;
+    `);
+
+    // Trigger 5: Compatibility Trigger for Citizens
+    await connection.query(`DROP TRIGGER IF EXISTS trg_citizens_compat_bi;`);
+    await connection.query(`
+      CREATE TRIGGER trg_citizens_compat_bi
+      BEFORE INSERT ON citizens
+      FOR EACH ROW
+      BEGIN
+        IF NEW.name IS NULL AND NEW.full_name IS NOT NULL THEN SET NEW.name = NEW.full_name; END IF;
+        IF NEW.full_name IS NULL AND NEW.name IS NOT NULL THEN SET NEW.full_name = NEW.name; END IF;
+        IF NEW.address IS NULL THEN SET NEW.address = CONCAT('House ', SUBSTRING(NEW.uid, 9), ', Road 4, ', IFNULL(NEW.area, 'Dhanmondi'), ', ', IFNULL(NEW.city, 'Dhaka')); END IF;
       END;
     `);
 

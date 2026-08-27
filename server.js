@@ -14,6 +14,8 @@ const prescriptionController = require('./controllers/prescriptionController');
 const blogController = require('./controllers/blogController');
 const aiController = require('./controllers/aiController');
 const analyticsController = require('./controllers/analyticsController');
+const hospitalController = require('./controllers/hospitalController');
+const appointmentController = require('./controllers/appointmentController');
 const aiRoutes = require('./routes/aiRoutes');
 const { authenticateToken, isDoctor, isPatient } = require('./middleware/authMiddleware');
 const upload = require('./middleware/uploadMiddleware');
@@ -142,6 +144,16 @@ app.get('/api/analytics/prescriptions-joined', analyticsController.getPrescripti
 app.get('/api/analytics/citizens-reports-left-join', analyticsController.getCitizensReportsLeftJoin);
 app.get('/api/analytics/complete-patient-history/:uid', analyticsController.getPatientHistoryFromView);
 app.get('/api/patients/:uid/history', analyticsController.getPatientUnifiedHistory);
+
+// --- Hospital & Doctor Directory ---
+app.get('/api/hospitals', hospitalController.getHospitals);
+app.get('/api/hospitals/:id', hospitalController.getHospitalById);
+
+// --- Priority & Emergency FCFS Appointments ---
+app.post('/api/appointments', authenticateToken, appointmentController.createAppointment);
+app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
+app.get('/api/appointments/:id', authenticateToken, appointmentController.getAppointmentById);
+app.put('/api/appointments/:id/status', authenticateToken, isDoctor, appointmentController.updateAppointmentStatus);
 
 // --- Clinical Blogs ---
 app.get('/api/blogs', blogController.getBlogs);
