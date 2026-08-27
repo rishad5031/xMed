@@ -166,6 +166,7 @@ async function registerDoctor(req, res) {
 
     const token = createToken({
       id: newDoctor.doctor_id,
+      doctor_id: newDoctor.doctor_id,
       license_no: newDoctor.license_no,
       full_name: newDoctor.full_name,
       email: newDoctor.email,
@@ -218,6 +219,7 @@ async function loginDoctor(req, res) {
 
     const token = createToken({
       id: doctor.doctor_id,
+      doctor_id: doctor.doctor_id,
       license_no: doctor.license_no,
       full_name: doctor.full_name,
       email: doctor.email,

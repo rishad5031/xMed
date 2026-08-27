@@ -85,7 +85,7 @@ async function getAppointments(req, res) {
     if (req.user && req.user.role === 'patient') {
       filter.patient_uid = req.user.uid;
     } else if (req.user && req.user.role === 'doctor') {
-      filter.doctor_id = req.user.doctor_id;
+      filter.doctor_id = req.user.doctor_id || req.user.id;
     }
 
     const data = await appointmentModel.getAppointments(filter);

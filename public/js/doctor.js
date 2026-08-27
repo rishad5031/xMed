@@ -657,9 +657,16 @@ async function loadDoctorTriageQueue() {
 
       renderEmergencyTriage(emergList, emergencies);
       renderRegularTriage(regList, regulars);
+    } else {
+      emergList.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">No pending emergency visits.</div>';
+      regList.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">No pending queue requests.</div>';
+      if (emergCountEl) emergCountEl.textContent = '0';
+      if (regCountEl) regCountEl.textContent = '0';
     }
   } catch (err) {
     console.error('Error loading triage queue:', err);
+    emergList.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">No pending emergency visits.</div>';
+    regList.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">No pending queue requests.</div>';
   }
 }
 
@@ -829,4 +836,13 @@ function selectPatientForPrescription(patientUid) {
     if (searchBtn) searchBtn.click();
     window.scrollTo({ top: searchInput.offsetTop - 100, behavior: 'smooth' });
   }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
