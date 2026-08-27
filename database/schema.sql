@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `citizens` (
   `address` TEXT NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `pk_citizens` PRIMARY KEY (`uid`),
-  CONSTRAINT `chk_citizen_dob` CHECK (`dob` >= '1900-01-01'),
+  CONSTRAINT `chk_citizen_dob` CHECK (`dob` >= '1900-01-01' AND `dob` <= CURRENT_DATE),
   KEY `idx_citizen_area` (`area`),
   KEY `idx_citizen_city` (`city`),
   KEY `idx_citizen_blood` (`blood_group`)
@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `medicines` (
   `generic_name` VARCHAR(100) NOT NULL,
   `dosage_form` VARCHAR(50) NOT NULL,
   `strength` VARCHAR(50) NOT NULL,
+  `manufacturer` VARCHAR(150) DEFAULT 'Essential Drugs Co. Ltd. (EDCL)',
   `category` VARCHAR(50) DEFAULT 'General',
   `origin` VARCHAR(50) DEFAULT 'Global',
   `total_prescribed_count` INT DEFAULT 0,
@@ -106,6 +107,8 @@ CREATE TABLE IF NOT EXISTS `prescriptions` (
   `doctor_id` INT NOT NULL,
   `diagnosis` TEXT NOT NULL,
   `clinical_notes` TEXT,
+  `prescription_date` DATE DEFAULT (CURRENT_DATE),
+  `qr_code_token` VARCHAR(255) NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `pk_prescriptions` PRIMARY KEY (`prescription_id`),
   CONSTRAINT `fk_prescriptions_patient` FOREIGN KEY (`patient_uid`) 
@@ -121,8 +124,11 @@ CREATE TABLE IF NOT EXISTS `prescription_items` (
   `item_id` INT AUTO_INCREMENT NOT NULL,
   `prescription_id` INT NOT NULL,
   `medicine_id` INT NOT NULL,
-  `dosage_instruction` VARCHAR(100) NOT NULL,
+  `dosage` VARCHAR(50) NULL,
+  `frequency` VARCHAR(50) NULL,
   `duration` VARCHAR(50) NOT NULL,
+  `instructions` TEXT NULL,
+  `dosage_instruction` VARCHAR(100) NULL,
   CONSTRAINT `pk_prescription_items` PRIMARY KEY (`item_id`),
   CONSTRAINT `fk_items_prescription` FOREIGN KEY (`prescription_id`) 
     REFERENCES `prescriptions`(`prescription_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -147,6 +153,7 @@ CREATE TABLE IF NOT EXISTS `appointments` (
   `emergency_reason` TEXT NULL,
   `priority_level` INT DEFAULT 1, -- 1: Regular FCFS, 2: Patient Emergency, 3: Doctor-Approved Emergency
   `applied_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `pk_appointments` PRIMARY KEY (`appointment_id`),
   CONSTRAINT `fk_apt_patient` FOREIGN KEY (`patient_uid`) 
     REFERENCES `citizens`(`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -183,7 +190,11 @@ CREATE TABLE IF NOT EXISTS `diagnostic_reports` (
   `report_id` INT AUTO_INCREMENT NOT NULL,
   `patient_uid` VARCHAR(20) NOT NULL,
   `test_name` VARCHAR(150) NOT NULL,
+  `lab_name` VARCHAR(150) NULL DEFAULT 'Central Pathology Laboratory',
   `report_file_url` VARCHAR(255) NOT NULL,
+  `extracted_summary` TEXT NULL,
+  `report_date` DATE NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `uploaded_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `pk_diagnostic_reports` PRIMARY KEY (`report_id`),
   CONSTRAINT `fk_reports_patient` FOREIGN KEY (`patient_uid`) 
@@ -390,4 +401,251 @@ ON `diagnostic_reports`(`patient_uid`, `uploaded_at` DESC);
 -- Full-Text Index on medicines for high-speed natural language search:
 CREATE FULLTEXT INDEX IF NOT EXISTS `idx_ft_medicines` 
 ON `medicines`(`brand_name`, `generic_name`);
+
+-- =============================================================
+-- 20. TRIGGERS & CONSTRAINTS (ALLERGY SAFETY & AUDITING)
+-- =============================================================
+
+DELIMITER $$
+
+-- Trigger 1: Pre-Insert Allergy Safety Guard on prescription_items
+DROP TRIGGER IF EXISTS `trg_check_allergy_before_prescribe`$$
+CREATE TRIGGER `trg_check_allergy_before_prescribe`
+BEFORE INSERT ON `prescription_items`
+FOR EACH ROW
+BEGIN
+  DECLARE v_patient_uid VARCHAR(20);
+  DECLARE v_severe_count INT DEFAULT 0;
+
+  SELECT patient_uid INTO v_patient_uid
+  FROM prescriptions
+  WHERE prescription_id = NEW.prescription_id
+  LIMIT 1;
+
+  IF v_patient_uid IS NOT NULL THEN
+    SELECT COUNT(*) INTO v_severe_count
+    FROM patient_allergies pa
+    JOIN medicine_allergens ma ON pa.allergen_id = ma.allergen_id
+    WHERE pa.patient_uid = v_patient_uid
+      AND ma.medicine_id = NEW.medicine_id
+      AND pa.severity = 'SEVERE';
+
+    IF v_severe_count > 0 THEN
+      SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'ALLERGY CONFLICT: Medicine contains allergen patient is severely allergic to.';
+    END IF;
+  END IF;
+END$$
+
+-- Trigger 2: Audit Citizens Updates
+DROP TRIGGER IF EXISTS `trg_audit_citizens_update`$$
+CREATE TRIGGER `trg_audit_citizens_update`
+AFTER UPDATE ON `citizens`
+FOR EACH ROW
+BEGIN
+  INSERT INTO `system_audit_logs` (table_name, action_type, record_id, performed_by, old_data, new_data)
+  VALUES (
+    'citizens',
+    'UPDATE',
+    NEW.uid,
+    'SYSTEM',
+    JSON_OBJECT('name', OLD.name, 'phone', OLD.phone, 'email', OLD.email, 'area', OLD.area, 'city', OLD.city),
+    JSON_OBJECT('name', NEW.name, 'phone', NEW.phone, 'email', NEW.email, 'area', NEW.area, 'city', NEW.city)
+  );
+END$$
+
+-- Trigger 3: Audit Citizens Deletions
+DROP TRIGGER IF EXISTS `trg_audit_citizens_delete`$$
+CREATE TRIGGER `trg_audit_citizens_delete`
+AFTER DELETE ON `citizens`
+FOR EACH ROW
+BEGIN
+  INSERT INTO `system_audit_logs` (table_name, action_type, record_id, performed_by, old_data, new_data)
+  VALUES (
+    'citizens',
+    'DELETE',
+    OLD.uid,
+    'SYSTEM',
+    JSON_OBJECT('name', OLD.name, 'phone', OLD.phone, 'email', OLD.email, 'area', OLD.area, 'city', OLD.city),
+    NULL
+  );
+END$$
+
+-- Trigger 4: Audit Prescriptions Updates
+DROP TRIGGER IF EXISTS `trg_audit_prescriptions_update`$$
+CREATE TRIGGER `trg_audit_prescriptions_update`
+AFTER UPDATE ON `prescriptions`
+FOR EACH ROW
+BEGIN
+  INSERT INTO `system_audit_logs` (table_name, action_type, record_id, performed_by, old_data, new_data)
+  VALUES (
+    'prescriptions',
+    'UPDATE',
+    CAST(NEW.prescription_id AS CHAR),
+    'DOCTOR',
+    JSON_OBJECT('patient_uid', OLD.patient_uid, 'doctor_id', OLD.doctor_id, 'diagnosis', OLD.diagnosis),
+    JSON_OBJECT('patient_uid', NEW.patient_uid, 'doctor_id', NEW.doctor_id, 'diagnosis', NEW.diagnosis)
+  );
+END$$
+
+-- Trigger 5: Audit Prescriptions Deletions
+DROP TRIGGER IF EXISTS `trg_audit_prescriptions_delete`$$
+CREATE TRIGGER `trg_audit_prescriptions_delete`
+AFTER DELETE ON `prescriptions`
+FOR EACH ROW
+BEGIN
+  INSERT INTO `system_audit_logs` (table_name, action_type, record_id, performed_by, old_data, new_data)
+  VALUES (
+    'prescriptions',
+    'DELETE',
+    CAST(OLD.prescription_id AS CHAR),
+    'DOCTOR',
+    JSON_OBJECT('patient_uid', OLD.patient_uid, 'doctor_id', OLD.doctor_id, 'diagnosis', OLD.diagnosis),
+    NULL
+  );
+END$$
+
+-- Trigger 6: Audit Appointments Updates
+DROP TRIGGER IF EXISTS `trg_audit_appointments_update`$$
+CREATE TRIGGER `trg_audit_appointments_update`
+AFTER UPDATE ON `appointments`
+FOR EACH ROW
+BEGIN
+  INSERT INTO `system_audit_logs` (table_name, action_type, record_id, performed_by, old_data, new_data)
+  VALUES (
+    'appointments',
+    'UPDATE',
+    CAST(NEW.appointment_id AS CHAR),
+    'SYSTEM',
+    JSON_OBJECT('status', OLD.status, 'priority_level', OLD.priority_level, 'serial_no', OLD.serial_no),
+    JSON_OBJECT('status', NEW.status, 'priority_level', NEW.priority_level, 'serial_no', NEW.serial_no)
+  );
+END$$
+
+-- Trigger 7: Audit Appointments Deletions
+DROP TRIGGER IF EXISTS `trg_audit_appointments_delete`$$
+CREATE TRIGGER `trg_audit_appointments_delete`
+AFTER DELETE ON `appointments`
+FOR EACH ROW
+BEGIN
+  INSERT INTO `system_audit_logs` (table_name, action_type, record_id, performed_by, old_data, new_data)
+  VALUES (
+    'appointments',
+    'DELETE',
+    CAST(OLD.appointment_id AS CHAR),
+    'SYSTEM',
+    JSON_OBJECT('status', OLD.status, 'priority_level', OLD.priority_level, 'serial_no', OLD.serial_no),
+    NULL
+  );
+END$$
+
+-- =============================================================
+-- 21. STORED PROCEDURES (ATOMIC BOOKING & CONCURRENCY CONTROL)
+-- =============================================================
+
+DROP PROCEDURE IF EXISTS `sp_book_appointment`$$
+CREATE PROCEDURE `sp_book_appointment`(
+  IN p_patient_uid VARCHAR(20),
+  IN p_doctor_id INT,
+  IN p_hospital_id INT,
+  IN p_date DATE,
+  IN p_is_emergency BOOLEAN,
+  IN p_reason TEXT,
+  OUT p_appointment_id INT,
+  OUT p_serial_no INT,
+  OUT p_priority_level INT
+)
+BEGIN
+  DECLARE v_doc_exists INT DEFAULT 0;
+  DECLARE v_next_serial INT DEFAULT 1;
+  DECLARE v_priority INT DEFAULT 1;
+  DECLARE v_scheduled_time TIME DEFAULT NULL;
+  DECLARE v_shift_start TIME DEFAULT '09:00:00';
+  DECLARE v_max_daily_slots INT DEFAULT 20;
+  DECLARE v_current_booked INT DEFAULT 0;
+
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    ROLLBACK;
+    RESIGNAL;
+  END;
+
+  START TRANSACTION;
+
+  -- Concurrency Row-Locking on Doctor Record
+  SELECT doctor_id, shift_start, max_daily_slots
+  INTO v_doc_exists, v_shift_start, v_max_daily_slots
+  FROM doctors
+  WHERE doctor_id = p_doctor_id
+  FOR UPDATE;
+
+  IF v_doc_exists IS NULL OR v_doc_exists = 0 THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid doctor_id specified for appointment.';
+  END IF;
+
+  IF p_is_emergency THEN
+    SET v_priority = 2;
+  ELSE
+    SET v_priority = 1;
+  END IF;
+
+  -- Count currently booked appointments for this doctor on requested date
+  SELECT COUNT(*) INTO v_current_booked
+  FROM appointments
+  WHERE doctor_id = p_doctor_id 
+    AND requested_date = p_date
+    AND status IN ('PENDING', 'ACCEPTED');
+
+  IF NOT p_is_emergency AND v_current_booked >= IFNULL(v_max_daily_slots, 20) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Doctor daily capacity reached for the requested date.';
+  END IF;
+
+  -- Compute next sequential serial number
+  SELECT IFNULL(MAX(serial_no), 0) + 1 INTO v_next_serial
+  FROM appointments
+  WHERE doctor_id = p_doctor_id AND requested_date = p_date;
+
+  -- Estimate scheduled appointment time based on slot queue (15 mins/slot)
+  SET v_scheduled_time = ADDTIME(IFNULL(v_shift_start, '09:00:00'), SEC_TO_TIME((v_next_serial - 1) * 15 * 60));
+
+  INSERT INTO appointments (
+    patient_uid, doctor_id, hospital_id, requested_date, scheduled_time,
+    serial_no, status, is_emergency, emergency_reason, priority_level
+  ) VALUES (
+    p_patient_uid, p_doctor_id, p_hospital_id, p_date, v_scheduled_time,
+    v_next_serial, 'PENDING', p_is_emergency, p_reason, v_priority
+  );
+
+  SET p_appointment_id = LAST_INSERT_ID();
+  SET p_serial_no = v_next_serial;
+  SET p_priority_level = v_priority;
+
+  COMMIT;
+
+  SELECT 
+    a.appointment_id,
+    a.patient_uid,
+    c.name AS patient_name,
+    a.doctor_id,
+    d.name AS doctor_name,
+    d.specialization,
+    a.hospital_id,
+    h.name AS hospital_name,
+    h.area AS hospital_area,
+    a.requested_date,
+    a.scheduled_time,
+    a.serial_no,
+    a.status,
+    a.is_emergency,
+    a.emergency_reason,
+    a.priority_level,
+    a.applied_at
+  FROM appointments a
+  JOIN citizens c ON a.patient_uid = c.uid
+  JOIN doctors d ON a.doctor_id = d.doctor_id
+  JOIN hospitals h ON a.hospital_id = h.hospital_id
+  WHERE a.appointment_id = p_appointment_id;
+END$$
+
+DELIMITER ;
 

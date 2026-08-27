@@ -180,10 +180,91 @@ async function updateAppointmentStatus(appointment_id, { status, scheduled_time,
   return await getAppointmentById(appointment_id);
 }
 
+async function getDoctorAppointmentQueue(doctorId, status = 'PENDING') {
+  let sql = `
+    SELECT 
+      a.appointment_id,
+      a.patient_uid,
+      c.name AS patient_name,
+      c.phone AS patient_phone,
+      c.blood_group AS patient_blood_group,
+      c.dob AS patient_dob,
+      c.gender AS patient_gender,
+      a.doctor_id,
+      d.name AS doctor_name,
+      d.specialization,
+      a.hospital_id,
+      h.name AS hospital_name,
+      a.requested_date,
+      a.scheduled_time,
+      a.serial_no,
+      a.status,
+      a.is_emergency,
+      a.emergency_reason,
+      a.priority_level,
+      a.applied_at
+    FROM appointments a
+    JOIN citizens c ON a.patient_uid = c.uid
+    JOIN doctors d ON a.doctor_id = d.doctor_id
+    JOIN hospitals h ON a.hospital_id = h.hospital_id
+    WHERE a.doctor_id = ?
+  `;
+  const params = [doctorId];
+  if (status && status !== 'ALL') {
+    sql += ' AND a.status = ?';
+    params.push(status);
+  }
+  sql += ' ORDER BY a.priority_level DESC, a.applied_at ASC;';
+  return await query(sql, params);
+}
+
+async function decideAppointment(appointmentId, { action, notes, priority_level }) {
+  const [apt] = await query('SELECT * FROM appointments WHERE appointment_id = ?;', [appointmentId]);
+  if (!apt) return null;
+
+  let newStatus = apt.status;
+  let newPriority = priority_level || apt.priority_level;
+  let serialNo = apt.serial_no;
+
+  if (action === 'ACCEPT') {
+    newStatus = 'ACCEPTED';
+    if (!serialNo) {
+      const [maxSer] = await query(
+        'SELECT IFNULL(MAX(serial_no), 0) + 1 AS next_ser FROM appointments WHERE doctor_id = ? AND requested_date = ?;',
+        [apt.doctor_id, apt.requested_date]
+      );
+      serialNo = maxSer ? maxSer.next_ser : 1;
+    }
+  } else if (action === 'REJECT') {
+    newStatus = 'REJECTED';
+  } else if (action === 'EMERGENCY_PRIORITY' || action === 'EMERGENCY') {
+    newStatus = 'ACCEPTED';
+    newPriority = 3; // Elevated Doctor Emergency
+    if (!serialNo) {
+      const [maxSer] = await query(
+        'SELECT IFNULL(MAX(serial_no), 0) + 1 AS next_ser FROM appointments WHERE doctor_id = ? AND requested_date = ?;',
+        [apt.doctor_id, apt.requested_date]
+      );
+      serialNo = maxSer ? maxSer.next_ser : 1;
+    }
+  }
+
+  await query(
+    `UPDATE appointments 
+     SET status = ?, priority_level = ?, serial_no = ?, emergency_reason = COALESCE(?, emergency_reason)
+     WHERE appointment_id = ?;`,
+    [newStatus, newPriority, serialNo, notes || null, appointmentId]
+  );
+
+  return await getAppointmentById(appointmentId);
+}
+
 module.exports = {
   createAppointment,
   bookAppointmentViaProcedure,
   getAppointmentById,
   getAppointments,
-  updateAppointmentStatus
+  updateAppointmentStatus,
+  getDoctorAppointmentQueue,
+  decideAppointment
 };

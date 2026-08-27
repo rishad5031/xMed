@@ -1,6 +1,6 @@
 const { query } = require('../config/db');
 
-async function getAllBlogs({ search, category } = {}) {
+async function getAllBlogs({ search, category, tag } = {}) {
   // Query health_blogs first with doctor details
   let sql = `
     SELECT 
@@ -24,6 +24,11 @@ async function getAllBlogs({ search, category } = {}) {
   if (category && category !== 'All') {
     sql += ' AND LOWER(hb.category) LIKE LOWER(?)';
     params.push(`%${category.trim()}%`);
+  }
+
+  if (tag && tag.trim()) {
+    sql += ' AND LOWER(hb.tags) LIKE LOWER(?)';
+    params.push(`%${tag.trim()}%`);
   }
 
   if (search && search.trim()) {

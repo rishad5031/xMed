@@ -188,49 +188,51 @@ function filterAndRenderDoctors() {
   }
 
   grid.innerHTML = filtered.map(d => `
-    <div class="glass-card-sm rounded-2xl p-5 flex flex-col justify-between hover:border-sky-500/40 transition-all group">
-      <div>
+    <div class="liquid-glass-card p-6 flex flex-col justify-between space-y-4">
+      <div class="space-y-3">
         <!-- Doctor Top Row -->
-        <div class="flex items-start justify-between gap-3 mb-3">
+        <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-white text-xs shadow-md shadow-sky-500/20">
-              Dr
+            <div class="w-11 h-11 rounded-2xl brand-emblem-ring p-0.5 shadow-md flex-shrink-0">
+              <div class="w-full h-full brand-emblem-bg rounded-[14px] flex items-center justify-center font-black brand-emblem-icon text-xs">
+                MD
+              </div>
             </div>
             <div>
               <div class="flex items-center gap-1.5">
-                <h3 class="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">${escapeHtml(d.name)}</h3>
-                <svg class="w-3.5 h-3.5 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
+                <h3 class="text-sm font-bold text-slate-100">${escapeHtml(d.name)}</h3>
+                <svg class="w-3.5 h-3.5 text-teal-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                 </svg>
               </div>
-              <span class="text-[11px] font-semibold text-sky-400">${escapeHtml(d.specialization)}</span>
+              <span class="text-[11px] font-semibold text-teal-400">${escapeHtml(d.specialization)}</span>
             </div>
           </div>
-          <span class="text-[10px] font-bold text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+          <span class="text-[11px] font-bold text-emerald-300 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-sm">
             ৳ ${parseFloat(d.consultation_fee || 500).toFixed(0)}
           </span>
         </div>
 
         <!-- Hospital Info -->
-        <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mb-2">
-          <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-[11px] text-slate-300 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
           </svg>
-          <span class="truncate font-medium text-slate-300">${escapeHtml(d.hospital_name)}</span>
-          <span class="text-slate-500">&bull; ${escapeHtml(d.hospital_area)}</span>
+          <span class="truncate font-medium text-slate-200">${escapeHtml(d.hospital_name)}</span>
+          <span class="text-slate-400">&bull; ${escapeHtml(d.hospital_area)}</span>
         </div>
 
         <!-- Schedule & Shifts -->
-        <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mb-3">
-          <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-[11px] text-slate-300 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <span>${escapeHtml(d.working_days || 'Sat-Wed')}</span>
-          <span class="text-slate-500">&bull; ${d.shift_start ? d.shift_start.slice(0,5) : '09:00'} - ${d.shift_end ? d.shift_end.slice(0,5) : '17:00'}</span>
+          <span class="text-slate-400">&bull; ${d.shift_start ? d.shift_start.slice(0,5) : '09:00'} - ${d.shift_end ? d.shift_end.slice(0,5) : '17:00'}</span>
         </div>
 
         <!-- Biography snippet -->
-        <p class="text-[11px] text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+        <p class="text-[11px] text-slate-300 line-clamp-2 leading-relaxed">
           ${escapeHtml(d.biography || 'Consultant Specialist offering comprehensive outpatient diagnostic evaluations and treatment management.')}
         </p>
       </div>
@@ -238,7 +240,7 @@ function filterAndRenderDoctors() {
       <!-- Book Visit Action -->
       <button 
         onclick="openBookingModal(${d.doctor_id}, ${d.hospital_id}, '${escapeQuote(d.name)}', '${escapeQuote(d.specialization)}', '${escapeQuote(d.hospital_name)}')"
-        class="w-full py-2 px-3 rounded-xl bg-sky-500/15 hover:bg-sky-500 text-sky-300 hover:text-white border border-sky-500/30 hover:border-sky-500 text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+        class="btn-liquid-primary w-full py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
       >
         <span>Book Appointment</span>
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -12,41 +12,44 @@
 
 /* --- Light Mode Liquid Glass --- */
 :root, [data-theme="light"], html.light {
-  --app-bg: radial-gradient(at 0% 0%, #EBF4F1 0px, transparent 50%),
-            radial-gradient(at 100% 0%, #E3EFEA 0px, transparent 50%),
-            radial-gradient(at 50% 100%, #DEECE6 0px, transparent 50%),
-            #F2F7F5;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Helvetica Neue", sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  /* Glass Surface: High-refraction milky crystal */
-  --glass-surface: rgba(255, 255, 255, 0.72);
-  --glass-surface-elevated: rgba(255, 255, 255, 0.86);
-  --glass-surface-hover: rgba(255, 255, 255, 0.92);
+  /* Ambient Canvas: Soft multi-chromatic mesh over #F5F5F7 */
+  --app-bg: radial-gradient(at 0% 0%, rgba(42, 131, 95, 0.08) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(18, 84, 79, 0.06) 0px, transparent 50%),
+            radial-gradient(at 50% 100%, rgba(139, 187, 146, 0.12) 0px, transparent 50%),
+            #F5F5F7;
 
-  /* Inner Light Catch (Top/Left Specular Highlight) */
-  --glass-border: rgba(255, 255, 255, 0.85);
-  --glass-inner-bevel: inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
-                       inset 0 -1px 1px 0 rgba(9, 35, 40, 0.04);
+  /* Glass Surface: Translucent with Apple refraction */
+  --glass-surface: rgba(255, 255, 255, 0.55);
+  --glass-surface-elevated: rgba(255, 255, 255, 0.75);
+  --glass-surface-hover: rgba(255, 255, 255, 0.85);
 
-  /* Deep Physical Ambient Shadow */
-  --glass-shadow-sm: 0 4px 16px -2px rgba(9, 35, 40, 0.06), 0 2px 6px -1px rgba(9, 35, 40, 0.04);
-  --glass-shadow-md: 0 12px 32px -4px rgba(9, 35, 40, 0.08), 0 4px 12px -2px rgba(9, 35, 40, 0.04);
-  --glass-shadow-lg: 0 24px 60px -8px rgba(9, 35, 40, 0.12), 0 8px 24px -4px rgba(9, 35, 40, 0.06);
+  /* Inner Specular Bevel & Catchlight */
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.90),
+                       inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
 
-  /* Brand Palette (Solid, High-Contrast Text) */
-  --text-primary: #092328;
+  /* Deep Ambient Diffraction Drop Shadows */
+  --glass-shadow-sm: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+  --glass-shadow-md: 0 12px 36px -4px rgba(0, 0, 0, 0.08);
+  --glass-shadow-lg: 0 20px 48px -6px rgba(0, 0, 0, 0.12);
+
+  /* High-Contrast Typography */
+  --text-primary: #1D1D1F;
   --text-secondary: #12544F;
-  --text-muted: #3D6B64;
+  --text-muted: #4A6064;
   --color-accent: #2A835F;
   --color-accent-hover: #1E6B4B;
   --color-mint: #8BBB92;
 
-  --color-primary: #092328;
-  --color-secondary: #12544F;
+  --color-primary: #1D1D1F;
   --color-tint: #8BBB92;
-  --color-bg: #F2F7F5;
-  --color-surface: rgba(255, 255, 255, 0.86);
-  --color-text-main: #092328;
-  --bg-primary: #F2F7F5;
+  --color-bg: #F5F5F7;
+  --color-surface: rgba(255, 255, 255, 0.75);
+  --color-text-main: #1D1D1F;
+  --bg-primary: #F5F5F7;
   --bg-surface: var(--glass-surface-elevated);
   --border-surface: var(--glass-border);
   --border-focus: #2A835F;
@@ -58,30 +61,35 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Helvetica Neue", sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --app-bg: radial-gradient(at 0% 0%, #0F2D2A 0px, transparent 50%),
-            radial-gradient(at 100% 100%, #081B1D 0px, transparent 50%),
-            #051113;
+  /* Ambient Canvas: Deep obsidian space-black with glowing nodes */
+  --app-bg: radial-gradient(at 0% 0%, rgba(42, 131, 95, 0.18) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(18, 84, 79, 0.20) 0px, transparent 50%),
+            #000000;
 
-  --glass-surface: rgba(14, 38, 39, 0.70);
-  --glass-surface-elevated: rgba(18, 48, 48, 0.82);
-  --glass-surface-hover: rgba(25, 62, 60, 0.88);
+  /* Glass Surface: Deep translucent obsidian */
+  --glass-surface: rgba(28, 28, 30, 0.60);
+  --glass-surface-elevated: rgba(38, 38, 42, 0.75);
+  --glass-surface-hover: rgba(48, 48, 54, 0.85);
 
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.20),
-                       inset 0 -1px 1px 0 rgba(0, 0, 0, 0.40);
+  /* Inner Specular Bevel & Catchlight */
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+                       inset 0 -1px 1px 0 rgba(0, 0, 0, 0.50);
 
-  --glass-shadow-sm: 0 4px 16px -2px rgba(0, 0, 0, 0.35);
-  --glass-shadow-md: 0 12px 32px -4px rgba(0, 0, 0, 0.45);
-  --glass-shadow-lg: 0 24px 60px -8px rgba(0, 0, 0, 0.60);
+  /* Deep Ambient Diffraction Drop Shadows */
+  --glass-shadow-sm: 0 4px 16px -2px rgba(0, 0, 0, 0.40);
+  --glass-shadow-md: 0 12px 36px -4px rgba(0, 0, 0, 0.70);
+  --glass-shadow-lg: 0 24px 60px -8px rgba(0, 0, 0, 0.85);
 
-  --text-primary: #FFFFFF;
+  /* High-Contrast Typography */
+  --text-primary: #F5F5F7;
   --text-secondary: #D1E7DF;
   --text-muted: #8BBB92;
   --color-accent: #2A835F;
   --color-accent-hover: #34A074;
   --color-mint: #8BBB92;
 
-  --bg-primary: #051113;
+  --bg-primary: #000000;
   --bg-surface: var(--glass-surface-elevated);
   --border-surface: var(--glass-border);
   --border-focus: #2A835F;
@@ -1955,6 +1963,151 @@ html.light .text-slate-400,
   color: var(--text-secondary) !important;
 }
 
+/* ==========================================================
+   APPLE COMPONENT REDESIGNS
+   ========================================================== */
 
+/* 1. Blood Bank Cards: Apple rounded-3xl (22px) glass cards */
+.blood-card,
+.liquid-glass-card {
+  border-radius: 22px !important;
+  backdrop-filter: blur(32px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+}
 
+/* Circular glossy blood group badge */
+.blood-group-pill {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 9999px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  background: linear-gradient(135deg, #E11D48 0%, #9F1239 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.40), inset 0 1px 1px rgba(255, 255, 255, 0.60) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
 
+/* Sleek red glass pill for CRITICAL EMERGENCY */
+.blood-emergency-pill,
+.badge-emergency {
+  border-radius: 9999px !important;
+  padding: 4px 12px !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  background: rgba(225, 29, 72, 0.18) !important;
+  color: #FB7185 !important;
+  border: 1px solid rgba(225, 29, 72, 0.35) !important;
+  box-shadow: 0 2px 10px rgba(225, 29, 72, 0.20) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  letter-spacing: 0.04em;
+}
+
+/* Subtle frosted quote container for clinical context notes */
+.blood-quote-box {
+  border-radius: 16px !important;
+  padding: 12px 14px !important;
+  background: rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid var(--glass-border) !important;
+  font-style: italic;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+html.light .blood-quote-box {
+  background: rgba(242, 247, 245, 0.65) !important;
+  color: #12544F !important;
+}
+
+/* Pill-shaped action buttons */
+.btn-blood-call {
+  border-radius: 9999px !important;
+  padding: 8px 16px !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  background: linear-gradient(135deg, #2A835F 0%, #12544F 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(42, 131, 95, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-blood-call:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(42, 131, 95, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.55) !important;
+}
+
+.btn-blood-msg {
+  border-radius: 9999px !important;
+  padding: 8px 16px !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  background: var(--glass-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-sm), var(--glass-inner-bevel) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-blood-msg:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: var(--glass-surface-hover) !important;
+  border-color: var(--color-mint) !important;
+}
+
+/* 2. Floating Navigation: Apple Pill Glass Dock */
+.liquid-glass-dock,
+.floating-glass-dock {
+  border-radius: 9999px !important;
+  background: var(--glass-surface-elevated) !important;
+  backdrop-filter: blur(32px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-lg), var(--glass-inner-bevel) !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 3. Micro-Interactions: Apple Spring Physics */
+.apple-hover,
+.liquid-glass-card,
+.liquid-card,
+.glass-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.35s ease !important;
+}
+
+.apple-hover:hover,
+.liquid-glass-card:hover,
+.liquid-card:hover,
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.006) !important;
+}
+
+/* Unread Notification Glow Pulse */
+@keyframes applePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(42, 131, 95, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(42, 131, 95, 0);
+  }
+}
+
+.apple-glow-pulse {
+  animation: applePulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}

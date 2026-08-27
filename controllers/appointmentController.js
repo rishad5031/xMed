@@ -214,11 +214,65 @@ async function requestAppointmentPublic(req, res) {
   }
 }
 
+// Doctor appointment queue sorted by priority_level DESC, applied_at ASC
+async function getDoctorAppointmentQueue(req, res) {
+  try {
+    const doctorId = (req.user && req.user.doctor_id) || (req.user && req.user.id) || req.query.doctor_id || 1;
+    const { status } = req.query;
+
+    const queue = await appointmentModel.getDoctorAppointmentQueue(doctorId, status);
+    res.json({
+      success: true,
+      count: queue.length,
+      data: queue
+    });
+  } catch (err) {
+    console.error('[AppointmentController] getDoctorAppointmentQueue error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error retrieving doctor appointment queue.' });
+  }
+}
+
+// Doctor decision on appointment (ACCEPT, REJECT, or EMERGENCY_PRIORITY)
+async function decideAppointment(req, res) {
+  try {
+    const { id } = req.params;
+    const { action, notes, priority_level } = req.body;
+
+    if (!action || !['ACCEPT', 'REJECT', 'EMERGENCY_PRIORITY', 'EMERGENCY'].includes(action.toUpperCase())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid action. Must be ACCEPT, REJECT, or EMERGENCY_PRIORITY.'
+      });
+    }
+
+    const updated = await appointmentModel.decideAppointment(id, {
+      action: action.toUpperCase(),
+      notes,
+      priority_level
+    });
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Appointment record not found.' });
+    }
+
+    res.json({
+      success: true,
+      message: `Appointment #${id} successfully updated with action: ${action.toUpperCase()}.`,
+      data: updated
+    });
+  } catch (err) {
+    console.error('[AppointmentController] decideAppointment error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error processing appointment decision.' });
+  }
+}
+
 module.exports = {
   createAppointment,
   bookAppointment,
   getAppointments,
   getAppointmentById,
   updateAppointmentStatus,
-  requestAppointmentPublic
+  requestAppointmentPublic,
+  getDoctorAppointmentQueue,
+  decideAppointment
 };

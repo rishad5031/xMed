@@ -145,6 +145,15 @@ describe('xMED Major System Upgrade Test Suite', () => {
   // 3. Hospital & Doctor Discovery
   // -------------------------------------------------------------
   describe('Hospital Doctors Discovery APIs', () => {
+    test('GET /api/hospitals - Should return list of hospitals with area filter', async () => {
+      const res = await request(app).get('/api/hospitals?area=Dhanmondi');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data.length).toBeGreaterThanOrEqual(1);
+      expect(res.body.data[0].area).toBe('Dhanmondi');
+    });
+
     test('GET /api/hospitals/1/doctors - Should return list of doctors assigned to Hospital 1', async () => {
       const res = await request(app).get('/api/hospitals/1/doctors');
       expect(res.status).toBe(200);
@@ -161,9 +170,11 @@ describe('xMED Major System Upgrade Test Suite', () => {
   });
 
   // -------------------------------------------------------------
-  // 4. Express Public Outpatient Appointment Booking
+  // 4. Express Public Outpatient Appointment Booking & Doctor Triage
   // -------------------------------------------------------------
-  describe('Public Appointment Booking APIs', () => {
+  describe('Appointment Booking & Doctor Triage Queue APIs', () => {
+    let testAptId = null;
+
     test('POST /api/appointments/request - Should book an express appointment without requiring auth token', async () => {
       const today = new Date().toISOString().split('T')[0];
       const res = await request(app)
@@ -183,6 +194,7 @@ describe('xMED Major System Upgrade Test Suite', () => {
       expect(res.body.data).toHaveProperty('appointment_id');
       expect(res.body.data).toHaveProperty('serial_no');
       expect(res.body.data.serial_no).toBeGreaterThanOrEqual(1);
+      testAptId = res.body.data.appointment_id;
     });
 
     test('POST /api/appointments/request - Should queue priority level 2 for emergencies', async () => {
@@ -203,13 +215,40 @@ describe('xMED Major System Upgrade Test Suite', () => {
       expect(res.body.data.priority_level).toBe(2);
       expect(res.body.message).toContain('Emergency');
     });
+
+    test('GET /api/doctor/appointments/queue - Should return doctor queue sorted by priority_level DESC', async () => {
+      const res = await request(app).get('/api/doctor/appointments/queue?doctor_id=1');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
+
+      // Verify sorting: each item has priority_level >= next item (or equal)
+      for (let i = 0; i < res.body.data.length - 1; i++) {
+        expect(res.body.data[i].priority_level).toBeGreaterThanOrEqual(res.body.data[i + 1].priority_level);
+      }
+    });
+
+    test('POST /api/doctor/appointments/:id/decide - Should accept or elevate appointment decision', async () => {
+      expect(testAptId).not.toBeNull();
+      const res = await request(app)
+        .post(`/api/doctor/appointments/${testAptId}/decide`)
+        .send({
+          action: 'EMERGENCY_PRIORITY',
+          notes: 'Doctor triage elevated patient to Emergency Priority 3.'
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.priority_level).toBe(3);
+      expect(res.body.data.status).toBe('ACCEPTED');
+    });
   });
 
   // -------------------------------------------------------------
   // 5. Clinical Knowledge Feed & Community Health Blogs
   // -------------------------------------------------------------
   describe('Clinical Knowledge Feed APIs', () => {
-    test('GET /api/blogs - Should return 10 doctor-authored clinical articles', async () => {
+    test('GET /api/blogs - Should return doctor-authored clinical articles', async () => {
       const res = await request(app).get('/api/blogs');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -236,6 +275,13 @@ describe('xMED Major System Upgrade Test Suite', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.blogs.length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('GET /api/blogs - Should filter articles by tag query', async () => {
+      const res = await request(app).get('/api/blogs?tag=cardiology');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.blogs)).toBe(true);
     });
   });
 

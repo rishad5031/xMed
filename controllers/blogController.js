@@ -2,8 +2,8 @@ const blogModel = require('../models/blogModel');
 
 async function getBlogs(req, res) {
   try {
-    const { search, category } = req.query;
-    const blogs = await blogModel.getAllBlogs({ search, category });
+    const { search, category, tag } = req.query;
+    const blogs = await blogModel.getAllBlogs({ search, category, tag });
     return res.json({ success: true, count: blogs.length, blogs });
   } catch (error) {
     console.error('[BlogController] getBlogs error:', error);

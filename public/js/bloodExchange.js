@@ -73,23 +73,23 @@ async function loadBloodPosts() {
 
       let urgencyBadge = '';
       if (isCritical) {
-        urgencyBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-black blood-badge-emergency">CRITICAL EMERGENCY</span>`;
+        urgencyBadge = `<span class="blood-emergency-pill">CRITICAL EMERGENCY</span>`;
       } else if (isUrgent) {
-        urgencyBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">URGENT</span>`;
+        urgencyBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 backdrop-blur-md">URGENT</span>`;
       } else {
-        urgencyBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-500/15 text-slate-300 border border-slate-500/30">ROUTINE</span>`;
+        urgencyBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-500/15 text-slate-300 border border-slate-500/30 backdrop-blur-md">ROUTINE</span>`;
       }
 
       const typeBadge = isRequest
-        ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-400 border border-rose-500/30">BLOOD NEEDED (${post.units_needed || 1} Bag)</span>`
-        : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-black blood-donor-badge">DONOR AVAILABLE</span>`;
+        ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-400 border border-rose-500/30 backdrop-blur-md">BLOOD NEEDED (${post.units_needed || 1} Bag)</span>`
+        : `<span class="px-2.5 py-1 rounded-full text-[11px] font-black blood-donor-badge">DONOR AVAILABLE</span>`;
 
       return `
-        <div class="liquid-glass-card p-5.5 flex flex-col justify-between space-y-4 ${isCritical ? 'border-rose-500/50 shadow-rose-900/30' : ''}">
-          <div class="space-y-3">
+        <div class="liquid-glass-card p-6 flex flex-col justify-between space-y-4 ${isCritical ? 'border-rose-500/50 shadow-rose-900/30' : ''}">
+          <div class="space-y-3.5">
             <div class="flex items-center justify-between">
-              <span class="blood-group-pill text-sm font-black">${post.blood_group}</span>
-              <div class="flex items-center gap-1.5">
+              <span class="blood-group-pill text-sm">${post.blood_group}</span>
+              <div class="flex items-center gap-1.5 flex-wrap justify-end">
                 ${urgencyBadge}
                 ${typeBadge}
               </div>
@@ -107,25 +107,25 @@ async function loadBloodPosts() {
             </div>
 
             ${post.hemoglobin_level ? `
-              <div class="text-xs px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono inline-block">
+              <div class="text-xs px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono inline-block">
                 Hemoglobin: <strong>${post.hemoglobin_level} g/dL</strong> (Safe & Verified)
               </div>
             ` : ''}
 
             ${post.notes ? `
-              <div class="text-xs p-3 rounded-2xl bg-black/20 border border-white/10 text-slate-200 leading-relaxed italic">
+              <div class="blood-quote-box">
                 "${post.notes}"
               </div>
             ` : ''}
           </div>
 
           <div class="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
-            <a href="tel:${post.contact_phone}" class="btn-liquid-primary py-2 px-3 text-xs flex items-center gap-1.5">
+            <a href="tel:${post.contact_phone}" class="btn-blood-call">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
               <span>Call ${post.contact_phone}</span>
             </a>
 
-            <button type="button" onclick="startDirectChat('${post.author_uid}', '${post.author_name}')" class="btn-liquid-secondary py-2 px-3 text-xs flex items-center gap-1.5">
+            <button type="button" onclick="startDirectChat('${post.author_uid}', '${post.author_name}')" class="btn-blood-msg cursor-pointer">
               <svg class="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
               <span>Message</span>
             </button>

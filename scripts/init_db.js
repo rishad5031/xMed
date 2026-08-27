@@ -134,12 +134,17 @@ async function initializeDatabase() {
         generic_name VARCHAR(100) NOT NULL,
         dosage_form VARCHAR(50) NOT NULL,
         strength VARCHAR(50) NOT NULL,
+        manufacturer VARCHAR(150) DEFAULT 'Essential Drugs Co. Ltd. (EDCL)',
         category VARCHAR(50) DEFAULT 'General',
         origin VARCHAR(50) DEFAULT 'Global',
         total_prescribed_count INT DEFAULT 0,
         FULLTEXT INDEX ft_medicine (brand_name, generic_name)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    try {
+      await connection.query(`ALTER TABLE medicines ADD COLUMN IF NOT EXISTS manufacturer VARCHAR(150) DEFAULT 'Essential Drugs Co. Ltd. (EDCL)';`);
+    } catch (e) {}
 
     // 5. prescriptions
     await connection.query(`
@@ -149,11 +154,18 @@ async function initializeDatabase() {
         doctor_id INT NOT NULL,
         diagnosis TEXT NOT NULL,
         clinical_notes TEXT,
+        prescription_date DATE DEFAULT (CURRENT_DATE),
+        qr_code_token VARCHAR(255) NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (patient_uid) REFERENCES citizens(uid) ON DELETE RESTRICT,
         FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE RESTRICT
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    try {
+      await connection.query(`ALTER TABLE prescriptions ADD COLUMN IF NOT EXISTS prescription_date DATE DEFAULT (CURRENT_DATE);`);
+      await connection.query(`ALTER TABLE prescriptions ADD COLUMN IF NOT EXISTS qr_code_token VARCHAR(255) NULL;`);
+    } catch (e) {}
 
     // 6. prescription_items
     await connection.query(`
@@ -161,12 +173,22 @@ async function initializeDatabase() {
         item_id INT AUTO_INCREMENT PRIMARY KEY,
         prescription_id INT NOT NULL,
         medicine_id INT NOT NULL,
-        dosage_instruction VARCHAR(100) NOT NULL,
+        dosage VARCHAR(50) NULL,
+        frequency VARCHAR(50) NULL,
         duration VARCHAR(50) NOT NULL,
+        instructions TEXT NULL,
+        dosage_instruction VARCHAR(100) NULL,
         FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id) ON DELETE CASCADE,
         FOREIGN KEY (medicine_id) REFERENCES medicines(medicine_id) ON DELETE RESTRICT
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    try {
+      await connection.query(`ALTER TABLE prescription_items ADD COLUMN IF NOT EXISTS dosage VARCHAR(50) NULL;`);
+      await connection.query(`ALTER TABLE prescription_items ADD COLUMN IF NOT EXISTS frequency VARCHAR(50) NULL;`);
+      await connection.query(`ALTER TABLE prescription_items ADD COLUMN IF NOT EXISTS instructions TEXT NULL;`);
+      await connection.query(`ALTER TABLE prescription_items ADD COLUMN IF NOT EXISTS dosage_instruction VARCHAR(100) NULL;`);
+    } catch (e) {}
 
     // 7. appointments (Priority & Emergency FCFS Table)
     await connection.query(`
@@ -183,6 +205,7 @@ async function initializeDatabase() {
         emergency_reason TEXT NULL,
         priority_level INT DEFAULT 1,
         applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         CONSTRAINT fk_apt_patient FOREIGN KEY (patient_uid) REFERENCES citizens(uid) ON DELETE CASCADE ON UPDATE CASCADE,
         CONSTRAINT fk_apt_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE ON UPDATE CASCADE,
         CONSTRAINT fk_apt_hospital FOREIGN KEY (hospital_id) REFERENCES hospitals(hospital_id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -193,17 +216,32 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    try {
+      await connection.query(`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;`);
+    } catch (e) {}
+
     // 8. diagnostic_reports
     await connection.query(`
       CREATE TABLE IF NOT EXISTS diagnostic_reports (
         report_id INT AUTO_INCREMENT PRIMARY KEY,
         patient_uid VARCHAR(20) NOT NULL,
         test_name VARCHAR(150) NOT NULL,
+        lab_name VARCHAR(150) NULL DEFAULT 'Central Pathology Laboratory',
         report_file_url VARCHAR(255) NOT NULL,
+        extracted_summary TEXT NULL,
+        report_date DATE NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (patient_uid) REFERENCES citizens(uid) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    try {
+      await connection.query(`ALTER TABLE diagnostic_reports ADD COLUMN IF NOT EXISTS lab_name VARCHAR(150) NULL DEFAULT 'Central Pathology Laboratory';`);
+      await connection.query(`ALTER TABLE diagnostic_reports ADD COLUMN IF NOT EXISTS extracted_summary TEXT NULL;`);
+      await connection.query(`ALTER TABLE diagnostic_reports ADD COLUMN IF NOT EXISTS report_date DATE NULL;`);
+      await connection.query(`ALTER TABLE diagnostic_reports ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;`);
+    } catch (e) {}
 
     // 9. patient_self_medications (Self-Reported / Emergency OTC Medications)
     await connection.query(`

@@ -189,6 +189,8 @@ app.post('/api/appointments/request', appointmentController.requestAppointmentPu
 app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
 app.get('/api/appointments/:id', authenticateToken, appointmentController.getAppointmentById);
 app.put('/api/appointments/:id/status', authenticateToken, isDoctor, appointmentController.updateAppointmentStatus);
+app.get('/api/doctor/appointments/queue', appointmentController.getDoctorAppointmentQueue);
+app.post('/api/doctor/appointments/:id/decide', appointmentController.decideAppointment);
 
 // --- Blood Donation & Request Hub ---
 app.post('/api/blood/posts', bloodController.createPost);
