@@ -35,8 +35,8 @@
 
   <!-- Ambient Aurora Glow Canvas -->
   <div class="aurora-bg">
-    <div class="aurora-blob-1" style="background: radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, rgba(59, 130, 246, 0.04) 60%, transparent 80%);"></div>
-    <div class="aurora-blob-2" style="background: radial-gradient(circle, rgba(147, 51, 234, 0.14) 0%, rgba(217, 70, 239, 0.03) 60%, transparent 80%);"></div>
+    <div class="aurora-blob-1"></div>
+    <div class="aurora-blob-2"></div>
   </div>
 
   <!-- Top Navigation Bar -->
@@ -44,17 +44,17 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       <!-- Logo & Emblem -->
       <a href="/" class="flex items-center gap-3 group">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-500 via-indigo-400 to-sky-400 p-0.5 shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform">
-          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-11 h-11 rounded-2xl brand-emblem-ring p-0.5 shadow-lg group-hover:scale-105 transition-transform">
+          <div class="w-full h-full brand-emblem-bg rounded-[14px] flex items-center justify-center">
+            <svg class="w-6 h-6 brand-emblem-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
           </div>
         </div>
         <div>
           <div class="flex items-center gap-1.5">
-            <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-300 to-sky-400 bg-clip-text text-transparent">xMED</span>
-            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">National EHR</span>
+            <span class="text-2xl font-extrabold tracking-tight brand-logo-text">xMED</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full brand-badge">National EHR</span>
           </div>
           <p class="text-[11px] text-slate-400 font-medium tracking-wide">Government of Bangladesh Health Informatics</p>
         </div>
@@ -62,29 +62,29 @@
 
       <!-- Quick Nav Links -->
       <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
-        <a href="/doctors" class="text-sky-300 hover:text-white font-bold flex items-center gap-1.5 transition-colors">
-          <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+        <a href="/doctors" class="nav-link-appt font-bold flex items-center gap-1.5 transition-colors">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           Book Appointment
         </a>
-        <a href="#features" class="hover:text-purple-400 transition-colors">Platform Capabilities</a>
-        <a href="#clinical-blogs" class="hover:text-teal-400 transition-colors">Doctors Insights</a>
-        <a href="/ai-assistant" class="text-cyan-300 hover:text-cyan-200 font-bold flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/30 hover:border-cyan-400/60 shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-all">
-          <img src="/images/mr-med-robot.png" alt="AI" class="w-4 h-4 rounded-full object-cover object-left border border-cyan-400">
+        <a href="#features" class="nav-link transition-colors">Platform Capabilities</a>
+        <a href="#clinical-blogs" class="nav-link transition-colors">Doctors Insights</a>
+        <a href="/ai-assistant" class="nav-mrmed-btn font-bold flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all">
+          <img src="/images/mr-med-robot.png" alt="AI" class="w-4 h-4 rounded-full object-cover object-left border">
           <span>MR.MED AI</span>
           <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
         </a>
-        <a href="/login" class="hover:text-sky-400 transition-colors">Clinical Login</a>
+        <a href="/login" class="nav-link transition-colors">Clinical Login</a>
       </nav>
 
       <!-- Right Navigation Actions -->
       <div class="flex items-center gap-3">
         <button type="button" class="theme-toggle-btn p-2.5 rounded-xl glass-card text-slate-300 hover:text-white transition-colors" aria-label="Toggle Theme"></button>
 
-        <a href="/login" class="px-4 py-2 rounded-xl glass-card text-xs font-bold text-slate-200 hover:text-white hover:border-sky-500/40 transition-all">
+        <a href="/login" class="nav-signin-btn px-4 py-2 rounded-xl text-xs font-bold transition-all">
           Sign In
         </a>
 
-        <a href="/register" class="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 text-white text-xs font-bold hover:opacity-90 shadow-lg shadow-sky-500/25 transition-all">
+        <a href="/register" class="nav-register-btn px-4 py-2 rounded-xl text-white text-xs font-bold shadow-lg transition-all">
           Get Citizen UID
         </a>
       </div>
@@ -101,34 +101,34 @@
       <div class="text-center max-w-4xl mx-auto space-y-6">
         
         <!-- Live Status Pill -->
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card border border-sky-500/30 text-xs font-semibold text-sky-400 animate-fade-in shadow-md">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full hero-status-pill text-xs font-semibold animate-fade-in shadow-md">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span>Unified National Electronic Health Record Ecosystem &bull; Node Active at 192.168.0.186:3306</span>
         </div>
 
-        <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-slate-100 leading-tight">
+        <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight hero-title">
           Next-Generation <br>
-          <span class="bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
+          <span class="hero-gradient-text bg-clip-text text-transparent">
             National Health Intelligence
           </span>
         </h1>
 
-        <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        <p class="text-base sm:text-lg hero-subtitle max-w-2xl mx-auto leading-relaxed">
           One lifelong Citizen UID. Zero lost prescriptions. Real-time drug conflict alerts. xMED unites citizens, certified BMDC physicians, and diagnostic laboratories into a unified, high-availability medical cloud.
         </p>
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-          <a href="/doctors" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 text-white font-bold text-sm hover:opacity-95 shadow-xl shadow-indigo-500/25 transition-all flex items-center justify-center gap-2">
+          <a href="/doctors" class="hero-btn-primary w-full sm:w-auto px-7 py-3.5 rounded-2xl text-white font-bold text-sm shadow-xl transition-all flex items-center justify-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             Book Appointment
           </a>
-          <a href="/login" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl glass-card text-slate-200 hover:text-white font-bold text-sm border border-slate-700/60 hover:border-sky-500/50 shadow-lg transition-all flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+          <a href="/login" class="hero-btn-secondary w-full sm:w-auto px-7 py-3.5 rounded-2xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
             Clinical Portal
           </a>
-          <a href="/register" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl glass-card text-slate-200 hover:text-white font-bold text-sm border border-slate-700/60 hover:border-teal-500/50 shadow-lg transition-all flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+          <a href="/register" class="hero-btn-accent w-full sm:w-auto px-7 py-3.5 rounded-2xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
             Get Citizen UID
           </a>
         </div>
@@ -156,7 +156,7 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
               <!-- Left Mini Panel: Patient Card -->
               <div class="md:col-span-5 space-y-4">
-                <div class="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-sky-950/80 border border-sky-500/30 space-y-2">
+                <div class="p-4 rounded-2xl mockup-patient-card bg-gradient-to-br from-slate-900 to-sky-950/80 border border-sky-500/30 space-y-2">
                   <div class="flex justify-between items-center text-xs">
                     <span class="text-[10px] uppercase font-bold text-slate-400">National Health ID</span>
                     <span class="text-rose-400 font-mono font-bold">O+ POSITIVE</span>
@@ -168,7 +168,7 @@
                   </div>
                 </div>
 
-                <div class="p-3.5 rounded-xl bg-slate-900/50 border border-slate-800 text-xs space-y-1.5">
+                <div class="p-3.5 rounded-xl mockup-diagnosis-card bg-slate-900/50 border border-slate-800 text-xs space-y-1.5">
                   <div class="text-[10px] uppercase font-bold text-slate-400">Recent Clinical Diagnosis</div>
                   <div class="text-xs font-semibold text-slate-200">Acute Bronchitis with Mild Hypertension</div>
                   <div class="text-[11px] text-slate-400">Prescribing: Dr. Tanvir Ahmed (BMDC-A10982)</div>
@@ -183,7 +183,7 @@
                 </div>
 
                 <div class="space-y-2">
-                  <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                  <div class="p-2.5 rounded-xl mockup-drug-card bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
                     <div>
                       <span class="font-bold text-slate-100">Sergel 20mg</span>
                       <span class="text-[10px] text-slate-400 block italic">Esomeprazole &bull; Capsule</span>
@@ -193,7 +193,7 @@
                     </div>
                   </div>
 
-                  <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                  <div class="p-2.5 rounded-xl mockup-drug-card bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
                     <div>
                       <span class="font-bold text-slate-100">Azithrocin 500mg</span>
                       <span class="text-[10px] text-slate-400 block italic">Azithromycin &bull; Tablet</span>
@@ -203,7 +203,7 @@
                     </div>
                   </div>
 
-                  <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+                  <div class="p-2.5 rounded-xl mockup-drug-card bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
                     <div>
                       <span class="font-bold text-slate-100">Napa Extra</span>
                       <span class="text-[10px] text-slate-400 block italic">Paracetamol + Caffeine &bull; Tablet</span>
@@ -215,7 +215,7 @@
                 </div>
 
                 <!-- Simulation Security Footer -->
-                <div class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 flex items-center justify-between">
+                <div class="p-2 rounded-xl mockup-security-footer bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 flex items-center justify-between">
                   <span class="flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     Cryptographic QR Validation Enabled

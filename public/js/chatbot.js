@@ -15,14 +15,14 @@
   function createFloatingButton() {
     const btn = document.createElement('button');
     btn.id = 'mrmed-floating-btn';
-    btn.className = 'fixed bottom-6 right-6 z-50 p-2 sm:p-2.5 rounded-full bg-slate-950 text-cyan-300 font-black shadow-[0_0_25px_rgba(6,182,212,0.45)] hover:scale-105 transition-all flex items-center gap-2.5 border-2 border-cyan-400 group';
+    btn.className = 'mrmed-floating-pill fixed bottom-6 right-6 z-50 p-2 sm:p-2.5 rounded-full hover:scale-105 transition-all flex items-center gap-2.5 group';
     btn.setAttribute('aria-label', 'Open MR.MED AI Health Assistant');
     btn.innerHTML = `
-      <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center overflow-hidden border border-cyan-400/80 shadow-inner flex-shrink-0">
+      <div class="mrmed-avatar-box w-8 h-8 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
         <img src="/images/mr-med-robot.png" alt="MR.MED AI" class="w-full h-full object-cover object-left scale-125">
       </div>
-      <span class="text-xs font-black pr-1 tracking-wide hidden sm:inline text-white group-hover:text-cyan-300 transition-colors">MR.MED AI</span>
-      <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+      <span class="mrmed-text text-xs font-black pr-1 tracking-wide hidden sm:inline transition-colors">MR.MED AI</span>
+      <span class="mrmed-pulse-dot w-2.5 h-2.5 rounded-full animate-pulse"></span>
     `;
 
     btn.addEventListener('click', toggleChatModal);
@@ -155,7 +155,7 @@
     const userBubble = document.createElement('div');
     userBubble.className = 'flex justify-end';
     userBubble.innerHTML = `
-      <div class="p-2.5 rounded-xl rounded-tr-sm bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-bold text-xs max-w-[85%] shadow leading-relaxed">
+      <div class="mrmed-user-bubble p-2.5 rounded-xl rounded-tr-sm bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-slate-950 font-bold text-xs max-w-[85%] shadow leading-relaxed">
         ${escapeWidgetHtml(text)}
       </div>
     `;
@@ -180,7 +180,7 @@
         <div class="w-7 h-7 rounded-lg bg-black border border-cyan-400 p-0.5 shadow-md flex-shrink-0 overflow-hidden mt-0.5">
           <img src="/images/mr-med-robot.png" alt="MR.MED" class="w-full h-full object-cover object-left scale-125">
         </div>
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-cyan-500/30 text-slate-200 leading-relaxed text-xs max-w-[88%] space-y-1.5 shadow">
+        <div class="mrmed-bot-bubble p-3 rounded-xl bg-slate-900/90 border border-cyan-500/30 text-slate-200 leading-relaxed text-xs max-w-[88%] space-y-1.5 shadow">
           ${parseWidgetMarkdown(data.reply || 'No response from assistant.')}
         </div>
       `;
