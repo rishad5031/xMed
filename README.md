@@ -19,10 +19,10 @@
 
 ## 🌐 Live Demo & Instant Access
 
-> 🚀 **Live Public Web Portal**: [**https://absolutely-mounts-ocean-unknown.trycloudflare.com**](https://absolutely-mounts-ocean-unknown.trycloudflare.com)  
-> 🏥 **Doctor Studio**: [https://absolutely-mounts-ocean-unknown.trycloudflare.com/doctor-dashboard](https://absolutely-mounts-ocean-unknown.trycloudflare.com/doctor-dashboard)  
-> 🩺 **Citizen Health Vault**: [https://absolutely-mounts-ocean-unknown.trycloudflare.com/patient-dashboard](https://absolutely-mounts-ocean-unknown.trycloudflare.com/patient-dashboard)  
-> 🤖 **MR.MED AI Assistant**: [https://absolutely-mounts-ocean-unknown.trycloudflare.com/ai-assistant](https://absolutely-mounts-ocean-unknown.trycloudflare.com/ai-assistant)  
+> 🚀 **Live Public Web Portal**: [**https://coordinated-cuisine-barbara-considered.trycloudflare.com**](https://coordinated-cuisine-barbara-considered.trycloudflare.com)  
+> 🏥 **Doctor Studio**: [https://coordinated-cuisine-barbara-considered.trycloudflare.com/doctor-dashboard](https://coordinated-cuisine-barbara-considered.trycloudflare.com/doctor-dashboard)  
+> 🩺 **Citizen Health Vault**: [https://coordinated-cuisine-barbara-considered.trycloudflare.com/patient-dashboard](https://coordinated-cuisine-barbara-considered.trycloudflare.com/patient-dashboard)  
+> 🤖 **MR.MED AI Assistant**: [https://coordinated-cuisine-barbara-considered.trycloudflare.com/ai-assistant](https://coordinated-cuisine-barbara-considered.trycloudflare.com/ai-assistant)  
 > 🔐 **Default Demo Password**: `Password123!`  
 > *(Connected in real-time to local XAMPP MariaDB at `192.168.0.186:3306/xmed_db` via Cloudflare Tunnel).*
 
