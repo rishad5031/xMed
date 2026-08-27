@@ -66,6 +66,10 @@
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           Book Appointment
         </a>
+        <a href="#govt-drugs" class="nav-link-govt font-bold flex items-center gap-1 transition-colors">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Free Govt Drugs
+        </a>
         <a href="#features" class="nav-link transition-colors">Platform Capabilities</a>
         <a href="#clinical-blogs" class="nav-link transition-colors">Doctors Insights</a>
         <a href="/ai-assistant" class="nav-mrmed-btn font-bold flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all">
@@ -336,6 +340,189 @@
     </section>
 
     <!-- ========================================================= -->
+    <!-- BANGLADESH GOVERNMENT FREE DRUGS & EMERGENCY FORMULARY    -->
+    <!-- ========================================================= -->
+    <section id="govt-drugs" class="py-20 border-t border-slate-800/80 govt-drugs-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold govt-section-badge mb-3">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>🇧🇩 DGHS &bull; Essential Drugs Company Limited (EDCL) Formulary</span>
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-black tracking-tight govt-section-title">
+              Officially Available Free Government Drugs
+            </h2>
+            <p class="text-sm sm:text-base govt-section-subtitle mt-2 leading-relaxed">
+              Essential life-saving emergency medicines, maternal supplies, and chronic care pharmaceuticals distributed at zero cost (<span class="font-bold text-emerald-700 dark:text-emerald-400">৳0.00 Free Supply</span>) across Community Clinics, Upazila Health Complexes (UHC), and Government Medical Colleges under the Ministry of Health & Family Welfare.
+            </p>
+          </div>
+
+          <!-- Expand Full National Catalog CTA -->
+          <div class="flex-shrink-0">
+            <button 
+              type="button" 
+              id="btn-expand-drug-catalog"
+              class="govt-expand-cta-btn px-6 py-3.5 rounded-2xl font-black text-xs sm:text-sm flex items-center gap-2.5 shadow-xl transition-all hover:scale-105">
+              <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+              </svg>
+              <span>Expand Full National Drug Catalog (60+)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-black bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                100% FREE
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Emergency Drugs Highlight Grid (Primary Welcome Portal Showcase) -->
+        <div class="mb-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+            <h3 class="text-base sm:text-lg font-black tracking-tight govt-subheading">
+              Curated Emergency & Resuscitation Suite
+            </h3>
+          </div>
+          <span class="text-xs font-semibold text-slate-400">
+            Immediate Resuscitation &bull; Upazila & District ER
+          </span>
+        </div>
+
+        <div id="emergency-drugs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- Populated by public/js/governmentDrugs.js -->
+          <div class="col-span-full text-center py-12">
+            <div class="inline-flex items-center gap-2 text-slate-400 text-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Loading official Bangladesh Government Emergency Medicines...
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner under Emergency Grid -->
+        <div class="mt-8 p-4 sm:p-5 rounded-2xl border govt-info-banner flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            <div>
+              <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
+                Citizen Entitlement Notice &bull; Bangladesh National Health Policy
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                Every citizen presenting at a Government Health Complex is entitled to these official EDCL medications completely free of charge. Report any unauthorized charges to DGHS hotline 16263.
+              </p>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            onclick="document.getElementById('btn-expand-drug-catalog').click()"
+            class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold govt-banner-btn transition-all">
+            Browse All 60+ Drugs &rarr;
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- EXPANDABLE FULL NATIONAL DRUG CATALOG MODAL               -->
+    <!-- ========================================================= -->
+    <div id="govt-drugs-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div class="govt-modal-container max-w-6xl w-full rounded-3xl border shadow-2xl flex flex-col max-h-[90vh] overflow-hidden my-auto animate-fade-in">
+        
+        <!-- Modal Header -->
+        <div class="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-sm">
+              🇧🇩
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+                  Bangladesh National Essential Drug Formulary
+                </h3>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                  EDCL &bull; 100% Free
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Official Directorate General of Drug Administration (DGDA) & Health Services (DGHS) Public Formulary
+              </p>
+            </div>
+          </div>
+
+          <button 
+            type="button" 
+            id="btn-close-drugs-modal"
+            class="p-2.5 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+            aria-label="Close Modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <!-- Search Bar & Category Filters Toolbar -->
+        <div class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800/60 space-y-4 bg-slate-50/50 dark:bg-slate-900/30">
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="relative flex-1 w-full">
+              <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <input 
+                type="text" 
+                id="drug-catalog-search"
+                placeholder="Search by generic chemical, brand name, strength, or emergency condition (e.g., Adrenaline, Amoxicillin, Sepsis)..."
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border text-xs sm:text-sm font-medium govt-search-input focus:outline-none transition-all">
+            </div>
+            <div id="govt-catalog-count" class="text-xs font-bold font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
+              Loading catalog...
+            </div>
+          </div>
+
+          <!-- Category Pills -->
+          <div id="drug-category-pills" class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Table Container (Scrollable) -->
+        <div class="flex-1 overflow-y-auto p-2 sm:p-4">
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800/80">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="govt-table-header text-[11px] uppercase tracking-wider font-bold border-b border-slate-200 dark:border-slate-800">
+                <tr>
+                  <th class="py-3 px-4">EDCL ID</th>
+                  <th class="py-3 px-4">Official Supply Name</th>
+                  <th class="py-3 px-4">Generic Molecule & Strength</th>
+                  <th class="py-3 px-4">Therapeutic Class</th>
+                  <th class="py-3 px-4">Facility Availability</th>
+                  <th class="py-3 px-4 text-right">Price</th>
+                </tr>
+              </thead>
+              <tbody id="govt-catalog-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                <!-- Populated dynamically by governmentDrugs.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Source: Essential Drugs Company Limited (EDCL) 2026 Public Formulary</span>
+          </div>
+          <button 
+            type="button" 
+            onclick="window.print()"
+            class="font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <span>Print / Save Formulary</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
     <!-- DOCTORS CLINICAL BLOG & INSIGHTS SECTION                  -->
     <!-- ========================================================= -->
     <section id="clinical-blogs" class="py-20 border-t border-slate-800/80 bg-slate-900/20">
@@ -424,5 +611,6 @@
   <script src="/js/theme.js"></script>
   <script src="/js/blog.js"></script>
   <script src="/js/chatbot.js"></script>
+  <script src="/js/governmentDrugs.js"></script>
 </body>
 </html>

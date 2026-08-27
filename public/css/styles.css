@@ -1093,3 +1093,265 @@ html.light .ai-cyber-card {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
 }
+
+/* =============================================================
+   BANGLADESH GOVERNMENT FREE DRUGS & CATALOG STYLING
+   ============================================================= */
+/* Dark Mode Base (Default) */
+.govt-drugs-section {
+  background: rgba(15, 23, 42, 0.4);
+}
+.govt-section-badge {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.govt-section-title {
+  color: #f8fafc;
+}
+.govt-section-subtitle {
+  color: #94a3b8;
+}
+.govt-subheading {
+  color: #f1f5f9;
+}
+.govt-expand-cta-btn {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2));
+  color: #ffffff;
+  border: 1.5px solid rgba(52, 211, 153, 0.5);
+  box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.3);
+}
+.govt-expand-cta-btn:hover {
+  border-color: #34d399;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.3));
+}
+.govt-drug-card {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+.govt-drug-card:hover {
+  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: 0 14px 30px -4px rgba(16, 185, 129, 0.15);
+}
+.govt-emergency-pill {
+  background: rgba(244, 63, 94, 0.15);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+}
+.govt-free-tag {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.govt-drug-title {
+  color: #f8fafc;
+}
+.govt-drug-generic {
+  color: #94a3b8;
+}
+.govt-drug-indication-box {
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+}
+.govt-inspect-btn {
+  color: #34d399;
+}
+.govt-info-banner {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+.govt-banner-btn {
+  background: #10b981;
+  color: #020617;
+}
+.govt-banner-btn:hover {
+  background: #34d399;
+}
+.govt-modal-container {
+  background: #0b1329;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+.govt-search-input {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+}
+.govt-search-input:focus {
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
+}
+.drug-cat-active {
+  background: #10b981 !important;
+  color: #020617 !important;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+.drug-cat-inactive {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+}
+.drug-cat-inactive:hover {
+  border-color: #34d399;
+  color: #f8fafc;
+}
+.govt-table-header {
+  background: rgba(15, 23, 42, 0.95);
+  color: #94a3b8;
+}
+.govt-category-badge {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+/* Light Mode Rules (Strict 4-Color Swatch Alignment: #092328, #12544F, #2A835F, #8BBB92) */
+html.light .govt-drugs-section,
+[data-theme="light"] .govt-drugs-section {
+  background: #F8FAF9 !important;
+  border-color: rgba(139, 187, 146, 0.5) !important;
+}
+html.light .govt-section-badge,
+[data-theme="light"] .govt-section-badge {
+  background: rgba(139, 187, 146, 0.25) !important;
+  color: #12544F !important;
+  border: 1px solid #8BBB92 !important;
+}
+html.light .govt-section-title,
+[data-theme="light"] .govt-section-title {
+  color: #092328 !important;
+}
+html.light .govt-section-subtitle,
+[data-theme="light"] .govt-section-subtitle {
+  color: #12544F !important;
+}
+html.light .govt-subheading,
+[data-theme="light"] .govt-subheading {
+  color: #092328 !important;
+}
+html.light .govt-expand-cta-btn,
+[data-theme="light"] .govt-expand-cta-btn {
+  background: #FFFFFF !important;
+  color: #092328 !important;
+  border: 2px solid #2A835F !important;
+  box-shadow: 0 10px 25px -4px rgba(9, 35, 40, 0.12) !important;
+}
+html.light .govt-expand-cta-btn:hover,
+[data-theme="light"] .govt-expand-cta-btn:hover {
+  background: #F8FAF9 !important;
+  border-color: #12544F !important;
+  box-shadow: 0 14px 30px -4px rgba(9, 35, 40, 0.18) !important;
+}
+html.light .govt-drug-card,
+[data-theme="light"] .govt-drug-card {
+  background: #FFFFFF !important;
+  border: 1.5px solid #8BBB92 !important;
+  box-shadow: 0 8px 24px -4px rgba(9, 35, 40, 0.07) !important;
+}
+html.light .govt-drug-card:hover,
+[data-theme="light"] .govt-drug-card:hover {
+  border-color: #2A835F !important;
+  box-shadow: 0 14px 32px -4px rgba(9, 35, 40, 0.14) !important;
+}
+html.light .govt-emergency-pill,
+[data-theme="light"] .govt-emergency-pill {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #b91c1c !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+html.light .govt-free-tag,
+[data-theme="light"] .govt-free-tag {
+  background: rgba(42, 131, 95, 0.15) !important;
+  color: #2A835F !important;
+  border: 1px solid rgba(42, 131, 95, 0.4) !important;
+}
+html.light .govt-drug-title,
+[data-theme="light"] .govt-drug-title {
+  color: #092328 !important;
+}
+html.light .govt-drug-generic,
+[data-theme="light"] .govt-drug-generic {
+  color: #12544F !important;
+}
+html.light .govt-drug-indication-box,
+[data-theme="light"] .govt-drug-indication-box {
+  background: #F8FAF9 !important;
+  border: 1px solid rgba(139, 187, 146, 0.45) !important;
+  color: #12544F !important;
+}
+html.light .govt-inspect-btn,
+[data-theme="light"] .govt-inspect-btn {
+  color: #2A835F !important;
+}
+html.light .govt-info-banner,
+[data-theme="light"] .govt-info-banner {
+  background: #FFFFFF !important;
+  border: 1.5px solid #8BBB92 !important;
+  box-shadow: 0 8px 24px -4px rgba(9, 35, 40, 0.06) !important;
+}
+html.light .govt-banner-btn,
+[data-theme="light"] .govt-banner-btn {
+  background: #2A835F !important;
+  color: #FFFFFF !important;
+}
+html.light .govt-banner-btn:hover,
+[data-theme="light"] .govt-banner-btn:hover {
+  background: #12544F !important;
+}
+html.light .govt-modal-container,
+[data-theme="light"] .govt-modal-container {
+  background: #FFFFFF !important;
+  border: 2px solid #2A835F !important;
+  box-shadow: 0 25px 65px -12px rgba(9, 35, 40, 0.3) !important;
+}
+html.light .govt-search-input,
+[data-theme="light"] .govt-search-input {
+  background: #FFFFFF !important;
+  border: 1.5px solid #8BBB92 !important;
+  color: #092328 !important;
+}
+html.light .govt-search-input:focus,
+[data-theme="light"] .govt-search-input:focus {
+  border-color: #2A835F !important;
+  box-shadow: 0 0 0 3px rgba(42, 131, 95, 0.2) !important;
+}
+html.light .drug-cat-active,
+[data-theme="light"] .drug-cat-active {
+  background: #2A835F !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 10px rgba(42, 131, 95, 0.3) !important;
+}
+html.light .drug-cat-inactive,
+[data-theme="light"] .drug-cat-inactive {
+  background: #F8FAF9 !important;
+  border: 1px solid #8BBB92 !important;
+  color: #12544F !important;
+}
+html.light .drug-cat-inactive:hover,
+[data-theme="light"] .drug-cat-inactive:hover {
+  background: rgba(139, 187, 146, 0.25) !important;
+  border-color: #2A835F !important;
+  color: #092328 !important;
+}
+html.light .govt-table-header,
+[data-theme="light"] .govt-table-header {
+  background: #F8FAF9 !important;
+  color: #12544F !important;
+  border-color: #8BBB92 !important;
+}
+html.light .govt-category-badge,
+[data-theme="light"] .govt-category-badge {
+  background: rgba(139, 187, 146, 0.22) !important;
+  color: #12544F !important;
+  border: 1px solid #8BBB92 !important;
+}
+html.light .nav-link-govt,
+[data-theme="light"] .nav-link-govt {
+  color: #2A835F !important;
+}
+html.light .nav-link-govt:hover,
+[data-theme="light"] .nav-link-govt:hover {
+  color: #12544F !important;
+}
+

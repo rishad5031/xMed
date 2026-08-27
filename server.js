@@ -16,6 +16,7 @@ const aiController = require('./controllers/aiController');
 const analyticsController = require('./controllers/analyticsController');
 const hospitalController = require('./controllers/hospitalController');
 const appointmentController = require('./controllers/appointmentController');
+const drugController = require('./controllers/drugController');
 const aiRoutes = require('./routes/aiRoutes');
 const { authenticateToken, isDoctor, isPatient } = require('./middleware/authMiddleware');
 const upload = require('./middleware/uploadMiddleware');
@@ -133,6 +134,11 @@ app.get('/api/doctor/analytics', authenticateToken, isDoctor, doctorController.g
 
 // --- Medicine Catalog & Autocomplete (In-Memory Cached) ---
 app.get('/api/medicines/search', prescriptionController.searchMedicines);
+
+// --- Bangladesh Government Free & Emergency Essential Drugs ---
+app.get('/api/drugs/government-essential', drugController.getGovernmentDrugs);
+app.get('/api/drugs/emergency', drugController.getEmergencyDrugs);
+app.get('/api/drugs/government-essential/:id', drugController.getDrugDetails);
 
 // --- Prescription & Advanced DBMS Analytics Routes ---
 app.post('/api/prescriptions', authenticateToken, isDoctor, prescriptionController.createPrescription);
