@@ -56,44 +56,63 @@
   --spotlight-color: rgba(42, 131, 95, 0.08);
 }
 
-/* --- Dark Mode Liquid Obsidian Glass --- */
+/* --- Dark Mode Liquid Obsidian Glass (Dark Logo Canvas Theme) --- */
 :root, [data-theme="dark"], html.dark {
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Helvetica Neue", sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Ambient Canvas: Deep obsidian space-black with glowing nodes */
-  --app-bg: radial-gradient(at 0% 0%, rgba(42, 131, 95, 0.18) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, rgba(18, 84, 79, 0.20) 0px, transparent 50%),
-            #000000;
+  /* Base Viewport Background: Absolute Space Black with Fixed Ambient Mesh Gradients */
+  --bg-base: #000000;
+  --bg-ambient-mesh: radial-gradient(circle at 15% 15%, rgba(42, 131, 95, 0.28) 0%, transparent 50%),
+                     radial-gradient(circle at 85% 25%, rgba(18, 84, 79, 0.35) 0%, transparent 55%),
+                     radial-gradient(circle at 45% 85%, rgba(9, 35, 40, 0.55) 0%, transparent 60%),
+                     #000000;
+  --app-bg: var(--bg-ambient-mesh);
 
-  /* Glass Surface: Deep translucent obsidian */
-  --glass-surface: rgba(28, 28, 30, 0.60);
-  --glass-surface-elevated: rgba(38, 38, 42, 0.75);
-  --glass-surface-hover: rgba(48, 48, 54, 0.85);
+  /* Liquid Glass Surfaces & Cards */
+  --glass-bg: rgba(9, 35, 40, 0.55);
+  --glass-bg-elevated: rgba(18, 84, 79, 0.45);
+  --glass-bg-hover: rgba(42, 131, 95, 0.25);
+  --glass-surface: var(--glass-bg);
+  --glass-surface-elevated: var(--glass-bg-elevated);
+  --glass-surface-hover: var(--glass-bg-hover);
 
-  /* Inner Specular Bevel & Catchlight */
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-inner-bevel: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
-                       inset 0 -1px 1px 0 rgba(0, 0, 0, 0.50);
+  /* Glass Border & Specular Inner Rim (Liquid Apple Polish) */
+  --glass-border: rgba(139, 187, 146, 0.20);
+  --glass-rim: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
+               inset 0 -1px 2px 0 rgba(0, 0, 0, 0.60);
+  --glass-inner-bevel: var(--glass-rim);
 
   /* Deep Ambient Diffraction Drop Shadows */
+  --glass-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.75),
+                  0 4px 12px -2px rgba(0, 0, 0, 0.50);
   --glass-shadow-sm: 0 4px 16px -2px rgba(0, 0, 0, 0.40);
   --glass-shadow-md: 0 12px 36px -4px rgba(0, 0, 0, 0.70);
-  --glass-shadow-lg: 0 24px 60px -8px rgba(0, 0, 0, 0.85);
+  --glass-shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.75);
 
-  /* High-Contrast Typography */
-  --text-primary: #F5F5F7;
-  --text-secondary: #D1E7DF;
-  --text-muted: #8BBB92;
-  --color-accent: #2A835F;
-  --color-accent-hover: #34A074;
+  /* High-Contrast Typography & Content Contrast */
+  --text-primary: #FFFFFF;
+  --text-secondary: #8BBB92;
+  --text-muted: rgba(139, 187, 146, 0.65);
+
+  /* Accent & Action Keys */
+  --accent-primary: #2A835F;
+  --accent-hover: #34A074;
+  --accent-glow: 0 0 24px rgba(42, 131, 95, 0.45);
+  --color-accent: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
   --color-mint: #8BBB92;
 
   --bg-primary: #000000;
   --bg-surface: var(--glass-surface-elevated);
   --border-surface: var(--glass-border);
   --border-focus: #2A835F;
-  --spotlight-color: rgba(42, 131, 95, 0.12);
+  --spotlight-color: rgba(42, 131, 95, 0.18);
+
+  /* Inputs & Form Controls */
+  --input-bg: rgba(9, 35, 40, 0.75);
+  --input-border: rgba(139, 187, 146, 0.30);
+  --input-focus-border: #2A835F;
 
   /* AI Yellow Compartment Palette */
   --ai-gold: #f59e0b;
@@ -115,23 +134,48 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Default site background: Black with Oceanic Cyan (bg-cyan.png) */
-  background: #020617 url('/images/bg-cyan.png') no-repeat center center fixed;
+  /* Default site background: Dark Ambient Mesh */
+  background: var(--bg-ambient-mesh);
+  background-attachment: fixed;
   background-size: cover;
   color: var(--text-primary);
   position: relative;
 }
 
-/* 1. Welcome Index Page Background: Black with Purple Wave (bg-purple.png) */
-body.page-welcome {
-  background: #030014 url('/images/bg-purple.png') no-repeat center center fixed;
-  background-size: cover;
+/* Ensure body inherits the dark ambient canvas */
+[data-theme="dark"] body,
+html.dark body {
+  background: var(--bg-ambient-mesh) !important;
+  background-attachment: fixed !important;
+  background-size: cover !important;
+  color: var(--text-primary);
 }
 
-/* 2. AI Compartment Background: Warm Yellow (bg-yellow.png) */
-body.page-ai {
-  background: #181204 url('/images/bg-yellow.png') no-repeat center center fixed;
-  background-size: cover;
+/* Glass Panels & Cards in Dark Mode */
+[data-theme="dark"] .apple-glass-card,
+[data-theme="dark"] .liquid-glass-panel,
+html.dark .apple-glass-card,
+html.dark .liquid-glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-rim);
+}
+
+[data-theme="dark"] .apple-glass-card:hover,
+html.dark .apple-glass-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(139, 187, 146, 0.35);
+  box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.85), var(--glass-rim);
+}
+
+/* Floating Navigation Dock */
+[data-theme="dark"] .apple-glass-nav,
+html.dark .apple-glass-nav {
+  background: var(--glass-bg-elevated);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-rim);
 }
 
 /* =============================================================
@@ -2111,3 +2155,266 @@ html.light .blood-quote-box {
 .apple-glow-pulse {
   animation: applePulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
 }
+
+/* =============================================================
+   DARK MODE COMPONENT STYLES & LIQUID GLASS POLISH
+   ============================================================= */
+
+/* Glass Panels & Cards in Dark Mode */
+[data-theme="dark"] .apple-glass-card,
+[data-theme="dark"] .liquid-glass-panel,
+[data-theme="dark"] .liquid-panel,
+[data-theme="dark"] .liquid-glass-card,
+[data-theme="dark"] .liquid-card,
+[data-theme="dark"] .glass-card,
+[data-theme="dark"] .glass-card-sm,
+html.dark .apple-glass-card,
+html.dark .liquid-glass-panel,
+html.dark .liquid-panel,
+html.dark .liquid-glass-card,
+html.dark .liquid-card,
+html.dark .glass-card,
+html.dark .glass-card-sm {
+  background: var(--glass-bg, rgba(9, 35, 40, 0.55)) !important;
+  backdrop-filter: blur(30px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(190%) !important;
+  border: 1px solid var(--glass-border, rgba(139, 187, 146, 0.20)) !important;
+  box-shadow: var(--glass-shadow, 0 16px 40px -8px rgba(0, 0, 0, 0.75)), var(--glass-rim, inset 0 1px 1px 0 rgba(255, 255, 255, 0.22)) !important;
+  color: var(--text-primary, #FFFFFF);
+}
+
+[data-theme="dark"] .apple-glass-card:hover,
+[data-theme="dark"] .liquid-glass-card:hover,
+[data-theme="dark"] .liquid-card:hover,
+[data-theme="dark"] .glass-card:hover,
+html.dark .apple-glass-card:hover,
+html.dark .liquid-glass-card:hover,
+html.dark .liquid-card:hover,
+html.dark .glass-card:hover {
+  background: var(--glass-bg-hover, rgba(42, 131, 95, 0.25)) !important;
+  border-color: rgba(139, 187, 146, 0.35) !important;
+  box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.85), var(--glass-rim) !important;
+}
+
+/* Floating Navigation Dock */
+[data-theme="dark"] .apple-glass-nav,
+[data-theme="dark"] .liquid-glass-dock,
+[data-theme="dark"] .floating-glass-dock,
+[data-theme="dark"] .liquid-glass-nav,
+[data-theme="dark"] .glass-nav,
+[data-theme="dark"] header.glass-nav,
+html.dark .apple-glass-nav,
+html.dark .liquid-glass-dock,
+html.dark .floating-glass-dock,
+html.dark .liquid-glass-nav,
+html.dark .glass-nav,
+html.dark header.glass-nav {
+  background: var(--glass-bg-elevated, rgba(18, 84, 79, 0.45)) !important;
+  backdrop-filter: blur(32px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+  border: 1px solid var(--glass-border, rgba(139, 187, 146, 0.20)) !important;
+  box-shadow: var(--glass-shadow), var(--glass-rim) !important;
+}
+
+/* Dark Mode Form Inputs & Selects */
+[data-theme="dark"] .glass-input,
+[data-theme="dark"] .liquid-input,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+html.dark .glass-input,
+html.dark .liquid-input,
+html.dark input[type="text"],
+html.dark input[type="password"],
+html.dark input[type="email"],
+html.dark input[type="date"],
+html.dark input[type="number"],
+html.dark select,
+html.dark textarea {
+  background: var(--input-bg, rgba(9, 35, 40, 0.75)) !important;
+  border: 1.5px solid var(--input-border, rgba(139, 187, 146, 0.30)) !important;
+  color: var(--text-primary, #FFFFFF) !important;
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="dark"] .glass-input:focus,
+[data-theme="dark"] .liquid-input:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus,
+html.dark .glass-input:focus,
+html.dark .liquid-input:focus,
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+  border-color: var(--input-focus-border, #2A835F) !important;
+  box-shadow: 0 0 0 3px rgba(42, 131, 95, 0.35), inset 0 1px 2px 0 rgba(0, 0, 0, 0.6) !important;
+  outline: none !important;
+}
+
+[data-theme="dark"] ::placeholder,
+html.dark ::placeholder {
+  color: rgba(139, 187, 146, 0.45) !important;
+}
+
+/* Dark Mode Typography & Content Contrast */
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+[data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6,
+html.dark h1, html.dark h2, html.dark h3,
+html.dark h4, html.dark h5, html.dark h6 {
+  color: var(--text-primary, #FFFFFF) !important;
+}
+
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-slate-500,
+html.dark .text-slate-400,
+html.dark .text-slate-500 {
+  color: var(--text-muted, rgba(139, 187, 146, 0.65)) !important;
+}
+
+/* Dark Mode Action Buttons */
+[data-theme="dark"] .btn-liquid-primary,
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .btn-accent,
+html.dark .btn-liquid-primary,
+html.dark .btn-primary,
+html.dark .btn-accent {
+  background: var(--accent-primary, #2A835F) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 14px 0 rgba(42, 131, 95, 0.45),
+              inset 0 1px 1px 0 rgba(255, 255, 255, 0.40) !important;
+}
+
+[data-theme="dark"] .btn-liquid-primary:hover,
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .btn-accent:hover,
+html.dark .btn-liquid-primary:hover,
+html.dark .btn-primary:hover,
+html.dark .btn-accent:hover {
+  background: var(--accent-hover, #34A074) !important;
+  box-shadow: 0 6px 20px 0 rgba(42, 131, 95, 0.60),
+              inset 0 1px 1px 0 rgba(255, 255, 255, 0.50) !important;
+}
+
+[data-theme="dark"] .btn-liquid-secondary,
+[data-theme="dark"] .btn-secondary,
+html.dark .btn-liquid-secondary,
+html.dark .btn-secondary {
+  background: var(--glass-bg, rgba(9, 35, 40, 0.55)) !important;
+  color: var(--text-primary, #FFFFFF) !important;
+  border: 1px solid var(--glass-border, rgba(139, 187, 146, 0.20)) !important;
+  box-shadow: var(--glass-shadow-sm), var(--glass-rim) !important;
+}
+
+[data-theme="dark"] .btn-liquid-secondary:hover,
+[data-theme="dark"] .btn-secondary:hover,
+html.dark .btn-liquid-secondary:hover,
+html.dark .btn-secondary:hover {
+  background: var(--glass-bg-hover, rgba(42, 131, 95, 0.25)) !important;
+  border-color: rgba(139, 187, 146, 0.35) !important;
+}
+
+/* System Red / Emergency Highlights */
+[data-theme="dark"] .blood-emergency-pill,
+[data-theme="dark"] .badge-emergency,
+html.dark .blood-emergency-pill,
+html.dark .badge-emergency {
+  background: rgba(255, 69, 58, 0.16) !important;
+  border: 1px solid rgba(255, 69, 58, 0.35) !important;
+  color: #FF453A !important;
+  box-shadow: 0 2px 10px rgba(255, 69, 58, 0.20) !important;
+}
+
+/* Dark Mode Brand Emblem & Logo */
+[data-theme="dark"] .brand-emblem-ring,
+html.dark .brand-emblem-ring {
+  background: linear-gradient(135deg, #12544F, #2A835F) !important;
+  box-shadow: 0 4px 14px rgba(18, 84, 79, 0.40) !important;
+}
+
+[data-theme="dark"] .brand-emblem-bg,
+html.dark .brand-emblem-bg {
+  background: #092328 !important;
+}
+
+[data-theme="dark"] .brand-emblem-icon,
+html.dark .brand-emblem-icon {
+  color: #8BBB92 !important;
+}
+
+[data-theme="dark"] .brand-logo-text,
+html.dark .brand-logo-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #8BBB92 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="dark"] .brand-badge,
+html.dark .brand-badge {
+  background: rgba(42, 131, 95, 0.25) !important;
+  color: #8BBB92 !important;
+  border: 1px solid rgba(139, 187, 146, 0.30) !important;
+}
+
+/* Hero Elements in Dark Mode */
+[data-theme="dark"] .hero-gradient-text,
+html.dark .hero-gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #8BBB92 60%, #2A835F 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="dark"] .hero-subtitle,
+html.dark .hero-subtitle {
+  color: #8BBB92 !important;
+}
+
+[data-theme="dark"] .hero-status-pill,
+html.dark .hero-status-pill {
+  background: var(--glass-bg, rgba(9, 35, 40, 0.55)) !important;
+  border: 1px solid var(--glass-border, rgba(139, 187, 146, 0.20)) !important;
+  color: #8BBB92 !important;
+  box-shadow: var(--glass-shadow-sm), var(--glass-rim) !important;
+}
+
+/* Dark Mode Blood Quote Context Box */
+[data-theme="dark"] .blood-quote-box,
+html.dark .blood-quote-box {
+  background: rgba(9, 35, 40, 0.65) !important;
+  border: 1px solid rgba(139, 187, 146, 0.18) !important;
+  color: #8BBB92 !important;
+}
+
+/* Dark Mode Nav Buttons */
+[data-theme="dark"] .nav-signin-btn,
+html.dark .nav-signin-btn {
+  background: var(--glass-bg, rgba(9, 35, 40, 0.55)) !important;
+  border: 1px solid var(--glass-border, rgba(139, 187, 146, 0.20)) !important;
+  color: #8BBB92 !important;
+}
+
+[data-theme="dark"] .nav-signin-btn:hover,
+html.dark .nav-signin-btn:hover {
+  border-color: #2A835F !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .nav-register-btn,
+html.dark .nav-register-btn {
+  background: #2A835F !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 14px rgba(42, 131, 95, 0.35),
+              inset 0 1px 1px rgba(255, 255, 255, 0.40) !important;
+}
+
+[data-theme="dark"] .nav-register-btn:hover,
+html.dark .nav-register-btn:hover {
+  background: #34A074 !important;
+}
+
