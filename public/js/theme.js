@@ -49,76 +49,8 @@ function updateThemeToggleButtons(theme) {
   });
 }
 
-// 2. High-Performance Fluid Magnetic Cursor Aura
+// 2. Initialize Theme Toggle on Load
 document.addEventListener('DOMContentLoaded', () => {
-  // Only mount custom cursor on devices with fine pointer (mouse/trackpad)
-  if (window.matchMedia('(pointer: fine)').matches) {
-    const dot = document.createElement('div');
-    dot.id = 'cursor-dot';
-    const aura = document.createElement('div');
-    aura.id = 'cursor-aura';
-    document.body.appendChild(dot);
-    document.body.appendChild(aura);
-
-    let mouseX = -100;
-    let mouseY = -100;
-    let auraX = -100;
-    let auraY = -100;
-
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      dot.style.left = `${mouseX}px`;
-      dot.style.top = `${mouseY}px`;
-
-      // Also update ambient spotlight CSS variables for glassmorphism
-      const wrappers = document.querySelectorAll('.spotlight-wrapper');
-      wrappers.forEach(wrapper => {
-        const rect = wrapper.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        wrapper.style.setProperty('--mouse-x', `${x}px`);
-        wrapper.style.setProperty('--mouse-y', `${y}px`);
-      });
-
-      // Check interactive hover elements
-      const target = e.target;
-      if (target.closest('button, a, input, select, textarea, .glass-card, .btn-interactive, .autocomplete-item')) {
-        document.body.classList.add('cursor-hover');
-      } else {
-        document.body.classList.remove('cursor-hover');
-      }
-    });
-
-    window.addEventListener('mousedown', () => {
-      document.body.classList.add('cursor-active');
-    });
-
-    window.addEventListener('mouseup', () => {
-      document.body.classList.remove('cursor-active');
-    });
-
-    window.addEventListener('mouseleave', () => {
-      dot.style.opacity = '0';
-      aura.style.opacity = '0';
-    });
-
-    window.addEventListener('mouseenter', () => {
-      dot.style.opacity = '1';
-      aura.style.opacity = '1';
-    });
-
-    // RequestAnimationFrame smooth physics lerp loop
-    function renderCursor() {
-      auraX += (mouseX - auraX) * 0.18;
-      auraY += (mouseY - auraY) * 0.18;
-      aura.style.left = `${auraX}px`;
-      aura.style.top = `${auraY}px`;
-      requestAnimationFrame(renderCursor);
-    }
-    requestAnimationFrame(renderCursor);
-  }
-
   // Setup theme toggle buttons
   document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
     btn.addEventListener('click', toggleTheme);
