@@ -28,7 +28,7 @@ describe('MR.MED AI Health Assistant Module Suite', () => {
     expect(res.headers['x-api-key']).toBeUndefined();
     expect(res.headers['gemini-api-key']).toBeUndefined();
     expect(JSON.stringify(res.body)).not.toContain(process.env.GEMINI_API_KEY || 'AIzaSy');
-  }, 20000); // 20s timeout for external LLM call if necessary
+  }, 30000); // 30s timeout for external LLM call if necessary
 
   test('POST /api/ai/chat: Rejects empty message with HTTP 400', async () => {
     const res = await request(app)

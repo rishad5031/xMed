@@ -4,74 +4,142 @@
    ============================================================= */
 @import url('./styles.css');
 
-[data-theme="dark"], html.dark {
-  --bg-base: #000000;
-  --bg-ambient-mesh: radial-gradient(circle at 15% 15%, rgba(42, 131, 95, 0.28) 0%, transparent 50%),
-                     radial-gradient(circle at 85% 25%, rgba(18, 84, 79, 0.35) 0%, transparent 55%),
-                     radial-gradient(circle at 45% 85%, rgba(9, 35, 40, 0.55) 0%, transparent 60%),
-                     #000000;
+/* ==========================================================
+   AUTHENTIC APPLE OPTICAL LIQUID GLASS (WWDC25 / visionOS)
+   ========================================================== */
 
-  --glass-bg: rgba(9, 35, 40, 0.55);
-  --glass-bg-elevated: rgba(18, 84, 79, 0.45);
-  --glass-bg-hover: rgba(42, 131, 95, 0.25);
+:root, [data-theme="light"] {
+  /* Ambient canvas allowing realistic background refraction */
+  --apple-canvas: radial-gradient(circle at 18% 15%, rgba(139, 187, 146, 0.25) 0%, transparent 45%),
+                  radial-gradient(circle at 82% 12%, rgba(42, 131, 95, 0.18) 0%, transparent 40%),
+                  radial-gradient(circle at 50% 85%, rgba(18, 84, 79, 0.12) 0%, transparent 55%),
+                  #FBFBFD;
 
-  --glass-border: rgba(139, 187, 146, 0.20);
-  --glass-rim: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
-               inset 0 -1px 2px 0 rgba(0, 0, 0, 0.60);
+  /* Optical Crystal Glass: High clarity, low opacity, high saturation */
+  --liquid-glass-bg: rgba(255, 255, 255, 0.28);
+  --liquid-glass-elevated: rgba(255, 255, 255, 0.42);
+  --liquid-glass-hover: rgba(255, 255, 255, 0.52);
 
-  --glass-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.75),
-                  0 4px 12px -2px rgba(0, 0, 0, 0.50);
+  /* Specular Caustic Edge (Simulating internal reflection & convex lens bevel) */
+  --liquid-glass-border: rgba(255, 255, 255, 0.65);
+  --liquid-caustic-rim: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.40),
+    inset 1px 0 2px 0 rgba(255, 255, 255, 0.60),
+    inset -1px 0 2px 0 rgba(255, 255, 255, 0.60);
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #8BBB92;
-  --text-muted: rgba(139, 187, 146, 0.65);
+  /* Soft Ambient Diffraction Shadow (Zero harsh black lines) */
+  --liquid-diffraction-shadow: 
+    0 8px 24px -4px rgba(9, 35, 40, 0.05),
+    0 20px 48px -8px rgba(9, 35, 40, 0.08);
 
-  --accent-primary: #2A835F;
-  --accent-hover: #34A074;
-  --accent-glow: 0 0 24px rgba(42, 131, 95, 0.45);
+  --liquid-diffraction-hover: 
+    0 12px 32px -4px rgba(9, 35, 40, 0.08),
+    0 28px 64px -10px rgba(9, 35, 40, 0.12);
 
-  --input-bg: rgba(9, 35, 40, 0.75);
-  --input-border: rgba(139, 187, 146, 0.30);
-  --input-focus-border: #2A835F;
+  /* Typography */
+  --apple-text-primary: #1D1D1F;
+  --apple-text-secondary: #424245;
+  --apple-text-muted: #86868B;
+  --apple-accent: #2A835F;
 }
 
-/* Ensure body inherits the dark ambient canvas */
-[data-theme="dark"] body,
-html.dark body {
-  background: var(--bg-ambient-mesh) !important;
-  background-attachment: fixed !important;
-  background-size: cover !important;
-  color: var(--text-primary);
+[data-theme="dark"] {
+  --apple-canvas: radial-gradient(circle at 15% 15%, rgba(42, 131, 95, 0.28) 0%, transparent 50%),
+                  radial-gradient(circle at 85% 25%, rgba(18, 84, 79, 0.35) 0%, transparent 55%),
+                  radial-gradient(circle at 45% 85%, rgba(9, 35, 40, 0.55) 0%, transparent 60%),
+                  #000000;
+
+  --liquid-glass-bg: rgba(20, 38, 38, 0.32);
+  --liquid-glass-elevated: rgba(25, 48, 48, 0.48);
+  --liquid-glass-hover: rgba(35, 68, 65, 0.58);
+
+  --liquid-glass-border: rgba(255, 255, 255, 0.22);
+  --liquid-caustic-rim: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.15),
+    inset 1px 0 1.5px 0 rgba(255, 255, 255, 0.25),
+    inset -1px 0 1.5px 0 rgba(255, 255, 255, 0.25);
+
+  --liquid-diffraction-shadow: 
+    0 12px 36px -4px rgba(0, 0, 0, 0.65),
+    0 24px 60px -8px rgba(0, 0, 0, 0.85);
+
+  --liquid-diffraction-hover: 
+    0 16px 44px -4px rgba(0, 0, 0, 0.75),
+    0 32px 72px -10px rgba(0, 0, 0, 0.95);
+
+  --apple-text-primary: #FFFFFF;
+  --apple-text-secondary: #D1E7DF;
+  --apple-text-muted: #8BBB92;
+  --apple-accent: #2A835F;
 }
 
-/* Glass Panels & Cards in Dark Mode */
-[data-theme="dark"] .apple-glass-card,
-[data-theme="dark"] .liquid-glass-panel,
-html.dark .apple-glass-card,
-html.dark .liquid-glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(30px) saturate(190%);
-  -webkit-backdrop-filter: blur(30px) saturate(190%);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), var(--glass-rim);
+body {
+  background: var(--apple-canvas);
+  background-attachment: fixed;
+  color: var(--apple-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  letter-spacing: -0.018em;
+  -webkit-font-smoothing: antialiased;
 }
 
-[data-theme="dark"] .apple-glass-card:hover,
-html.dark .apple-glass-card:hover {
-  background: var(--glass-bg-hover);
-  border-color: rgba(139, 187, 146, 0.35);
-  box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.85), var(--glass-rim);
+/* ==========================================================
+   GLASS COMPONENT ARCHITECTURE
+   ========================================================== */
+
+/* Authentic Optical Liquid Lens (Cards, Blood Post Capsules, Panels) */
+.liquid-glass-lens {
+  background: var(--liquid-glass-bg);
+  backdrop-filter: blur(24px) saturate(210%);
+  -webkit-backdrop-filter: blur(24px) saturate(210%);
+  border: 0.5px solid var(--liquid-glass-border);
+  box-shadow: var(--liquid-diffraction-shadow), var(--liquid-caustic-rim);
+  border-radius: 28px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s ease;
 }
 
-/* Floating Navigation Dock */
-[data-theme="dark"] .apple-glass-nav,
-[data-theme="dark"] .liquid-glass-dock,
-[data-theme="dark"] .glass-nav,
-html.dark .apple-glass-nav,
-html.dark .liquid-glass-dock,
-html.dark .glass-nav {
-  background: var(--glass-bg-elevated);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), var(--glass-rim);
+.liquid-glass-lens:hover {
+  transform: translateY(-3px) scale(1.008);
+  background: var(--liquid-glass-hover);
+  box-shadow: var(--liquid-diffraction-hover), var(--liquid-caustic-rim);
 }
+
+/* Floating Navigation Dock (Liquid Pill Style from Apple Media Controls) */
+.liquid-glass-dock {
+  background: var(--liquid-glass-elevated);
+  backdrop-filter: blur(32px) saturate(220%);
+  -webkit-backdrop-filter: blur(32px) saturate(220%);
+  border: 0.5px solid var(--liquid-glass-border);
+  box-shadow: var(--liquid-diffraction-shadow), var(--liquid-caustic-rim);
+  border-radius: 9999px; /* Continuous capsule */
+  padding: 8px 16px;
+}
+
+/* Liquid Button Pill (Convex Tactile Glass) */
+.liquid-btn {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.12) 100%), var(--apple-accent);
+  color: #FFFFFF;
+  border: 0.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 14px 0 rgba(42, 131, 95, 0.3),
+              inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.8),
+              inset 0 -1px 1.5px 0 rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-btn:hover {
+  transform: translateY(-1.5px) scale(1.02);
+  box-shadow: 0 8px 22px 0 rgba(42, 131, 95, 0.4),
+              inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95);
+}
+
+.liquid-btn:active {
+  transform: scale(0.97);
+}
+
 
