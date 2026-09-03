@@ -89,7 +89,14 @@ body {
    ========================================================== */
 
 /* Authentic Optical Liquid Lens (Cards, Blood Post Capsules, Panels) */
-.liquid-glass-lens {
+.liquid-glass-lens,
+.liquid-glass-panel,
+.liquid-panel,
+.apple-glass-card,
+.liquid-glass-card,
+.liquid-card,
+.glass-card,
+.blood-card {
   background: var(--liquid-glass-bg);
   backdrop-filter: blur(24px) saturate(210%);
   -webkit-backdrop-filter: blur(24px) saturate(210%);
@@ -101,14 +108,26 @@ body {
               background 0.3s ease;
 }
 
-.liquid-glass-lens:hover {
+.liquid-glass-lens:hover,
+.liquid-glass-panel:hover,
+.liquid-panel:hover,
+.apple-glass-card:hover,
+.liquid-glass-card:hover,
+.liquid-card:hover,
+.glass-card:hover,
+.blood-card:hover {
   transform: translateY(-3px) scale(1.008);
   background: var(--liquid-glass-hover);
   box-shadow: var(--liquid-diffraction-hover), var(--liquid-caustic-rim);
 }
 
 /* Floating Navigation Dock (Liquid Pill Style from Apple Media Controls) */
-.liquid-glass-dock {
+.liquid-glass-dock,
+.floating-glass-dock,
+.liquid-glass-nav,
+.apple-glass-nav,
+.glass-nav,
+header.glass-nav {
   background: var(--liquid-glass-elevated);
   backdrop-filter: blur(32px) saturate(220%);
   -webkit-backdrop-filter: blur(32px) saturate(220%);
@@ -116,10 +135,13 @@ body {
   box-shadow: var(--liquid-diffraction-shadow), var(--liquid-caustic-rim);
   border-radius: 9999px; /* Continuous capsule */
   padding: 8px 16px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Liquid Button Pill (Convex Tactile Glass) */
-.liquid-btn {
+.liquid-btn,
+.btn-liquid-primary,
+.btn-primary {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.12) 100%), var(--apple-accent);
   color: #FFFFFF;
   border: 0.5px solid rgba(255, 255, 255, 0.5);
@@ -132,14 +154,56 @@ body {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.liquid-btn:hover {
+.liquid-btn:hover,
+.btn-liquid-primary:hover,
+.btn-primary:hover {
   transform: translateY(-1.5px) scale(1.02);
   box-shadow: 0 8px 22px 0 rgba(42, 131, 95, 0.4),
               inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95);
 }
 
-.liquid-btn:active {
+.liquid-btn:active,
+.btn-liquid-primary:active,
+.btn-primary:active {
   transform: scale(0.97);
+}
+
+.btn-liquid-secondary,
+.btn-secondary {
+  background: var(--liquid-glass-bg);
+  color: var(--apple-text-primary);
+  border: 0.5px solid var(--liquid-glass-border);
+  box-shadow: var(--liquid-diffraction-shadow), var(--liquid-caustic-rim);
+  border-radius: 9999px;
+  padding: 8px 20px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.btn-liquid-secondary:hover,
+.btn-secondary:hover {
+  background: var(--liquid-glass-hover);
+  box-shadow: var(--liquid-diffraction-hover), var(--liquid-caustic-rim);
+}
+
+/* Liquid Input */
+.liquid-input,
+.glass-input {
+  background: var(--liquid-glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 0.5px solid var(--liquid-glass-border);
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05), var(--liquid-caustic-rim);
+  color: var(--apple-text-primary);
+  border-radius: 16px;
+  transition: all 0.25s ease;
+}
+
+.liquid-input:focus,
+.glass-input:focus {
+  border-color: var(--apple-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(42, 131, 95, 0.25), inset 0 1px 2px 0 rgba(0, 0, 0, 0.05), var(--liquid-caustic-rim);
 }
 
 
