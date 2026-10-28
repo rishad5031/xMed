@@ -1,11 +1,6 @@
-// =============================================================
-// xMED MR.MED AI Floating Assistant Widget
-// 100% Server-Side Automated Proxy & Holographic Cyber Aesthetic
-// =============================================================
-
 (function initMrMedWidget() {
   document.addEventListener('DOMContentLoaded', () => {
-    // Avoid double rendering if already on fullscreen /ai-assistant
+
     if (window.location.pathname === '/ai-assistant') return;
 
     createFloatingButton();
@@ -115,7 +110,6 @@
 
     document.getElementById('btn-close-mrmed').addEventListener('click', toggleChatModal);
 
-    // Setup input submit
     const form = document.getElementById('mrmed-input-form');
     const input = document.getElementById('mrmed-input');
     form.addEventListener('submit', (e) => {
@@ -126,7 +120,6 @@
       sendWidgetMessage(txt);
     });
 
-    // Chips
     modal.querySelectorAll('.mrmed-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const query = chip.textContent.replace(/^[^a-zA-Z0-9]+/, '').trim();
@@ -146,12 +139,10 @@
     }
   }
 
-  // 100% Automated Server-Side Chat Dispatch
   async function sendWidgetMessage(text) {
     const stream = document.getElementById('mrmed-stream');
     const typing = document.getElementById('mrmed-typing');
 
-    // Append User Bubble
     const userBubble = document.createElement('div');
     userBubble.className = 'flex justify-end';
     userBubble.innerHTML = `

@@ -3,7 +3,6 @@ const prescriptionModel = require('../models/prescriptionModel');
 const reportModel = require('../models/reportModel');
 const doctorModel = require('../models/doctorModel');
 
-// Search patient by UID and return complete medical dossier
 async function searchPatientByUid(req, res) {
   try {
     const { uid } = req.params;
@@ -50,10 +49,9 @@ async function searchPatientByUid(req, res) {
   }
 }
 
-// Get doctor analytics for Chart.js
 async function getDoctorAnalytics(req, res) {
   try {
-    const doctorId = req.user.id;
+    const doctorId = (req.user && (req.user.doctor_id || req.user.id)) ? (req.user.doctor_id || req.user.id) : 1;
     const analytics = await doctorModel.getDoctorAnalytics(doctorId);
     return res.json({ success: true, analytics });
   } catch (error) {

@@ -1,12 +1,24 @@
-// =============================================================
-// xMED - Blood Donation & Request Controller
-// RESTful Endpoints for Blood Exchange Hub
-// =============================================================
-
 const bloodModel = require('../models/bloodModel');
 
+/**
+ * Controller: createPost
+ * HTTP Method: POST
+ * Route: /api/blood/posts
+ * Access: Authenticated Citizen
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Obtains author citizen UID from verified JWT session (req.user.uid) or body fallback.
+ * 2. Enforces authentication, returning HTTP 401 if unauthenticated.
+ * 3. Extracts post parameters: post_type, blood_group, hemoglobin_level, units, area, city, hospital, urgency, contact.
+ * 4. Validates post_type (must be DONATE or REQUEST).
+ * 5. Validates blood_group against standard 8 ABO/Rh antigen groups: A+, A-, B+, B-, AB+, AB-, O+, O-.
+ * 6. Validates area and contact phone number.
+ * 7. Normalizes numerical inputs (hemoglobin float, units integer) and sets default city ('Dhaka') and urgency ('NORMAL').
+ * 8. Persists new blood post via model and returns HTTP 201 Created status.
+ */
 async function createPost(req, res) {
   try {
+
     const author_uid = req.user ? req.user.uid : req.body.author_uid;
 
     if (!author_uid) {
@@ -64,6 +76,17 @@ async function createPost(req, res) {
   }
 }
 
+/**
+ * Controller: getPosts
+ * HTTP Method: GET
+ * Route: /api/blood/posts
+ * Access: Public
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Extracts filtering criteria from URL query parameters.
+ * 2. Calls model query applying dynamic WHERE predicates and SQL pagination.
+ * 3. Returns matching blood exchange posts along with total record count.
+ */
 async function getPosts(req, res) {
   try {
     const { type, blood_group, min_hb, area, city, urgency, status, limit, offset } = req.query;
@@ -91,6 +114,17 @@ async function getPosts(req, res) {
   }
 }
 
+/**
+ * Controller: updateStatus
+ * HTTP Method: PATCH
+ * Route: /api/blood/posts/:id/status
+ * Access: Authenticated Citizen (Author) / Admin
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Extracts post ID from URL parameters and new status from body.
+ * 2. Validates status against allowed enum values (OPEN, FULFILLED, CLOSED).
+ * 3. Updates post record in database and returns updated object.
+ */
 async function updateStatus(req, res) {
   try {
     const { id } = req.params;
@@ -116,9 +150,16 @@ async function updateStatus(req, res) {
   }
 }
 
+/**
+ * Controller: getStats
+ * HTTP Method: GET
+ * Route: /api/blood/stats
+ * Access: Public
+ */
 async function getStats(req, res) {
   try {
     const stats = await bloodModel.getBloodStats();
+
     res.json({
       success: true,
       data: stats

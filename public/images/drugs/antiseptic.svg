@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="100%" height="100%">
+  <defs>
+    <radialGradient id="ant-bg-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#EA580C" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#EA580C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="povidone-liquid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#451A03"/>
+      <stop offset="40%" stop-color="#7C2D12"/>
+      <stop offset="80%" stop-color="#9A3412"/>
+      <stop offset="100%" stop-color="#451A03"/>
+    </linearGradient>
+    <linearGradient id="ant-cap" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="50%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    <filter id="ant-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#7C2D12" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <circle cx="80" cy="80" r="70" fill="url(#ant-bg-glow)" />
+
+  <g filter="url(#ant-shadow)">
+    <!-- Red Dispenser Nozzle Cap -->
+    <path d="M77 20 L83 20 L85 36 L75 36 Z" fill="url(#ant-cap)" stroke="#B91C1C" stroke-width="0.8"/>
+    <rect x="71" y="36" width="18" height="8" rx="2" fill="url(#ant-cap)" stroke="#B91C1C" stroke-width="0.8"/>
+
+    <!-- Antiseptic Bottle Body -->
+    <path d="M56 50 C56 44, 66 42, 70 42 L90 42 C94 42, 104 44, 104 50 L104 126 C104 132, 98 136, 90 136 L70 136 C62 136, 56 132, 56 126 Z" 
+          fill="url(#povidone-liquid)" stroke="#451A03" stroke-width="1.2"/>
+
+    <!-- Bottle Label -->
+    <rect x="60" y="62" width="40" height="50" rx="3" fill="#FFFBEB" stroke="#FDE68A" stroke-width="0.8"/>
+    <rect x="63" y="67" width="22" height="4" rx="1" fill="#DC2626"/>
+    <text x="80" y="81" fill="#7C2D12" font-family="sans-serif" font-weight="900" font-size="7.5" text-anchor="middle">POVIDONE</text>
+    <text x="80" y="90" fill="#B45309" font-family="sans-serif" font-weight="700" font-size="6.5" text-anchor="middle">IODINE 10%</text>
+
+    <!-- First Aid Cross Icon -->
+    <path d="M77 100 L83 100 M80 97 L80 103" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Highlight -->
+    <path d="M59 52 L59 126" stroke="#FED7AA" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  </g>
+</svg>

@@ -1,9 +1,8 @@
 const { query } = require('../config/db');
 
-// In-Memory Cache for fast, zero-latency catalog lookups
 let medicineCache = null;
 let lastCacheTime = 0;
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes TTL
+const CACHE_TTL_MS = 10 * 60 * 1000;
 
 async function refreshCache() {
   try {
@@ -38,7 +37,6 @@ async function searchMedicines(searchTerm, limit = 30) {
 
   const clean = searchTerm.trim().toLowerCase();
 
-  // In-Memory high-speed relevance match with origin and category
   const scored = [];
   for (const m of allMeds) {
     const brandLower = m.brand_name.toLowerCase();
@@ -82,7 +80,6 @@ async function findById(medicine_id) {
   return rows[0] || null;
 }
 
-// Pre-warm cache on module load
 refreshCache().catch(() => {});
 
 module.exports = {

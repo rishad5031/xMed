@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Automated Test Suite: Major System Upgrade
-// Blood Exchange, Cross-Role Messaging, Public Booking, Blogs
-// =============================================================
-
 const request = require('supertest');
 const app = require('../server');
 const { query } = require('../config/db');
@@ -11,9 +6,6 @@ describe('xMED Major System Upgrade Test Suite', () => {
 
   let createdPostId = null;
 
-  // -------------------------------------------------------------
-  // 1. Blood Donation & Request Exchange Hub
-  // -------------------------------------------------------------
   describe('Blood Exchange Hub APIs', () => {
     test('GET /api/blood/posts - Should retrieve seeded blood exchange posts', async () => {
       const res = await request(app).get('/api/blood/posts');
@@ -88,9 +80,6 @@ describe('xMED Major System Upgrade Test Suite', () => {
     });
   });
 
-  // -------------------------------------------------------------
-  // 2. Universal Real-Time Cross-Role Messaging System
-  // -------------------------------------------------------------
   describe('Universal Messaging Hub APIs', () => {
     test('GET /api/messages/conversations - Should return conversation threads for citizen', async () => {
       const res = await request(app).get('/api/messages/conversations?uid=BD-2000-0001');
@@ -141,9 +130,6 @@ describe('xMED Major System Upgrade Test Suite', () => {
     });
   });
 
-  // -------------------------------------------------------------
-  // 3. Hospital & Doctor Discovery
-  // -------------------------------------------------------------
   describe('Hospital Doctors Discovery APIs', () => {
     test('GET /api/hospitals - Should return list of hospitals with area filter', async () => {
       const res = await request(app).get('/api/hospitals?area=Dhanmondi');
@@ -169,9 +155,6 @@ describe('xMED Major System Upgrade Test Suite', () => {
     });
   });
 
-  // -------------------------------------------------------------
-  // 4. Express Public Outpatient Appointment Booking & Doctor Triage
-  // -------------------------------------------------------------
   describe('Appointment Booking & Doctor Triage Queue APIs', () => {
     let testAptId = null;
 
@@ -222,7 +205,6 @@ describe('xMED Major System Upgrade Test Suite', () => {
       expect(res.body.success).toBe(true);
       expect(Array.isArray(res.body.data)).toBe(true);
 
-      // Verify sorting: each item has priority_level >= next item (or equal)
       for (let i = 0; i < res.body.data.length - 1; i++) {
         expect(res.body.data[i].priority_level).toBeGreaterThanOrEqual(res.body.data[i + 1].priority_level);
       }
@@ -244,9 +226,6 @@ describe('xMED Major System Upgrade Test Suite', () => {
     });
   });
 
-  // -------------------------------------------------------------
-  // 5. Clinical Knowledge Feed & Community Health Blogs
-  // -------------------------------------------------------------
   describe('Clinical Knowledge Feed APIs', () => {
     test('GET /api/blogs - Should return doctor-authored clinical articles', async () => {
       const res = await request(app).get('/api/blogs');

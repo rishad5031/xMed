@@ -1,32 +1,17 @@
-// =============================================================
-// xMED Global Theme & Fluid Magnetic Cursor Aura Engine
-// =============================================================
-
-// 1. Theme Management (Light / Dark)
 (function initTheme() {
-  const savedTheme = localStorage.getItem('xmed_theme') || 'dark';
-  applyTheme(savedTheme);
+  applyTheme('dark');
 })();
 
 function applyTheme(theme) {
   const html = document.documentElement;
-  if (theme === 'light') {
-    html.classList.add('light');
-    html.classList.remove('dark');
-    html.setAttribute('data-theme', 'light');
-  } else {
-    html.classList.add('dark');
-    html.classList.remove('light');
-    html.setAttribute('data-theme', 'dark');
-  }
-  localStorage.setItem('xmed_theme', theme);
-  updateThemeToggleButtons(theme);
+  html.classList.add('dark');
+  html.classList.remove('light');
+  html.setAttribute('data-theme', 'dark');
+  localStorage.setItem('xmed_theme', 'dark');
 }
 
 function toggleTheme() {
-  const current = localStorage.getItem('xmed_theme') || 'dark';
-  const newTheme = current === 'dark' ? 'light' : 'dark';
-  applyTheme(newTheme);
+  applyTheme('dark');
 }
 
 function updateThemeToggleButtons(theme) {
@@ -49,16 +34,13 @@ function updateThemeToggleButtons(theme) {
   });
 }
 
-// 2. Initialize Theme Toggle on Load
 document.addEventListener('DOMContentLoaded', () => {
-  // Setup theme toggle buttons
   document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
     btn.addEventListener('click', toggleTheme);
   });
   updateThemeToggleButtons(localStorage.getItem('xmed_theme') || 'dark');
 });
 
-// 3. Global Toast Notifications
 function showToast(message, type = 'info', duration = 4000) {
   let container = document.getElementById('toast-container');
   if (!container) {
@@ -96,7 +78,6 @@ function showToast(message, type = 'info', duration = 4000) {
   }, duration);
 }
 
-// 4. Clipboard helper
 function copyToClipboard(text, label = 'UID') {
   navigator.clipboard.writeText(text).then(() => {
     showToast(`${label} copied to clipboard!`, 'success');
@@ -105,7 +86,6 @@ function copyToClipboard(text, label = 'UID') {
   });
 }
 
-// 5. Auth & Session Management
 const Auth = {
   getToken: () => localStorage.getItem('xmed_token') || localStorage.getItem('token'),
   getUser: () => {

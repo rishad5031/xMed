@@ -1,7 +1,3 @@
-// =============================================================
-// xMED E-Prescription QR & PDF Export Controller
-// =============================================================
-
 let currentPrescription = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -100,7 +96,6 @@ function renderPrescription(p) {
   document.getElementById('rx-signature-hash').textContent = `SHA256-AUTHENTICATED-${p.prescription_id}-${p.patient_uid}-${p.doctor_id}`;
 }
 
-// Generate Official Authenticity QR Code
 function setupQRCode(p) {
   const qrContainer = document.getElementById('rx-qrcode-container');
   if (!qrContainer) return;
@@ -118,7 +113,6 @@ function setupQRCode(p) {
       correctLevel: QRCode.CorrectLevel.M
     });
   } else {
-    // Fallback QR code SVG
     qrContainer.innerHTML = `
       <div class="w-20 h-20 bg-slate-100 border border-slate-300 rounded flex flex-col items-center justify-center text-[9px] text-center font-mono text-slate-600 p-1">
         <span>SCAN TO VERIFY</span>
@@ -133,7 +127,6 @@ function setupQRCode(p) {
   }
 }
 
-// One-Click Direct PDF Download with html2pdf.js
 function setupPdfDownload(p) {
   const downloadBtn = document.getElementById('btn-download-pdf');
   if (!downloadBtn) return;

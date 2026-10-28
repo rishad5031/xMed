@@ -1,7 +1,6 @@
 const { query } = require('../config/db');
 
 async function getAllBlogs({ search, category, tag } = {}) {
-  // Query health_blogs first with doctor details
   let sql = `
     SELECT 
       hb.blog_id,
@@ -41,7 +40,6 @@ async function getAllBlogs({ search, category, tag } = {}) {
 
   const healthBlogs = await query(sql, params);
 
-  // If no health_blogs exist, fallback to legacy blogs table
   if (healthBlogs.length === 0 && !search && (!category || category === 'All')) {
     return await query(`
       SELECT 
@@ -76,7 +74,6 @@ async function getBlogById(id) {
   const rows = await query(sql, [id]);
   if (rows.length > 0) return rows[0];
 
-  // Fallback check in blogs
   const fallback = await query('SELECT * FROM blogs WHERE blog_id = ? LIMIT 1;', [id]);
   return fallback[0] || null;
 }

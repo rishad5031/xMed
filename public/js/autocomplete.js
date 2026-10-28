@@ -1,13 +1,8 @@
-// =============================================================
-// xMED Live Medicine Autocomplete Component (Enhanced Global & BD Catalog)
-// =============================================================
-
 function setupMedicineAutocomplete({ inputElement, dropdownElement, onSelect }) {
   let debounceTimeout = null;
   let activeIndex = -1;
   let currentResults = [];
 
-  // 300ms Debounced input handler
   inputElement.addEventListener('input', (e) => {
     clearTimeout(debounceTimeout);
     const query = e.target.value.trim();
@@ -37,7 +32,6 @@ function setupMedicineAutocomplete({ inputElement, dropdownElement, onSelect }) 
     }, 280);
   });
 
-  // Keyboard navigation
   inputElement.addEventListener('keydown', (e) => {
     const items = dropdownElement.querySelectorAll('.autocomplete-item');
     if (!items.length) return;

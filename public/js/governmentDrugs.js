@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Official Bangladesh Government Free Essential Drugs
-// Directorate General of Health Services (DGHS) & EDCL Formulary
-// =============================================================
-
 let allGovtDrugs = [];
 let activeCategory = 'All';
 let searchQuery = '';
@@ -10,11 +5,66 @@ let searchQuery = '';
 document.addEventListener('DOMContentLoaded', () => {
   loadEmergencyDrugs();
   setupCatalogModal();
+  setupSingleDrugModal();
 });
 
-/**
- * Fetch and render the Emergency Drug highlight cards on the welcome portal.
- */
+function getDrugImage(drug) {
+  if (!drug) return '/images/drugs/tablets.svg';
+  if (drug.image) return drug.image;
+
+  const form = (drug.dosage_form || '').toLowerCase();
+  const name = ((drug.brand_name || '') + ' ' + (drug.generic_name || '')).toLowerCase();
+
+  if (name.includes('povidone') || name.includes('iodine') || form.includes('topical solution')) {
+    return '/images/drugs/antiseptic.svg';
+  }
+  if (form.includes('ors') || form.includes('powder for solution') || name.includes('oral rehydration') || name.includes('ors')) {
+    return '/images/drugs/ors.svg';
+  }
+  if (form.includes('inhal') || form.includes('nebul') || form.includes('respule') || form.includes('evohaler')) {
+    return '/images/drugs/inhaler.svg';
+  }
+  if (form.includes('infusion') || form.includes('saline') || form.includes('iv fluid') || form.includes('bag')) {
+    return '/images/drugs/iv-infusion.svg';
+  }
+  if (form.includes('eye') || form.includes('ear') || form.includes('drops') || form.includes('ophthalmic') || form.includes('otic')) {
+    return '/images/drugs/eyedrops.svg';
+  }
+  if (form.includes('cream') || form.includes('ointment') || form.includes('tube') || form.includes('emulsion') || form.includes('gel')) {
+    return '/images/drugs/cream-tube.svg';
+  }
+  if (form.includes('vial') || name.includes('vial') || name.includes('insulin') || name.includes('hydrocortisone') || name.includes('ceftriaxone')) {
+    return '/images/drugs/vial.svg';
+  }
+  if (form.includes('ampoule') || form.includes('injection') || name.includes('adrenaline') || name.includes('atropine') || name.includes('diazepam') || name.includes('furosemide') || name.includes('magnesium') || name.includes('oxytocin') || name.includes('tetanus')) {
+    return '/images/drugs/ampoule.svg';
+  }
+  if (form.includes('syrup') || form.includes('suspension') || form.includes('liquid') || form.includes('elixir')) {
+    return '/images/drugs/syrup.svg';
+  }
+  if (form.includes('capsule') || form.includes('softgel') || name.includes('capsule') || name.includes('omeprazole 20mg')) {
+    return '/images/drugs/capsules.svg';
+  }
+  return '/images/drugs/tablets.svg';
+}
+
+function getDrugFormBadge(drug) {
+  const form = (drug.dosage_form || '').toLowerCase();
+  const name = ((drug.brand_name || '') + ' ' + (drug.generic_name || '')).toLowerCase();
+
+  if (name.includes('povidone') || name.includes('iodine')) return 'Antiseptic 100ml';
+  if (form.includes('ors') || name.includes('ors')) return 'ORS Sachet';
+  if (form.includes('inhal') || form.includes('evohaler')) return 'MDI Inhaler';
+  if (form.includes('infusion')) return 'IV Infusion';
+  if (form.includes('drops')) return 'Dropper 5ml';
+  if (form.includes('cream') || form.includes('ointment')) return 'Topical Tube';
+  if (form.includes('vial') || name.includes('insulin') || name.includes('ceftriaxone')) return 'Sterile Vial';
+  if (form.includes('ampoule') || form.includes('injection')) return 'Glass Ampoule';
+  if (form.includes('syrup') || form.includes('suspension')) return 'Syrup Bottle';
+  if (form.includes('capsule')) return 'Oral Capsule';
+  return 'Tablet Strip';
+}
+
 async function loadEmergencyDrugs() {
   const container = document.getElementById('emergency-drugs-grid');
   if (!container) return;
@@ -32,59 +82,66 @@ async function loadEmergencyDrugs() {
       return;
     }
 
-    const emergencyDrugs = json.data;
-    // Highlight top 8 prominent emergency medicines
+    const emergencyDrugs = json.data || json.emergency_drugs || [];
     const displayList = emergencyDrugs.slice(0, 8);
 
-    container.innerHTML = displayList.map(drug => `
-      <div class="govt-drug-card rounded-2xl p-5 border transition-all hover:scale-[1.01] flex flex-col justify-between group">
-        <div class="space-y-3">
-          <!-- Top Badges -->
-          <div class="flex items-center justify-between gap-2">
-            <span class="govt-emergency-pill inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+    container.innerHTML = displayList.map(drug => {
+      const drugId = drug.medicine_id || drug.id || '';
+      const imageSrc = getDrugImage(drug);
+      const formBadge = getDrugFormBadge(drug);
+
+      return `
+      <div class="govt-drug-card rounded-3xl p-4 border transition-all hover:scale-[1.02] flex flex-col justify-between group overflow-hidden relative">
+        <div>
+          <div class="flex items-center justify-between gap-2 z-10 mb-2.5">
+            <span class="govt-emergency-pill inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider">
               <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-              Emergency Supply
+              Emergency
             </span>
-            <span class="govt-free-tag inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold font-mono">
-              <svg class="w-3 h-3 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-              100% Free
+            <span class="govt-free-tag inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black font-mono">
+              <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+              ৳0.00 Free
             </span>
           </div>
 
-          <!-- Drug Names -->
-          <div>
-            <h4 class="govt-drug-title text-base font-black tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+          <div class="relative w-full h-36 rounded-2xl bg-gradient-to-b from-white/5 to-white/0 flex items-center justify-center p-2 mb-3 border border-white/5 group-hover:border-emerald-500/30 transition-all overflow-hidden cursor-pointer" onclick="viewDrugDetails('${escapeHtml(drugId)}')">
+            <div class="absolute inset-0 bg-radial-gradient from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            <img src="${imageSrc}" alt="${escapeHtml(drug.brand_name)}" class="w-24 h-24 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md" loading="lazy" />
+            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-black/70 backdrop-blur-md text-slate-300 border border-white/10">
+              ${escapeHtml(formBadge)}
+            </span>
+          </div>
+
+          <div class="space-y-1">
+            <h4 class="govt-drug-title text-sm font-black tracking-tight group-hover:text-emerald-400 transition-colors line-clamp-1" title="${escapeHtml(drug.brand_name)}">
               ${escapeHtml(drug.brand_name)}
             </h4>
-            <p class="govt-drug-generic text-xs font-semibold pt-0.5">
-              ${escapeHtml(drug.generic_name)} &bull; <span class="font-mono text-[11px] font-bold">${escapeHtml(drug.strength)}</span>
-            </p>
-          </div>
-
-          <!-- Emergency Indication Note -->
-          <div class="govt-drug-indication-box p-3 rounded-xl text-xs space-y-1">
-            <div class="text-[10px] uppercase font-bold tracking-wider opacity-75">Emergency Role</div>
-            <p class="text-xs leading-relaxed font-medium">
-              ${escapeHtml(drug.emergency_indication || 'Life-saving critical care medication')}
-            </p>
+            <div class="flex items-center justify-between text-xs pt-0.5">
+              <span class="govt-drug-generic font-medium text-slate-400 truncate max-w-[130px]" title="${escapeHtml(drug.generic_name)}">
+                ${escapeHtml(drug.generic_name)}
+              </span>
+              <span class="font-mono text-[11px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
+                ${escapeHtml(drug.strength)}
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- Card Footer -->
-        <div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs">
-          <div class="text-[11px] font-medium opacity-80 flex items-center gap-1">
-            <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-            <span>${escapeHtml(drug.facility_tier.split('&')[0].trim())}</span>
-          </div>
+        <div class="pt-3 mt-3 border-t border-white/5 flex items-center justify-between text-xs">
+          <span class="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            ${escapeHtml(drug.stock_status || 'In Stock')}
+          </span>
           <button 
             type="button" 
-            onclick="viewDrugDetails('${escapeHtml(drug.id)}')"
-            class="govt-inspect-btn font-bold text-xs hover:underline flex items-center gap-1">
+            onclick="viewDrugDetails('${escapeHtml(drugId)}')"
+            class="govt-inspect-btn font-bold text-xs hover:underline flex items-center gap-1 cursor-pointer">
             Details &rarr;
           </button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
   } catch (err) {
     console.error('Error rendering emergency drugs:', err);
@@ -96,9 +153,6 @@ async function loadEmergencyDrugs() {
   }
 }
 
-/**
- * Setup handlers for the Full National Drug Catalog Modal.
- */
 function setupCatalogModal() {
   const openBtn = document.getElementById('btn-expand-drug-catalog');
   const modal = document.getElementById('govt-drugs-modal');
@@ -117,7 +171,6 @@ function setupCatalogModal() {
     });
   }
 
-  // Backdrop click
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
@@ -126,14 +179,18 @@ function setupCatalogModal() {
     });
   }
 
-  // ESC Key listener
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
-      closeCatalogModal();
+    if (e.key === 'Escape') {
+      if (modal && !modal.classList.contains('hidden')) {
+        closeCatalogModal();
+      }
+      const singleModal = document.getElementById('single-drug-modal');
+      if (singleModal && !singleModal.classList.contains('hidden')) {
+        closeDrugDetailsModal();
+      }
     }
   });
 
-  // Search input debounced
   if (searchInput) {
     let timeout = null;
     searchInput.addEventListener('input', (e) => {
@@ -146,6 +203,120 @@ function setupCatalogModal() {
   }
 }
 
+function setupSingleDrugModal() {
+  const modal = document.getElementById('single-drug-modal');
+  const closeBtn = document.getElementById('btn-close-single-drug-modal');
+  const closeFooterBtn = document.getElementById('btn-close-single-drug-footer');
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeDrugDetailsModal);
+  }
+  if (closeFooterBtn) {
+    closeFooterBtn.addEventListener('click', closeDrugDetailsModal);
+  }
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeDrugDetailsModal();
+      }
+    });
+  }
+}
+
+window.openDrugDetailsModal = function(drugOrId) {
+  let drug = typeof drugOrId === 'object' ? drugOrId : null;
+  if (!drug && typeof drugOrId === 'string') {
+    drug = allGovtDrugs.find(d => d.id === drugOrId || d.medicine_id === drugOrId);
+  }
+
+  const modal = document.getElementById('single-drug-modal');
+  if (!modal) return;
+
+  if (drug) {
+    populateSingleDrugModal(drug);
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  } else {
+    fetchDrugAndOpenModal(drugOrId);
+  }
+};
+
+async function fetchDrugAndOpenModal(drugId) {
+  try {
+    const res = await fetch(`/api/drugs/${encodeURIComponent(drugId)}`);
+    const json = await res.json();
+    if (json.success && json.data) {
+      populateSingleDrugModal(json.data);
+      const modal = document.getElementById('single-drug-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    } else {
+      openCatalogModal();
+      const input = document.getElementById('drug-catalog-search');
+      if (input) {
+        input.value = drugId;
+        searchQuery = drugId;
+        filterAndRenderCatalog();
+      }
+    }
+  } catch (e) {
+    console.error('Error opening drug details:', e);
+  }
+}
+
+function populateSingleDrugModal(drug) {
+  const idEl = document.getElementById('modal-drug-id');
+  const titleEl = document.getElementById('modal-drug-title');
+  const imgEl = document.getElementById('modal-drug-image');
+  const formBadgeEl = document.getElementById('modal-drug-form-badge');
+  const genericEl = document.getElementById('modal-drug-generic');
+  const strengthEl = document.getElementById('modal-drug-strength');
+  const categoryEl = document.getElementById('modal-drug-category');
+  const indicationEl = document.getElementById('modal-drug-indication');
+  const facilityEl = document.getElementById('modal-drug-facility');
+  const routeEl = document.getElementById('modal-drug-route');
+
+  const drugId = drug.medicine_id || drug.id || 'EDCL-MED';
+  const img = getDrugImage(drug);
+  const badge = getDrugFormBadge(drug);
+
+  if (idEl) idEl.textContent = drugId;
+  if (titleEl) titleEl.textContent = drug.brand_name || 'Government Essential Medicine';
+  if (imgEl) {
+    imgEl.src = img;
+    imgEl.alt = drug.brand_name || '';
+  }
+  if (formBadgeEl) formBadgeEl.textContent = badge;
+  if (genericEl) genericEl.textContent = drug.generic_name || 'Essential Active Substance';
+  if (strengthEl) strengthEl.textContent = drug.strength || 'Standard';
+  if (categoryEl) categoryEl.textContent = drug.category || 'Essential Formulary';
+  if (indicationEl) {
+    indicationEl.textContent = drug.emergency_indication || 'Supplied under National Essential Drug Formulary for outpatient and inpatient clinical care.';
+  }
+  if (facilityEl) {
+    facilityEl.textContent = drug.facility_tier || 'Community Clinic, Upazila Health Complex & All Govt Hospitals';
+  }
+  if (routeEl) {
+    routeEl.textContent = drug.route_of_admin || (drug.dosage_form && drug.dosage_form.includes('Injection') ? 'Intramuscular / Intravenous' : 'Oral');
+  }
+}
+
+window.closeDrugDetailsModal = function() {
+  const modal = document.getElementById('single-drug-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  const catalogModal = document.getElementById('govt-drugs-modal');
+  if (!catalogModal || catalogModal.classList.contains('hidden')) {
+    document.body.style.overflow = '';
+  }
+};
+
+window.viewDrugDetails = function(drugId) {
+  window.openDrugDetailsModal(drugId);
+};
+
 async function openCatalogModal() {
   const modal = document.getElementById('govt-drugs-modal');
   if (!modal) return;
@@ -153,7 +324,6 @@ async function openCatalogModal() {
   modal.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 
-  // If drugs not loaded yet, fetch full catalog
   if (allGovtDrugs.length === 0) {
     await fetchFullCatalog();
   } else {
@@ -168,9 +338,6 @@ function closeCatalogModal() {
   document.body.style.overflow = '';
 }
 
-/**
- * Fetch the complete list of 60+ government essential drugs.
- */
 async function fetchFullCatalog() {
   const tableBody = document.getElementById('govt-catalog-table-body');
   if (tableBody) {
@@ -200,22 +367,19 @@ async function fetchFullCatalog() {
   }
 }
 
-/**
- * Render category filter pill buttons.
- */
 function renderCategoryPills(categories) {
   const pillContainer = document.getElementById('drug-category-pills');
   if (!pillContainer) return;
 
   const popularCategories = [
     'All',
-    'Emergency & Critical Care',
-    'Antibiotic',
-    'Maternal & Child Health',
-    'Gastrointestinal & Rehydration',
+    'Emergency',
+    'Antibiotics',
+    'Maternal & Child',
+    'GI & Rehydration',
     'Respiratory',
-    'Cardiovascular & Diuretics',
-    'Analgesic & Antipyretic'
+    'Cardiovascular',
+    'Analgesics'
   ];
 
   pillContainer.innerHTML = popularCategories.map(cat => `
@@ -230,7 +394,6 @@ function renderCategoryPills(categories) {
 
 window.setDrugCategory = function(category) {
   activeCategory = category;
-  // Update active pill button classes
   document.querySelectorAll('.drug-cat-pill').forEach(btn => {
     if (btn.textContent.trim() === category) {
       btn.classList.add('drug-cat-active');
@@ -244,9 +407,6 @@ window.setDrugCategory = function(category) {
   filterAndRenderCatalog();
 };
 
-/**
- * Filter and render the table rows and count.
- */
 function filterAndRenderCatalog() {
   const tableBody = document.getElementById('govt-catalog-table-body');
   const countBadge = document.getElementById('govt-catalog-count');
@@ -260,7 +420,7 @@ function filterAndRenderCatalog() {
 
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
-    filtered = filtered.filter(d => 
+    filtered = filtered.filter(d =>
       d.brand_name.toLowerCase().includes(q) ||
       d.generic_name.toLowerCase().includes(q) ||
       d.strength.toLowerCase().includes(q) ||
@@ -284,78 +444,59 @@ function filterAndRenderCatalog() {
     return;
   }
 
-  tableBody.innerHTML = filtered.map(drug => `
-    <tr class="govt-catalog-row border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-      <!-- ID & Status -->
+  tableBody.innerHTML = filtered.map(drug => {
+    const drugId = drug.medicine_id || drug.id || '';
+    const facilityTier = drug.facility_tier || (drug.origin && drug.origin.includes('EDCL') ? 'Community Clinics & Upazila' : 'Tertiary & Upazila ER');
+    const isEmergency = drug.is_emergency || drug.category === 'Emergency';
+    const imageSrc = getDrugImage(drug);
+
+    return `
+    <tr class="govt-catalog-row border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer" onclick="openDrugDetailsModal('${escapeHtml(drugId)}')">
       <td class="py-3.5 px-4 whitespace-nowrap">
-        <span class="font-mono text-[11px] font-bold opacity-75">${escapeHtml(drug.id)}</span>
-        ${drug.is_emergency ? `
+        <span class="font-mono text-[11px] font-bold opacity-75">EDCL-${escapeHtml(drugId)}</span>
+        ${isEmergency ? `
           <span class="ml-1.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
             Emergency
           </span>
         ` : ''}
       </td>
 
-      <!-- Brand / Official Supply Name -->
       <td class="py-3.5 px-4 font-bold text-xs">
-        <div class="font-black text-slate-900 dark:text-slate-100">${escapeHtml(drug.brand_name)}</div>
-        <div class="text-[11px] opacity-75 font-normal">${escapeHtml(drug.dosage_form)}</div>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-1 flex-shrink-0">
+            <img src="${imageSrc}" alt="" class="w-7 h-7 object-contain">
+          </div>
+          <div>
+            <div class="font-black text-slate-900 dark:text-slate-100">${escapeHtml(drug.brand_name)}</div>
+            <div class="text-[11px] opacity-75 font-normal">${escapeHtml(drug.dosage_form || 'Tablet')}</div>
+          </div>
+        </div>
       </td>
 
-      <!-- Generic Substance & Strength -->
       <td class="py-3.5 px-4 text-xs">
         <div class="font-semibold text-slate-800 dark:text-slate-200">${escapeHtml(drug.generic_name)}</div>
-        <div class="font-mono text-[11px] text-emerald-700 dark:text-emerald-400 font-bold">${escapeHtml(drug.strength)}</div>
+        <div class="font-mono text-[11px] text-emerald-700 dark:text-emerald-400 font-bold">${escapeHtml(drug.strength || '')}</div>
       </td>
 
-      <!-- Therapeutic Category -->
       <td class="py-3.5 px-4 text-xs whitespace-nowrap">
         <span class="px-2.5 py-1 rounded-full text-[11px] font-medium govt-category-badge">
-          ${escapeHtml(drug.category)}
+          ${escapeHtml(drug.category || 'Essential')}
         </span>
       </td>
 
-      <!-- Government Facility Availability Tier -->
       <td class="py-3.5 px-4 text-xs">
-        <span class="text-[11px] font-medium opacity-90">${escapeHtml(drug.facility_tier)}</span>
+        <span class="text-[11px] font-medium opacity-90">${escapeHtml(facilityTier)}</span>
       </td>
 
-      <!-- Government Subsidized Price -->
       <td class="py-3.5 px-4 text-xs whitespace-nowrap text-right">
         <span class="px-2.5 py-1 rounded-lg text-xs font-black font-mono bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
           ৳0.00 (Free)
         </span>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
-
-/**
- * Inspect single drug details modal.
- */
-window.viewDrugDetails = function(drugId) {
-  const drug = allGovtDrugs.find(d => d.id === drugId) || null;
-  if (!drug) {
-    // If not in cache, open modal and focus search on drugId
-    openCatalogModal();
-    const input = document.getElementById('drug-catalog-search');
-    if (input) {
-      input.value = drugId;
-      searchQuery = drugId;
-      filterAndRenderCatalog();
-    }
-    return;
-  }
-
-  // Open catalog and filter to this drug
-  openCatalogModal();
-  const input = document.getElementById('drug-catalog-search');
-  if (input) {
-    input.value = drug.generic_name;
-    searchQuery = drug.generic_name;
-    filterAndRenderCatalog();
-  }
-};
 
 function escapeHtml(str) {
   if (!str) return '';

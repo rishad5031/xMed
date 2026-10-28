@@ -1,23 +1,22 @@
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 async function testDBMS() {
   const conn = await mysql.createConnection({
-    host: '192.168.0.186',
-    port: 3306,
-    user: 'root',
-    password: '',
-    database: 'xmed_db',
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'xmed_db',
     multipleStatements: true
   });
   console.log('[DBMS Test] Connected to xmed_db.');
 
-  // 1. Column on medicines
   try {
     await conn.query('ALTER TABLE medicines ADD COLUMN IF NOT EXISTS total_prescribed_count INT DEFAULT 0;');
     console.log('[DBMS Test] 1. Column medicines.total_prescribed_count OK');
   } catch(e) { console.log('[DBMS Test] Column notice:', e.message); }
 
-  // 2. Audit logs table
   await conn.query(`
     CREATE TABLE IF NOT EXISTS prescription_audit_logs (
       log_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,7 +30,6 @@ async function testDBMS() {
   `);
   console.log('[DBMS Test] 2. Table prescription_audit_logs OK');
 
-  // 3. Daily summary table
   await conn.query(`
     CREATE TABLE IF NOT EXISTS daily_analytics_summary (
       summary_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -43,7 +41,6 @@ async function testDBMS() {
   `);
   console.log('[DBMS Test] 3. Table daily_analytics_summary OK');
 
-  // 4. Indexes
   try {
     await conn.query('CREATE INDEX IF NOT EXISTS idx_presc_patient_date ON prescriptions(patient_uid, created_at DESC);');
     await conn.query('CREATE INDEX IF NOT EXISTS idx_items_lookup ON prescription_items(prescription_id, medicine_id);');
@@ -54,7 +51,6 @@ async function testDBMS() {
     console.log('[DBMS Test] Index error:', e.message);
   }
 
-  // 5. Triggers
   await conn.query('DROP TRIGGER IF EXISTS trg_update_medicine_usage;');
   await conn.query(`
     CREATE TRIGGER trg_update_medicine_usage
@@ -120,7 +116,6 @@ async function testDBMS() {
   `);
   console.log('[DBMS Test] 5.3 Trigger trg_after_prescription_update OK');
 
-  // 6. Stored Procedure: sp_CreatePrescriptionWithItems
   await conn.query('DROP PROCEDURE IF EXISTS sp_CreatePrescriptionWithItems;');
   await conn.query(`
     CREATE PROCEDURE sp_CreatePrescriptionWithItems(
@@ -175,7 +170,6 @@ async function testDBMS() {
   `);
   console.log('[DBMS Test] 6. Stored Procedure sp_CreatePrescriptionWithItems OK');
 
-  // 7. Stored Procedure: sp_GetPatientLongitudinalHistory
   await conn.query('DROP PROCEDURE IF EXISTS sp_GetPatientLongitudinalHistory;');
   await conn.query(`
     CREATE PROCEDURE sp_GetPatientLongitudinalHistory(
@@ -231,7 +225,6 @@ async function testDBMS() {
   `);
   console.log('[DBMS Test] 7. Stored Procedure sp_GetPatientLongitudinalHistory OK');
 
-  // 8. Relational Views
   await conn.query('DROP VIEW IF EXISTS vw_complete_patient_history;');
   await conn.query(`
     CREATE VIEW vw_complete_patient_history AS
@@ -286,7 +279,6 @@ async function testDBMS() {
   `);
   console.log('[DBMS Test] 8.2 View vw_doctor_clinical_analytics OK');
 
-  // 9. Scheduled Event
   try {
     await conn.query('SET GLOBAL event_scheduler = ON;');
     await conn.query('DROP EVENT IF EXISTS evt_daily_health_summary;');
@@ -314,7 +306,6 @@ async function testDBMS() {
     console.log('[DBMS Test] Event scheduler notice:', e.message);
   }
 
-  // 10. Verification: Test CALL sp_CreatePrescriptionWithItems directly!
   console.log('[DBMS Test] 10. Testing ACID execution of sp_CreatePrescriptionWithItems...');
   const [existingMeds] = await conn.query('SELECT medicine_id FROM medicines LIMIT 2;');
   const mId1 = existingMeds[0].medicine_id;
@@ -334,15 +325,12 @@ async function testDBMS() {
   const newRxId = rxCall[0][0].prescription_id;
   console.log('[DBMS Test] Created Rx via Stored Procedure! ID =', newRxId);
 
-  // Check audit log trigger fired!
   const [auditRows] = await conn.query('SELECT * FROM prescription_audit_logs WHERE prescription_id = ?;', [newRxId]);
   console.log('[DBMS Test] Trigger verified! Audit log entry found:', auditRows[0].action_type, 'at', auditRows[0].changed_at);
 
-  // Check medicine usage trigger incremented!
   const [medRows] = await conn.query('SELECT medicine_id, brand_name, total_prescribed_count FROM medicines WHERE medicine_id IN (?, ?);', [mId1, mId2]);
   console.log('[DBMS Test] Medicine usage counts after trigger increment:', medRows);
 
-  // Check view query
   const [viewRows] = await conn.query('SELECT * FROM vw_complete_patient_history WHERE prescription_id = ?;', [newRxId]);
   console.log('[DBMS Test] View query verified! Result:', {
     patient: viewRows[0].patient_name,
@@ -350,7 +338,6 @@ async function testDBMS() {
     diagnosis: viewRows[0].diagnosis
   });
 
-  // Check analytics view
   const [analyticsRows] = await conn.query('SELECT * FROM vw_doctor_clinical_analytics LIMIT 2;');
   console.log('[DBMS Test] Doctor analytics view verified:', analyticsRows);
 

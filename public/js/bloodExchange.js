@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Blood Donation & Request Exchange Client Script
-// Life-Saving Voluntary Community Blood Bank
-// =============================================================
-
 let activeBloodType = '';
 let activeBloodGroup = '';
 let activeUrgency = '';
@@ -11,8 +6,8 @@ async function loadBloodStats() {
   try {
     const res = await fetch('/api/blood/stats');
     const data = await res.json();
-    if (data.success && data.data) {
-      const stats = data.data;
+    if (data.success && (data.stats || data.data)) {
+      const stats = data.stats || data.data;
       const donorsEl = document.getElementById('stat-active-donors');
       const requestsEl = document.getElementById('stat-pending-requests');
       const emergenciesEl = document.getElementById('stat-critical-emergencies');
@@ -54,8 +49,9 @@ async function loadBloodPosts() {
 
     const res = await fetch(url);
     const result = await res.json();
+    const postList = result.data || result.posts || [];
 
-    if (!result.success || !result.data || result.data.length === 0) {
+    if (!result.success || !Array.isArray(postList) || postList.length === 0) {
       container.innerHTML = `
         <div class="col-span-full text-center py-12 liquid-card p-8 text-slate-400">
           <svg class="w-12 h-12 mx-auto text-slate-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
@@ -66,14 +62,14 @@ async function loadBloodPosts() {
       return;
     }
 
-    container.innerHTML = result.data.map(post => {
+    container.innerHTML = postList.map(post => {
       const isRequest = post.post_type === 'REQUEST';
       const isCritical = post.urgency === 'CRITICAL_EMERGENCY';
       const isUrgent = post.urgency === 'URGENT';
 
       let urgencyBadge = '';
       if (isCritical) {
-        urgencyBadge = `<span class="blood-emergency-pill">CRITICAL EMERGENCY</span>`;
+        urgencyBadge = `<span class="blood-emergency-pill">CRITICAL</span>`;
       } else if (isUrgent) {
         urgencyBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 backdrop-blur-md">URGENT</span>`;
       } else {
@@ -81,7 +77,7 @@ async function loadBloodPosts() {
       }
 
       const typeBadge = isRequest
-        ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-400 border border-rose-500/30 backdrop-blur-md">BLOOD NEEDED (${post.units_needed || 1} Bag)</span>`
+        ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-400 border border-rose-500/30 backdrop-blur-md">NEEDED &mdash; ${post.units_needed || 1} bags</span>`
         : `<span class="px-2.5 py-1 rounded-full text-[11px] font-black blood-donor-badge">DONOR AVAILABLE</span>`;
 
       return `
@@ -223,14 +219,12 @@ function startDirectChat(authorUid, authorName) {
     return;
   }
 
-  // If in dashboard, switch to messages tab and open thread
   if (typeof switchDashboardTab === 'function') {
     switchDashboardTab('messages');
     if (typeof openChatThread === 'function') {
       openChatThread(authorUid, authorName);
     }
   } else {
-    // If on public landing page or public blood page, redirect to dashboard
     window.location.href = '/patient-dashboard?tab=messages&chatWith=' + encodeURIComponent(authorUid);
   }
 }
@@ -300,7 +294,6 @@ function closeLoginRequiredModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// Initializer
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('blood-posts-grid')) {
     loadBloodStats();

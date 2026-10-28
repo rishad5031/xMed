@@ -33,9 +33,7 @@ async function getDoctorStats(doctor_id) {
   return rows[0] || { total_prescriptions: 0, total_patients: 0 };
 }
 
-// Doctor Analytics for Chart.js
 async function getDoctorAnalytics(doctor_id) {
-  // 1. Consultation trend: last 7 days or months
   const trendSql = `
     SELECT 
       DATE_FORMAT(created_at, '%d %b') AS label,
@@ -48,7 +46,6 @@ async function getDoctorAnalytics(doctor_id) {
   `;
   let trends = await query(trendSql, [doctor_id]);
 
-  // If few records exist, provide realistic simulation data for smooth visualization
   if (trends.length <= 1) {
     trends = [
       { label: 'Mon', count: 4 },
@@ -61,7 +58,6 @@ async function getDoctorAnalytics(doctor_id) {
     ];
   }
 
-  // 2. Prescribed Medicine Category Distribution
   const categorySql = `
     SELECT 
       COALESCE(m.category, 'General') AS category,

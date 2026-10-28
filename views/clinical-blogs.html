@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinical Research & Practice | xMED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              mint: '#10B981',
+              'mint-light': '#34D399',
+              'mint-dark': '#059669',
+              cyan: '#12544F',
+              slate: '#94A3B8',
+              'slate-light': '#CBD5E1',
+              dark: '#0A0C0E',
+              'dark-deep': '#050607',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            script: ['Caveat', 'cursive'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-[#050607] text-[#F8FAFC] font-sans antialiased min-h-screen flex flex-col justify-between relative overflow-x-hidden">
+
+  <!-- Ambient Light Mesh Background -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="hero-radial-backlight"></div>
+  </div>
+
+  <!-- Top Floating Navigation Dock -->
+  <div class="sticky top-4 z-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <header class="top-floating-dock px-5 sm:px-7 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-[#050607] border border-emerald-500/40 p-0.5 shadow-lg group-hover:border-emerald-400 transition-all flex items-center justify-center font-mono font-bold text-sm text-white">
+          <span class="text-white">[</span>
+          <span class="text-emerald-400 font-black">/</span>
+          <span class="text-white">]</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold tracking-tight text-white">x<span class="text-emerald-400">MED</span></span>
+            <span class="text-[10px] uppercase font-mono font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-300 border border-emerald-500/30">Clinical Insights</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide hidden sm:block">BMDC Physician Medical Research</p>
+        </div>
+      </a>
+
+      <!-- Quick Nav Links -->
+      <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-200">
+        <a href="/" class="hover:text-emerald-400 transition-colors">Home</a>
+        <a href="/appointments" class="hover:text-emerald-400 transition-colors">Appointments</a>
+        <a href="/govt-drugs" class="hover:text-emerald-400 transition-colors">Free Drugs</a>
+        <a href="/blood-bank" class="hover:text-emerald-400 transition-colors">Blood Bank</a>
+        <a href="/clinical-blogs" class="text-emerald-400 font-bold hover:text-emerald-300 transition-colors">Clinical Insights</a>
+        <a href="/ai-assistant" class="font-bold flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 transition-all">
+          <img src="/images/mr-med-robot.png" alt="AI" class="w-4 h-4 rounded-full object-cover object-left">
+          <span>MR.MED AI</span>
+        </a>
+        <a href="/login" class="hover:text-emerald-400 transition-colors">Clinical Login</a>
+      </nav>
+
+      <!-- Right Action -->
+      <div class="flex items-center gap-2.5">
+        <a href="/login" class="brand-outline-pill px-4 py-2 text-xs font-bold">Sign In</a>
+        <a href="/register" class="px-4 sm:px-5 py-2 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold shadow-[0_0_18px_rgba(251,191,36,0.35)] transition-all">Get Citizen UID</a>
+      </div>
+    </header>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-10 relative z-10">
+    
+    <!-- Hero Banner -->
+    <div class="dark-obsidian-card p-8 sm:p-10 rounded-3xl border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+      <div class="space-y-3 max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+          <span>Verified Medical Knowledge</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          Clinical Research & Practice
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          Treatment guidelines and peer-reviewed articles from BMDC-registered physicians.
+        </p>
+      </div>
+
+      <!-- Specialty Category Filter Tabs -->
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="blog-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-black transition-all shadow-md cursor-pointer" data-category="All">All</button>
+        <button type="button" class="blog-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer" data-category="Cardiology">Cardiology</button>
+        <button type="button" class="blog-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer" data-category="Internal Medicine">Internal Medicine</button>
+        <button type="button" class="blog-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer" data-category="Health Informatics">Health Informatics</button>
+        <button type="button" class="blog-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer" data-category="Pediatrics">Pediatrics</button>
+      </div>
+    </div>
+
+    <!-- Dynamic Blog Cards Grid -->
+    <div id="doctor-blogs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="h-64 rounded-3xl bg-white/5 border border-white/10 animate-pulse"></div>
+      <div class="h-64 rounded-3xl bg-white/5 border border-white/10 animate-pulse"></div>
+      <div class="h-64 rounded-3xl bg-white/5 border border-white/10 animate-pulse"></div>
+    </div>
+
+  </main>
+
+  <!-- Minimal Global Footer -->
+  <footer class="py-8 border-t border-white/10 bg-[#050607] relative z-10 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-bold text-white">x<span class="text-emerald-400">MED</span></span>
+        <span>&bull;</span>
+        <span>Clinical Knowledge & Medical Research Informatics</span>
+      </div>
+      <div class="flex items-center gap-5 text-slate-300">
+        <a href="/" class="hover:text-emerald-400">Home</a>
+        <a href="/appointments" class="hover:text-emerald-400">Appointments</a>
+        <a href="/govt-drugs" class="hover:text-emerald-400">Free Drugs</a>
+        <a href="/blood-bank" class="hover:text-emerald-400">Blood Bank</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/theme.js"></script>
+  <script src="/js/auth-state.js"></script>
+  <script src="/js/blog.js"></script>
+</body>
+</html>

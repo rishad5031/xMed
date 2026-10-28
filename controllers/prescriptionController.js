@@ -1,9 +1,15 @@
 const medicineModel = require('../models/medicineModel');
+
 const prescriptionModel = require('../models/prescriptionModel');
+
 const citizenModel = require('../models/citizenModel');
+
 const { getConnection } = require('../config/db');
 
-// Live medicine autocomplete search (uses high-speed in-memory cache)
+/**
+ * High-Speed Live Medicine Autocomplete Search
+ * GET /api/medicines/search?q=paracetamol
+ */
 async function searchMedicines(req, res) {
   try {
     const q = req.query.q || '';
@@ -15,11 +21,20 @@ async function searchMedicines(req, res) {
   }
 }
 
-// Strict Multi-Step ACID Transaction for Prescription & Items Submission
+/**
+ * Strict Multi-Step ACID Transaction for Prescription & Items Submission
+ * POST /api/prescriptions
+ * 
+ * ACID Guarantees:
+ * - Atomicity: Both prescription header and all prescription items are inserted together or rolled back completely.
+ * - Consistency: Domain constraints and MySQL allergy triggers (SIGNAL SQLSTATE '45000') validate data integrity.
+ * - Isolation: Uncommitted transactions remain unobservable to other doctor/patient sessions.
+ * - Durability: Changes are persisted to disk upon connection.commit().
+ */
 async function createPrescription(req, res) {
   const connection = await getConnection();
   try {
-    const doctor_id = req.user.id;
+    const doctor_id = req.user.doctor_id || req.user.id;
     const { patient_uid, diagnosis, clinical_notes, items } = req.body;
 
     if (!patient_uid || !diagnosis) {
@@ -44,17 +59,14 @@ async function createPrescription(req, res) {
       }
     }
 
-    // 1. Begin Multi-Step ACID Transaction
     await connection.beginTransaction();
 
-    // 2. Insert into master prescriptions table
     const [rxResult] = await connection.query(
       'INSERT INTO prescriptions (patient_uid, doctor_id, diagnosis, clinical_notes) VALUES (?, ?, ?, ?)',
       [patient.uid, doctor_id, diagnosis, clinical_notes || '']
     );
     const prescription_id = rxResult.insertId;
 
-    // 3. Loop insert into prescription_items (Triggers trg_update_medicine_usage fire automatically)
     for (const it of items) {
       await connection.query(
         'INSERT INTO prescription_items (prescription_id, medicine_id, dosage_instruction, duration) VALUES (?, ?, ?, ?)',
@@ -62,7 +74,6 @@ async function createPrescription(req, res) {
       );
     }
 
-    // 4. Atomically commit transaction
     await connection.commit();
 
     const prescription = await prescriptionModel.getPrescriptionById(prescription_id);
@@ -73,7 +84,7 @@ async function createPrescription(req, res) {
       prescription
     });
   } catch (error) {
-    // 5. Automatic rollback on any error
+
     await connection.rollback();
     console.error('[PrescriptionController] createPrescription transaction rollback:', error.message);
 
@@ -91,11 +102,11 @@ async function createPrescription(req, res) {
       error: error.message
     });
   } finally {
+
     connection.release();
   }
 }
 
-// Fetch prescription details for printable view or patient review
 async function getPrescriptionDetails(req, res) {
   try {
     const { id } = req.params;
@@ -105,7 +116,6 @@ async function getPrescriptionDetails(req, res) {
       return res.status(404).json({ success: false, message: 'Prescription record not found.' });
     }
 
-    // Security check: if patient is viewing, ensure it belongs to them
     if (req.user && req.user.role === 'patient' && req.user.uid !== prescription.patient_uid) {
       return res.status(403).json({ success: false, message: 'Access denied to this medical record.' });
     }
@@ -117,7 +127,6 @@ async function getPrescriptionDetails(req, res) {
   }
 }
 
-// Public Authenticity Verification
 async function verifyPrescriptionPublic(req, res) {
   try {
     const { id } = req.params;
@@ -142,7 +151,6 @@ async function verifyPrescriptionPublic(req, res) {
   }
 }
 
-// Fetch immutable audit logs for a prescription
 async function getPrescriptionAuditTrail(req, res) {
   try {
     const { id } = req.params;
@@ -154,7 +162,6 @@ async function getPrescriptionAuditTrail(req, res) {
   }
 }
 
-// Fetch doctor clinical analytics from analytical view vw_doctor_clinical_analytics
 async function getDoctorAnalytics(req, res) {
   try {
     const doctor_id = req.user.id;
@@ -166,7 +173,6 @@ async function getDoctorAnalytics(req, res) {
   }
 }
 
-// Fetch complete flattened history from relational view vw_complete_patient_history
 async function getPatientCompleteHistory(req, res) {
   try {
     const { uid } = req.params;

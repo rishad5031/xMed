@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Universal Real-Time Messaging Controller
-// Cross-Role Communication Engine
-// =============================================================
-
 const messageModel = require('../models/messageModel');
 
 async function getConversations(req, res) {

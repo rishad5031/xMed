@@ -21,14 +21,12 @@ describe('MR.MED AI Health Assistant Module Suite', () => {
     expect(typeof res.body.reply).toBe('string');
     expect(res.body.reply.trim().length).toBeGreaterThan(20);
 
-    // Verify response content covers blood pressure / hypertension guidance
     expect(res.body.reply.toLowerCase()).toMatch(/blood pressure|hypertension|mmhg/i);
 
-    // Verify no secret API key is ever leaked in the response headers or body
     expect(res.headers['x-api-key']).toBeUndefined();
     expect(res.headers['gemini-api-key']).toBeUndefined();
     expect(JSON.stringify(res.body)).not.toContain(process.env.GEMINI_API_KEY || 'AIzaSy');
-  }, 30000); // 30s timeout for external LLM call if necessary
+  }, 30000);
 
   test('POST /api/ai/chat: Rejects empty message with HTTP 400', async () => {
     const res = await request(app)

@@ -1,16 +1,13 @@
 const { query } = require('../config/db');
 
-// Create prescription and items in a single ACID transaction via Stored Procedure
 async function createPrescriptionWithItems({ patient_uid, doctor_id, diagnosis, clinical_notes, items }) {
   const itemsJson = JSON.stringify(items || []);
   
-  // Execute stored procedure with ACID transaction & SQLEXCEPTION rollback handler
   const callResults = await query(
     'CALL sp_CreatePrescriptionWithItems(?, ?, ?, ?, ?, @out_prescription_id);',
     [patient_uid, doctor_id, diagnosis, clinical_notes || '', itemsJson]
   );
 
-  // The stored procedure returns the newly created prescription_id in its result set
   const firstSet = Array.isArray(callResults) ? callResults[0] : null;
   const returnedRow = Array.isArray(firstSet) ? firstSet[0] : firstSet;
   const prescription_id = returnedRow ? returnedRow.prescription_id : null;
@@ -22,7 +19,6 @@ async function createPrescriptionWithItems({ patient_uid, doctor_id, diagnosis, 
   return await getPrescriptionById(prescription_id);
 }
 
-// Fetch complete prescription with doctor, patient, and items details
 async function getPrescriptionById(prescription_id) {
   const rxSql = `
     SELECT 
@@ -55,7 +51,6 @@ async function getPrescriptionById(prescription_id) {
 
   const prescription = rxRows[0];
 
-  // Fetch prescription items
   const itemsSql = `
     SELECT 
       pi.item_id,
@@ -78,7 +73,6 @@ async function getPrescriptionById(prescription_id) {
   return prescription;
 }
 
-// Fetch full prescription timeline for a patient with pagination
 async function getPrescriptionsByPatientUid(patient_uid, limit = 20, offset = 0) {
   const rxSql = `
     SELECT 
@@ -99,7 +93,6 @@ async function getPrescriptionsByPatientUid(patient_uid, limit = 20, offset = 0)
   `;
   const prescriptions = await query(rxSql, [patient_uid, parseInt(limit, 10), parseInt(offset, 10)]);
 
-  // Attach items to each prescription
   for (const rx of prescriptions) {
     const itemsSql = `
       SELECT 
@@ -122,7 +115,6 @@ async function getPrescriptionsByPatientUid(patient_uid, limit = 20, offset = 0)
   return prescriptions;
 }
 
-// Query immutable audit log table
 async function getPrescriptionAuditLogs(prescription_id) {
   const sql = `
     SELECT log_id, prescription_id, action_type, performed_by_doctor_id, old_data, new_data, changed_at
@@ -133,7 +125,6 @@ async function getPrescriptionAuditLogs(prescription_id) {
   return await query(sql, [prescription_id]);
 }
 
-// Query optimized analytical view for doctor metrics
 async function getDoctorClinicalAnalytics(doctor_id) {
   const sql = `
     SELECT *
@@ -145,7 +136,6 @@ async function getDoctorClinicalAnalytics(doctor_id) {
   return rows[0] || null;
 }
 
-// Query relational view vw_complete_patient_history
 async function getCompletePatientHistory(patient_uid) {
   const sql = `
     SELECT *
@@ -156,7 +146,6 @@ async function getCompletePatientHistory(patient_uid) {
   return await query(sql, [patient_uid]);
 }
 
-// Public verification helper
 async function verifyPrescriptionPublic(prescription_id) {
   const rxSql = `
     SELECT 

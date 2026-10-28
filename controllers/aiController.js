@@ -1,9 +1,7 @@
 const { GoogleGenAI } = require('@google/genai');
 
-// Strict medical disclaimer system instruction as specified
 const SYSTEM_INSTRUCTION = `You are MR.MED, the intelligent health assistant for xMED. Provide general wellness guidance and explain diagnostic terms simply. Do not diagnose conditions or prescribe medications. Advise consulting a licensed doctor for official clinical decisions.`;
 
-// Conversational Clinical Fallback Knowledge Base (guarantees 100% uptime even if network hiccups)
 const CLINICAL_KNOWLEDGE_BASE = [
   {
     keywords: ['hi', 'hello', 'hey', 'who are you', 'what can you do', 'good morning', 'good evening', 'help'],
@@ -162,8 +160,11 @@ Thank you for your question regarding health, wellness, and medical terminology!
 
 /**
  * 100% Server-Side Proxied POST /api/ai/chat
- * Reads GEMINI_API_KEY from environment.
- * Zero client key input required.
+ * Reads GEMINI_API_KEY directly from server environment variables.
+ * Zero client API key entry required — seamless, friction-free citizen experience.
+ * 
+ * @param {import('express').Request} req - Express request with JSON body containing user query
+ * @param {import('express').Response} res - Express response stream
  */
 async function handleChat(req, res) {
   try {
@@ -179,14 +180,17 @@ async function handleChat(req, res) {
 
     const apiKey = process.env.GEMINI_API_KEY;
 
-    // Execute server-side Gemini call with server key
     if (apiKey && apiKey.trim() !== '' && apiKey.trim() !== 'your_gemini_api_key_here') {
+
       const candidateModels = ['gemini-3.6-flash', 'gemini-2.5-flash'];
+
       const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
+
       const promptText = `User inquiry: "${message.trim()}"`;
 
       for (const modelName of candidateModels) {
         try {
+
           const response = await ai.models.generateContent({
             model: modelName,
             contents: promptText,
@@ -210,7 +214,6 @@ async function handleChat(req, res) {
       }
     }
 
-    // High-reliability clinical fallback if external API is unreachable
     const fallbackAnswer = findFallbackAnswer(message);
     return res.json({
       success: true,
@@ -228,9 +231,13 @@ async function handleChat(req, res) {
   }
 }
 
-// Server-side status check
+/**
+ * Server-side AI Subsystem Health & Status Probe
+ * GET /api/ai/status
+ */
 async function getStatus(req, res) {
   const hasKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim() !== '');
+  
   return res.json({
     success: true,
     active: true,

@@ -27,7 +27,6 @@ async function initializeDatabase() {
 
     console.log(`[xMED DB Init] Verifying and updating core tables in strict FK dependency order...`);
 
-    // 1. hospitals
     await connection.query(`
       CREATE TABLE IF NOT EXISTS hospitals (
         hospital_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,7 +41,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 2. doctors (Enhanced Schema)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS doctors (
         doctor_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -70,7 +68,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
-    // Migrate existing doctors table if needed
     try {
       await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS uid VARCHAR(20) NULL;`);
       await connection.query(`ALTER TABLE doctors ADD COLUMN IF NOT EXISTS name VARCHAR(100) NULL;`);
@@ -91,7 +88,6 @@ async function initializeDatabase() {
       console.log(`[xMED DB Init] Doctor migration notice:`, e.message);
     }
 
-    // 3. citizens (Patients Schema with Location Details)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS citizens (
         uid VARCHAR(20) PRIMARY KEY,
@@ -113,7 +109,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
-    // Migrate existing citizens table if needed
     try {
       await connection.query(`ALTER TABLE citizens ADD COLUMN IF NOT EXISTS name VARCHAR(100) NULL;`);
       await connection.query(`ALTER TABLE citizens ADD COLUMN IF NOT EXISTS area VARCHAR(100) NOT NULL DEFAULT 'Dhanmondi';`);
@@ -126,7 +121,6 @@ async function initializeDatabase() {
       console.log(`[xMED DB Init] Citizen migration notice:`, e.message);
     }
 
-    // 4. medicines
     await connection.query(`
       CREATE TABLE IF NOT EXISTS medicines (
         medicine_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -146,7 +140,6 @@ async function initializeDatabase() {
       await connection.query(`ALTER TABLE medicines ADD COLUMN IF NOT EXISTS manufacturer VARCHAR(150) DEFAULT 'Essential Drugs Co. Ltd. (EDCL)';`);
     } catch (e) {}
 
-    // 5. prescriptions
     await connection.query(`
       CREATE TABLE IF NOT EXISTS prescriptions (
         prescription_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -167,7 +160,6 @@ async function initializeDatabase() {
       await connection.query(`ALTER TABLE prescriptions ADD COLUMN IF NOT EXISTS qr_code_token VARCHAR(255) NULL;`);
     } catch (e) {}
 
-    // 6. prescription_items
     await connection.query(`
       CREATE TABLE IF NOT EXISTS prescription_items (
         item_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -190,7 +182,6 @@ async function initializeDatabase() {
       await connection.query(`ALTER TABLE prescription_items ADD COLUMN IF NOT EXISTS dosage_instruction VARCHAR(100) NULL;`);
     } catch (e) {}
 
-    // 7. appointments (Priority & Emergency FCFS Table)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS appointments (
         appointment_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -204,6 +195,10 @@ async function initializeDatabase() {
         is_emergency BOOLEAN DEFAULT FALSE,
         emergency_reason TEXT NULL,
         priority_level INT DEFAULT 1,
+        fee_amount DECIMAL(10,2) DEFAULT 5.00,
+        payment_status ENUM('PENDING', 'PAID', 'REFUNDED') DEFAULT 'PAID',
+        payment_method VARCHAR(50) DEFAULT 'bKash',
+        transaction_id VARCHAR(100) NULL,
         applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         CONSTRAINT fk_apt_patient FOREIGN KEY (patient_uid) REFERENCES citizens(uid) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -218,9 +213,12 @@ async function initializeDatabase() {
 
     try {
       await connection.query(`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;`);
+      await connection.query(`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS fee_amount DECIMAL(10,2) DEFAULT 5.00;`);
+      await connection.query(`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS payment_status ENUM('PENDING', 'PAID', 'REFUNDED') DEFAULT 'PAID';`);
+      await connection.query(`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50) DEFAULT 'bKash';`);
+      await connection.query(`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS transaction_id VARCHAR(100) NULL;`);
     } catch (e) {}
 
-    // 8. diagnostic_reports
     await connection.query(`
       CREATE TABLE IF NOT EXISTS diagnostic_reports (
         report_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -243,7 +241,6 @@ async function initializeDatabase() {
       await connection.query(`ALTER TABLE diagnostic_reports ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;`);
     } catch (e) {}
 
-    // 9. patient_self_medications (Self-Reported / Emergency OTC Medications)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS patient_self_medications (
         log_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -257,7 +254,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 10. blogs
     await connection.query(`
       CREATE TABLE IF NOT EXISTS blogs (
         blog_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -273,10 +269,8 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8. ADVANCED DBMS: Audit Trail & Analytics Tables
     console.log(`[xMED DB Init] Initializing immutable audit logging & analytics infrastructure...`);
 
-    // 8.1 Prescription Audit Logs
     await connection.query(`
       CREATE TABLE IF NOT EXISTS prescription_audit_logs (
         log_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -289,7 +283,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.1.1 Allergens & Drug Contraindications
     await connection.query(`
       CREATE TABLE IF NOT EXISTS allergens (
         allergen_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -320,7 +313,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.1.2 Enterprise System Audit Logs
     await connection.query(`
       CREATE TABLE IF NOT EXISTS system_audit_logs (
         log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -336,7 +328,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.1.3 Hospital Departments & Bed Management
     await connection.query(`
       CREATE TABLE IF NOT EXISTS departments (
         department_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -362,7 +353,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.2 Daily Analytics Summary (for Event Scheduler)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS daily_analytics_summary (
         summary_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -373,7 +363,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.3 Blood Donation & Request Hub
     await connection.query(`
       CREATE TABLE IF NOT EXISTS blood_posts (
         post_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -396,7 +385,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.4 Universal Real-Time Messaging System
     await connection.query(`
       CREATE TABLE IF NOT EXISTS messages (
         message_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -410,7 +398,6 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.5 Community Health Blogs / Clinical Knowledge Feed
     await connection.query(`
       CREATE TABLE IF NOT EXISTS health_blogs (
         blog_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -426,12 +413,10 @@ async function initializeDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 8.6 Alter medicines table to add total_prescribed_count
     try {
       await connection.query(`ALTER TABLE medicines ADD COLUMN IF NOT EXISTS total_prescribed_count INT DEFAULT 0;`);
     } catch (e) {}
 
-    // 8.7 Targeted Indexes (Composite, B-Tree, Full-Text) & Constraints
     console.log(`[xMED DB Init] Optimizing query plans with advanced indexes & constraints...`);
     try {
       await connection.query(`CREATE INDEX IF NOT EXISTS idx_presc_patient_created ON prescriptions(patient_uid, created_at DESC);`);
@@ -450,10 +435,8 @@ async function initializeDatabase() {
       await connection.query(`ALTER TABLE prescription_items ADD CONSTRAINT chk_item_duration CHECK (duration != '');`);
     } catch (e) {}
 
-    // 8.5 Automated Database Triggers
     console.log(`[xMED DB Init] Compiling automated database triggers...`);
 
-    // Trigger 1: Medicine prescription counter
     await connection.query(`DROP TRIGGER IF EXISTS trg_update_medicine_usage;`);
     await connection.query(`
       CREATE TRIGGER trg_update_medicine_usage
@@ -466,7 +449,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 2: Prescription insertion audit log
     await connection.query(`DROP TRIGGER IF EXISTS trg_after_prescription_insert;`);
     await connection.query(`
       CREATE TRIGGER trg_after_prescription_insert
@@ -489,7 +471,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 3: Prescription update audit log
     await connection.query(`DROP TRIGGER IF EXISTS trg_after_prescription_update;`);
     await connection.query(`
       CREATE TRIGGER trg_after_prescription_update
@@ -518,7 +499,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 4: Compatibility Trigger for Doctors
     await connection.query(`DROP TRIGGER IF EXISTS trg_doctors_compat_bi;`);
     await connection.query(`
       CREATE TRIGGER trg_doctors_compat_bi
@@ -533,7 +513,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 5: Compatibility Trigger for Citizens
     await connection.query(`DROP TRIGGER IF EXISTS trg_citizens_compat_bi;`);
     await connection.query(`
       CREATE TRIGGER trg_citizens_compat_bi
@@ -546,7 +525,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 6: Allergy Conflict Safety Check (Pre-Insert on prescription_items)
     await connection.query(`DROP TRIGGER IF EXISTS trg_check_allergy_before_prescribe;`);
     await connection.query(`
       CREATE TRIGGER trg_check_allergy_before_prescribe
@@ -577,7 +555,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 7: System Audit Logging for Citizens Update
     await connection.query(`DROP TRIGGER IF EXISTS trg_audit_citizens_update;`);
     await connection.query(`
       CREATE TRIGGER trg_audit_citizens_update
@@ -594,7 +571,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 8: System Audit Logging for Citizens Delete
     await connection.query(`DROP TRIGGER IF EXISTS trg_audit_citizens_delete;`);
     await connection.query(`
       CREATE TRIGGER trg_audit_citizens_delete
@@ -611,7 +587,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 9: System Audit Logging for Prescriptions Update
     await connection.query(`DROP TRIGGER IF EXISTS trg_audit_prescriptions_update;`);
     await connection.query(`
       CREATE TRIGGER trg_audit_prescriptions_update
@@ -628,7 +603,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 10: System Audit Logging for Prescriptions Delete
     await connection.query(`DROP TRIGGER IF EXISTS trg_audit_prescriptions_delete;`);
     await connection.query(`
       CREATE TRIGGER trg_audit_prescriptions_delete
@@ -645,7 +619,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 11: System Audit Logging for Appointments Update
     await connection.query(`DROP TRIGGER IF EXISTS trg_audit_appointments_update;`);
     await connection.query(`
       CREATE TRIGGER trg_audit_appointments_update
@@ -662,7 +635,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Trigger 12: System Audit Logging for Appointments Delete
     await connection.query(`DROP TRIGGER IF EXISTS trg_audit_appointments_delete;`);
     await connection.query(`
       CREATE TRIGGER trg_audit_appointments_delete
@@ -679,10 +651,8 @@ async function initializeDatabase() {
       END;
     `);
 
-    // 8.6 Stored Procedures with ACID Transactions
     console.log(`[xMED DB Init] Compiling stored procedures with ACID transaction handlers...`);
 
-    // Stored Procedure 1: sp_CreatePrescriptionWithItems
     await connection.query(`DROP PROCEDURE IF EXISTS sp_CreatePrescriptionWithItems;`);
     await connection.query(`
       CREATE PROCEDURE sp_CreatePrescriptionWithItems(
@@ -736,7 +706,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Stored Procedure 2: sp_GetPatientLongitudinalHistory
     await connection.query(`DROP PROCEDURE IF EXISTS sp_GetPatientLongitudinalHistory;`);
     await connection.query(`
       CREATE PROCEDURE sp_GetPatientLongitudinalHistory(
@@ -791,7 +760,6 @@ async function initializeDatabase() {
       END;
     `);
 
-    // Stored Procedure 3: sp_book_appointment (Atomic Booking with Concurrency Row-Locking)
     await connection.query(`DROP PROCEDURE IF EXISTS sp_book_appointment;`);
     await connection.query(`
       CREATE PROCEDURE sp_book_appointment(
@@ -885,10 +853,8 @@ async function initializeDatabase() {
       END;
     `);
 
-    // 8.7 Optimized Relational & Analytical Views
     console.log(`[xMED DB Init] Compiling relational and analytical views...`);
 
-    // View 1: Complete patient history
     await connection.query(`DROP VIEW IF EXISTS vw_complete_patient_history;`);
     await connection.query(`
       CREATE VIEW vw_complete_patient_history AS
@@ -923,7 +889,6 @@ async function initializeDatabase() {
       GROUP BY p.prescription_id;
     `);
 
-    // View 2: Doctor clinical analytics
     await connection.query(`DROP VIEW IF EXISTS vw_doctor_clinical_analytics;`);
     await connection.query(`
       CREATE VIEW vw_doctor_clinical_analytics AS
@@ -942,7 +907,6 @@ async function initializeDatabase() {
       GROUP BY d.doctor_id;
     `);
 
-    // 8.8 MySQL Event Scheduler
     try {
       await connection.query(`SET GLOBAL event_scheduler = ON;`);
       await connection.query(`DROP EVENT IF EXISTS evt_daily_health_summary;`);
@@ -972,16 +936,11 @@ async function initializeDatabase() {
 
     console.log(`[xMED DB Init] Core schema and advanced DBMS infrastructure verified.`);
 
-    // =========================================================
-    // 8. SEED EXPANDED MEDICINES (Worldwide & Bangladesh Govt EDCL)
-    // =========================================================
     const [medCountRows] = await connection.query(`SELECT COUNT(*) AS count FROM medicines;`);
-    // If fewer than 50 medicines, populate the full global & national catalog
     if (medCountRows[0].count < 50) {
       console.log(`[xMED DB Init] Seeding extensive worldwide and Bangladesh government essential drug dataset...`);
       
       const fullCatalog = [
-        // --- 1. BANGLADESH GOVERNMENT OFFICIAL ESSENTIAL DRUGS (EDCL / DGHS) ---
         ['EDCL Paracetamol 500mg', 'Paracetamol', 'Tablet', '500mg', 'Analgesic', 'BD Govt Essential (EDCL)'],
         ['EDCL Paracetamol Syrup', 'Paracetamol', 'Syrup', '120mg/5ml', 'Analgesic & Antipyretic', 'BD Govt Essential (EDCL)'],
         ['EDCL Antacid Compound', 'Aluminium Hydroxide + Magnesium Hydroxide', 'Tablet', 'Standard Chewable', 'Antacid', 'BD Govt Essential (EDCL)'],
@@ -1008,7 +967,6 @@ async function initializeDatabase() {
         ['EDCL Hydrochlorothiazide 25mg', 'Hydrochlorothiazide', 'Tablet', '25mg', 'Diuretic / Antihypertensive', 'BD Govt Essential (EDCL)'],
         ['EDCL Omeprazole 20mg', 'Omeprazole', 'Capsule', '20mg', 'PPI (Proton Pump Inhibitor)', 'BD Govt Essential (EDCL)'],
 
-        // --- 2. WORLDWIDE TOP ESSENTIAL PHARMACEUTICALS ---
         ['Lipitor', 'Atorvastatin Calcium', 'Tablet', '20mg', 'Lipid-Lowering (Statin)', 'Global (Pfizer)'],
         ['Atorvastatin 10mg', 'Atorvastatin Calcium', 'Tablet', '10mg', 'Lipid-Lowering (Statin)', 'Global Standard'],
         ['Atorvastatin 40mg', 'Atorvastatin Calcium', 'Tablet', '40mg', 'Lipid-Lowering (Statin)', 'Global Standard'],
@@ -1055,7 +1013,6 @@ async function initializeDatabase() {
         ['Novorapid Flexpen', 'Insulin Aspart', 'Injection', '100 units/ml (3ml Pen)', 'Rapid-Acting Mealtime Insulin', 'Global (Novo Nordisk)'],
         ['Mixtard 30/70', 'Biphasic Isophane Insulin', 'Injection', '100 IU/ml 10ml', 'Premixed Insulin', 'Global (Novo Nordisk)'],
 
-        // --- 3. POPULAR BANGLADESH COMMERCIAL PHARMACEUTICALS ---
         ['Napa Extra', 'Paracetamol + Caffeine', 'Tablet', '500mg + 65mg', 'Analgesic', 'Beximco Pharmaceuticals'],
         ['Napa', 'Paracetamol', 'Tablet', '500mg', 'Analgesic', 'Beximco Pharmaceuticals'],
         ['Napa Rapid', 'Paracetamol Fast Dissolving', 'Tablet', '500mg', 'Analgesic', 'Beximco Pharmaceuticals'],
@@ -1105,7 +1062,6 @@ async function initializeDatabase() {
         ['Anclog 75', 'Clopidogrel', 'Tablet', '75mg', 'Antiplatelet', 'Square Pharmaceuticals']
       ];
 
-      // Clean existing medicines if fewer than full set
       await connection.query(`DELETE FROM prescription_items;`);
       await connection.query(`DELETE FROM prescriptions;`);
       await connection.query(`DELETE FROM medicines;`);
@@ -1117,9 +1073,6 @@ async function initializeDatabase() {
       console.log(`[xMED DB Init] Inserted ${fullCatalog.length} comprehensive medicines.`);
     }
 
-    // =========================================================
-    // 9. SEED CERTIFIED DOCTORS SUITE (4 Doctors)
-    // =========================================================
     console.log(`[xMED DB Init] Seeding certified doctors suite...`);
     const salt = await bcrypt.genSalt(10);
     const doctorPassHash = await bcrypt.hash('Doctor@123', salt);
@@ -1165,9 +1118,6 @@ async function initializeDatabase() {
       }
     }
 
-    // =========================================================
-    // 10. SEED CITIZENS / PATIENTS SUITE (4 Patients)
-    // =========================================================
     console.log(`[xMED DB Init] Seeding diverse citizen patient profiles...`);
     const patientPassHash = await bcrypt.hash('Patient@123', salt);
 
@@ -1230,14 +1180,12 @@ async function initializeDatabase() {
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `, [p.uid, p.name, p.dob, p.gender, p.blood, p.phone, p.email, patientPassHash]);
 
-        // Insert initial prescription
         const [rxRes] = await connection.query(`
           INSERT INTO prescriptions (patient_uid, doctor_id, diagnosis, clinical_notes)
           VALUES (?, ?, ?, ?)
         `, [p.uid, docId1, p.diagnosis, p.notes]);
         const rxId = rxRes.insertId;
 
-        // Add 2-3 appropriate medicines
         const [meds] = await connection.query(`
           SELECT medicine_id, brand_name FROM medicines LIMIT 10;
         `);
@@ -1251,7 +1199,6 @@ async function initializeDatabase() {
           `, [rxId, meds[0].medicine_id, rxId, meds[1].medicine_id, rxId, meds[2].medicine_id]);
         }
 
-        // Add sample diagnostic report
         await connection.query(`
           INSERT INTO diagnostic_reports (patient_uid, test_name, report_file_url)
           VALUES (?, ?, ?)

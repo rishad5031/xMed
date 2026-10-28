@@ -37,15 +37,12 @@ function getPool() {
   return pool;
 }
 
-// Execute parameterized query using standard text protocol
-// Supporting stored procedures, DDL, views, and multiple statements
 async function query(sql, params = []) {
   const currentPool = getPool();
   const [results] = await currentPool.query(sql, params);
   return results;
 }
 
-// Get a raw connection for multi-query ACID transactions
 async function getConnection() {
   const currentPool = getPool();
   return await currentPool.getConnection();

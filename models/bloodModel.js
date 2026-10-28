@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Blood Donation & Request Hub Model (3NF MySQL)
-// Life-Saving Voluntary Exchange Network
-// =============================================================
-
 const { query } = require('../config/db');
 
 async function createBloodPost(postData) {
@@ -108,7 +103,6 @@ async function getBloodPosts(filters = {}) {
     params.push(filters.status.trim().toUpperCase());
   }
 
-  // Priority ordering: Critical emergency first, then urgent, then chronological
   sql += `
     ORDER BY 
       CASE bp.urgency 

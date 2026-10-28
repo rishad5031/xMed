@@ -1,21 +1,58 @@
-// =============================================================
-// xMED - Public Express Outpatient Booking Engine
-// Accessible directly from Landing Page without prior login
-// =============================================================
-
 let cachedHospitals = [];
+
+function generateSimulatedTrx() {
+  const method = document.querySelector('input[name="payment_method"]:checked')?.value || 'bKash';
+  const prefix = method === 'bKash' ? 'BKASH' : method === 'Nagad' ? 'NAGAD' : method === 'Rocket' ? 'RCKT' : 'XMED';
+  const randomHex = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const trx = `${prefix}-${randomHex}`;
+  const trxInput = document.getElementById('payment-trx-id');
+  if (trxInput) {
+    trxInput.value = trx;
+  }
+  return trx;
+}
 
 async function initPublicBooking() {
   const hospSelect = document.getElementById('public-booking-hospital');
   const dateInput = document.getElementById('public-booking-date');
   if (!hospSelect) return;
 
-  // Set minimum date to today (YYYY-MM-DD)
   if (dateInput) {
     const today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
     dateInput.value = today;
   }
+
+  generateSimulatedTrx();
+
+  // Fee tier radio handlers
+  const feeRadios = document.querySelectorAll('.fee-tier-radio');
+  const feeAmountInput = document.getElementById('input-fee-amount');
+  const displayTotalFee = document.getElementById('display-total-fee');
+
+  feeRadios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const val = parseFloat(e.target.value).toFixed(2);
+      if (feeAmountInput) feeAmountInput.value = val;
+      if (displayTotalFee) displayTotalFee.textContent = `৳${val}`;
+
+      document.querySelectorAll('.fee-option-card').forEach(card => {
+        card.classList.remove('border-emerald-500/60', 'bg-emerald-500/5', 'active-fee-card');
+      });
+      const parentCard = e.target.closest('.fee-option-card');
+      if (parentCard) {
+        parentCard.classList.add('border-emerald-500/60', 'bg-emerald-500/5', 'active-fee-card');
+      }
+    });
+  });
+
+  // Payment method radio handlers
+  const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
+  paymentMethodRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      generateSimulatedTrx();
+    });
+  });
 
   try {
     const res = await fetch('/api/hospitals');
@@ -40,16 +77,22 @@ async function initPublicBooking() {
   }
 }
 
+let activeHospitalDoctors = [];
+
 async function handleHospitalChange(e) {
   const hospitalId = e.target.value;
   const docSelect = document.getElementById('public-booking-doctor');
   const docFeeBadge = document.getElementById('public-booking-fee-badge');
+  const docCard = document.getElementById('public-booking-doctor-card');
   if (!docSelect) return;
+
+  if (docCard) docCard.classList.add('hidden');
 
   if (!hospitalId) {
     docSelect.innerHTML = '<option value="">-- Select Hospital First --</option>';
     docSelect.disabled = true;
     if (docFeeBadge) docFeeBadge.textContent = 'Fee: --';
+    activeHospitalDoctors = [];
     return;
   }
 
@@ -61,6 +104,7 @@ async function handleHospitalChange(e) {
     const result = await res.json();
 
     if (result.success && result.data && result.data.length > 0) {
+      activeHospitalDoctors = result.data;
       docSelect.innerHTML = '<option value="">-- Select Doctor / Specialist --</option>' +
         result.data.map(d => `
           <option value="${d.doctor_id}" data-fee="${d.consultation_fee}">
@@ -69,20 +113,46 @@ async function handleHospitalChange(e) {
         `).join('');
       docSelect.disabled = false;
     } else {
+      activeHospitalDoctors = [];
       docSelect.innerHTML = '<option value="">No active doctors found for this hospital</option>';
     }
   } catch (err) {
     console.error('[PublicBooking] Error loading doctors:', err);
+    activeHospitalDoctors = [];
     docSelect.innerHTML = '<option value="">Failed to load doctors</option>';
   }
 
-  docSelect.addEventListener('change', (ev) => {
-    const selectedOption = ev.target.options[ev.target.selectedIndex];
-    const fee = selectedOption.getAttribute('data-fee');
-    if (docFeeBadge && fee) {
-      docFeeBadge.textContent = `Consultation Fee: ৳${parseFloat(fee).toFixed(2)}`;
+  docSelect.onchange = (ev) => {
+    const selectedDocId = ev.target.value;
+    const docObj = activeHospitalDoctors.find(d => String(d.doctor_id) === String(selectedDocId));
+    
+    if (docObj && docCard) {
+      const initials = docObj.name ? docObj.name.replace(/^Dr\.\s*/i, '').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'MD';
+      const docNameEl = document.getElementById('doc-card-name');
+      const docSpecEl = document.getElementById('doc-card-spec');
+      const docHospEl = document.getElementById('doc-card-hospital');
+      const docInitialsEl = document.getElementById('doc-card-initials');
+      const docShiftEl = document.getElementById('doc-card-shift');
+      const docFeeEl = document.getElementById('doc-card-fee');
+
+      if (docNameEl) docNameEl.textContent = docObj.name || 'Attending Physician';
+      if (docSpecEl) docSpecEl.textContent = docObj.specialization || 'Clinical Specialist';
+      if (docHospEl) docHospEl.textContent = `${docObj.hospital_name || 'Government Hospital'} • BMDC License Verified`;
+      if (docInitialsEl) docInitialsEl.textContent = initials;
+      if (docShiftEl) docShiftEl.textContent = `Shift: ${docObj.shift_start?.slice(0,5) || '09:00'} - ${docObj.shift_end?.slice(0,5) || '17:00'}`;
+      if (docFeeEl) docFeeEl.textContent = '৳3.00 – ৳5.00 BDT (Subsidized)';
+
+      docCard.classList.remove('hidden');
+    } else if (docCard) {
+      docCard.classList.add('hidden');
     }
-  });
+
+    const selectedOption = ev.target.options[ev.target.selectedIndex];
+    const fee = selectedOption ? selectedOption.getAttribute('data-fee') : null;
+    if (docFeeBadge && fee) {
+      docFeeBadge.textContent = `Doctor Fee: ৳${parseFloat(fee).toFixed(2)} (Subsidized Token: ৳3–৳5)`;
+    }
+  };
 }
 
 async function handlePublicBookingSubmit(e) {
@@ -95,6 +165,14 @@ async function handlePublicBookingSubmit(e) {
     feedbackEl.classList.add('hidden');
   }
 
+  let trxId = document.getElementById('payment-trx-id')?.value.trim();
+  if (!trxId) {
+    trxId = generateSimulatedTrx();
+  }
+
+  const feeAmount = parseFloat(form.fee_amount?.value || '5.00');
+  const paymentMethod = form.payment_method?.value || 'bKash';
+
   const payload = {
     hospital_id: form.hospital_id.value,
     doctor_id: form.doctor_id.value,
@@ -102,7 +180,11 @@ async function handlePublicBookingSubmit(e) {
     patient_uid: form.patient_uid ? form.patient_uid.value.trim() : '',
     patient_phone: form.patient_phone ? form.patient_phone.value.trim() : '',
     is_emergency: form.is_emergency ? form.is_emergency.checked : false,
-    emergency_reason: form.emergency_reason ? form.emergency_reason.value.trim() : ''
+    emergency_reason: form.emergency_reason ? form.emergency_reason.value.trim() : '',
+    fee_amount: feeAmount,
+    payment_method: paymentMethod,
+    transaction_id: trxId,
+    payment_status: 'PAID'
   };
 
   if (!payload.hospital_id || !payload.doctor_id || !payload.requested_date) {
@@ -120,7 +202,7 @@ async function handlePublicBookingSubmit(e) {
       submitBtn.disabled = true;
       submitBtn.innerHTML = `
         <span class="w-3.5 h-3.5 rounded-full border-2 border-slate-900 border-t-transparent animate-spin"></span>
-        <span>Registering Outpatient Token...</span>
+        <span>Processing Digital Payment (৳${feeAmount.toFixed(2)})...</span>
       `;
     }
 
@@ -137,44 +219,53 @@ async function handlePublicBookingSubmit(e) {
 
     const apt = result.data;
     if (feedbackEl) {
-      feedbackEl.className = 'p-6 rounded-2xl border liquid-card animate-liquid-spring block space-y-3';
+      feedbackEl.className = 'p-6 rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-slate-900 via-emerald-950/20 to-slate-900 shadow-2xl block space-y-4 animate-fade-in';
       feedbackEl.innerHTML = `
-        <div class="flex items-center gap-3 text-emerald-400">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center font-bold text-lg">✓</div>
-          <div>
-            <h4 class="text-sm sm:text-base font-black text-slate-100">${result.message}</h4>
-            <p class="text-xs text-slate-400">Your request has been filed in the national FCFS hospital queue.</p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-4">
+          <div class="flex items-center gap-3 text-emerald-400">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-500/20">✓</div>
+            <div>
+              <h4 class="text-base sm:text-lg font-black text-white">${result.message}</h4>
+              <p class="text-xs text-slate-300">Appointment confirmed with verified payment receipt.</p>
+            </div>
+          </div>
+          <div class="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-xs self-start sm:self-auto">
+            Paid: ৳${(apt.fee_amount || feeAmount).toFixed(2)} (${apt.payment_method || paymentMethod})
           </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2">
-          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-            <span class="text-slate-400 block text-[10px] uppercase">Daily Token #</span>
-            <strong class="text-sky-400 font-mono font-bold text-sm">#${apt.serial_no || 1}</strong>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
+          <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Daily Token Serial</span>
+            <strong class="text-sky-300 font-mono font-black text-lg">#${apt.serial_no ? String(apt.serial_no).padStart(2, '0') : '01'}</strong>
           </div>
-          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-            <span class="text-slate-400 block text-[10px] uppercase">Triage Status</span>
-            <strong class="text-amber-400 font-bold text-sm">${apt.status || 'PENDING'}</strong>
+          <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Triage Status</span>
+            <strong class="text-emerald-400 font-bold text-sm uppercase">${apt.status || 'PENDING'}</strong>
           </div>
-          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-            <span class="text-slate-400 block text-[10px] uppercase">Citizen Identifier</span>
-            <strong class="text-teal-400 font-mono font-bold text-sm">${apt.patient_uid}</strong>
+          <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Payment Trx ID</span>
+            <strong class="text-amber-300 font-mono font-bold text-xs">${apt.transaction_id || trxId}</strong>
           </div>
-          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-            <span class="text-slate-400 block text-[10px] uppercase">Consultation Date</span>
-            <strong class="text-slate-200 font-mono font-bold text-sm">${payload.requested_date}</strong>
+          <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Consultation Date</span>
+            <strong class="text-slate-200 font-mono font-bold text-xs">${payload.requested_date}</strong>
           </div>
         </div>
 
-        <div class="text-[11px] text-slate-400 flex items-center justify-between pt-2">
-          <span>Present this Token Number at Hospital Registration Counter.</span>
-          <a href="/login" class="text-teal-400 font-bold hover:underline">Citizen Login &rarr;</a>
+        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs text-slate-300">
+          <span>Present token <strong>#${apt.serial_no ? String(apt.serial_no).padStart(2, '0') : '01'}</strong> at registration desk.</span>
+          <a href="/login" class="text-emerald-400 font-bold hover:underline flex items-center gap-1">
+            <span>View in Patient Vault</span>
+            <span>&rarr;</span>
+          </a>
         </div>
       `;
       feedbackEl.classList.remove('hidden');
     }
 
     form.reset();
+    generateSimulatedTrx();
   } catch (err) {
     if (feedbackEl) {
       feedbackEl.className = 'p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs block';
@@ -187,7 +278,7 @@ async function handlePublicBookingSubmit(e) {
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = `
-        <span>Confirm & Book Appointment</span>
+        <span>Pay & Confirm Appointment</span>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
       `;
     }

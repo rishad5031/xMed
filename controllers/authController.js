@@ -1,28 +1,38 @@
 const bcrypt = require('bcryptjs');
+
 const jwt = require('jsonwebtoken');
+
 const citizenModel = require('../models/citizenModel');
+
 const doctorModel = require('../models/doctorModel');
+
 require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'xmed_super_secure_national_health_secret_key_2026_bd';
+
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
+/**
+ * Generates a signed cryptographic JWT access token for a given user payload.
+ * @param {Object} payload - User claims including UID, email, role, and identifiers
+ * @returns {string} Signed JWT token string
+ */
 function createToken(payload) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
-// -------------------------------------------------------------
-// Citizen (Patient) Auth
-// -------------------------------------------------------------
+/**
+ * Registers a new citizen in the national EHR network.
+ * POST /api/auth/register-citizen
+ */
 async function registerCitizen(req, res) {
   try {
     const { full_name, dob, gender, blood_group, phone, email, password } = req.body;
 
     if (!full_name || !dob || !gender || !blood_group || !phone || !email || !password) {
-      return res.status(400).json({ success: false, message: 'All fields are required.' });
+      return res.status(400).json({ success: false, message: 'All mandatory registration fields are required.' });
     }
 
-    // Check if email or phone already exists
     const existingEmail = await citizenModel.findByEmail(email);
     if (existingEmail) {
       return res.status(409).json({ success: false, message: 'A citizen with this email address already exists.' });
@@ -33,11 +43,9 @@ async function registerCitizen(req, res) {
       return res.status(409).json({ success: false, message: 'A citizen with this phone number already exists.' });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
 
-    // Create citizen
     const newCitizen = await citizenModel.createCitizen({
       full_name,
       dob,
@@ -57,7 +65,7 @@ async function registerCitizen(req, res) {
 
     return res.status(201).json({
       success: true,
-      message: 'Citizen registration successful.',
+      message: 'National Citizen Health ID created successfully.',
       token,
       user: {
         uid: newCitizen.uid,
@@ -72,16 +80,21 @@ async function registerCitizen(req, res) {
     });
   } catch (error) {
     console.error('[Auth Error] registerCitizen:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error during registration.' });
+    return res.status(500).json({ success: false, message: 'Internal server error during citizen registration.' });
   }
 }
 
+/**
+ * Authenticates a registered citizen via UID, Email, or Phone number.
+ * POST /api/auth/login-citizen
+ */
 async function loginCitizen(req, res) {
   try {
-    const { identifier, password } = req.body; // Can be email, phone, or UID
+    const identifier = (req.body.identifier || req.body.uid || req.body.email || req.body.phone || req.body.username || req.body.id || '').trim();
+    const password = req.body.password;
 
     if (!identifier || !password) {
-      return res.status(400).json({ success: false, message: 'Citizen ID/Email and password are required.' });
+      return res.status(400).json({ success: false, message: 'Citizen ID/Email/Phone and password are required.' });
     }
 
     let citizen = null;
@@ -91,6 +104,9 @@ async function loginCitizen(req, res) {
       citizen = await citizenModel.findByEmail(identifier);
     } else {
       citizen = await citizenModel.findByPhone(identifier);
+      if (!citizen) {
+        citizen = await citizenModel.findByUid(identifier);
+      }
     }
 
     if (!citizen) {
@@ -111,7 +127,7 @@ async function loginCitizen(req, res) {
 
     return res.json({
       success: true,
-      message: 'Login successful.',
+      message: 'Citizen authenticated successfully.',
       token,
       user: {
         uid: citizen.uid,
@@ -126,22 +142,22 @@ async function loginCitizen(req, res) {
     });
   } catch (error) {
     console.error('[Auth Error] loginCitizen:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error during login.' });
+    return res.status(500).json({ success: false, message: 'Internal server error during citizen login.' });
   }
 }
 
-// -------------------------------------------------------------
-// Doctor Auth
-// -------------------------------------------------------------
+/**
+ * Registers a certified clinical doctor in the national medical directory.
+ * POST /api/auth/register-doctor
+ */
 async function registerDoctor(req, res) {
   try {
     const { license_no, full_name, specialization, phone, email, password } = req.body;
 
     if (!license_no || !full_name || !specialization || !phone || !email || !password) {
-      return res.status(400).json({ success: false, message: 'All doctor fields are required.' });
+      return res.status(400).json({ success: false, message: 'All doctor registration fields are required.' });
     }
 
-    // Check existing
     const existingEmail = await doctorModel.findByEmail(email);
     if (existingEmail) {
       return res.status(409).json({ success: false, message: 'A doctor with this email is already registered.' });
@@ -193,9 +209,14 @@ async function registerDoctor(req, res) {
   }
 }
 
+/**
+ * Authenticates a doctor via Email or BMDC License number.
+ * POST /api/auth/login-doctor
+ */
 async function loginDoctor(req, res) {
   try {
-    const { identifier, password } = req.body; // Can be email or license number
+    const identifier = (req.body.identifier || req.body.email || req.body.license_no || req.body.license_number || req.body.phone || req.body.username || req.body.id || '').trim();
+    const password = req.body.password;
 
     if (!identifier || !password) {
       return res.status(400).json({ success: false, message: 'Doctor email/license number and password are required.' });
@@ -206,6 +227,9 @@ async function loginDoctor(req, res) {
       doctor = await doctorModel.findByEmail(identifier);
     } else {
       doctor = await doctorModel.findByLicense(identifier);
+      if (!doctor) {
+        doctor = await doctorModel.findByEmail(identifier);
+      }
     }
 
     if (!doctor) {
@@ -246,18 +270,25 @@ async function loginDoctor(req, res) {
   }
 }
 
-// -------------------------------------------------------------
-// Safe Session Status Probe: GET /api/auth/me
-// -------------------------------------------------------------
+/**
+ * Universal Session Probe Endpoint
+ * GET /api/auth/me | GET /api/auth/profile
+ * 
+ * Safely inspects headers, query strings, and browser cookies without throwing 401/403.
+ * Returns { authenticated: true, user: {...} } or { authenticated: false, user: null }.
+ */
 async function getSessionStatus(req, res) {
   try {
     let token = null;
+
     const authHeader = req.headers['authorization'];
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.substring(7);
-    } else if (req.query && req.query.token) {
+    } 
+    else if (req.query && req.query.token) {
       token = req.query.token;
-    } else if (req.headers.cookie) {
+    } 
+    else if (req.headers.cookie) {
       const cookies = req.headers.cookie.split(';');
       for (const c of cookies) {
         const [name, val] = c.trim().split('=');
@@ -304,7 +335,8 @@ async function getSessionStatus(req, res) {
           role: 'doctor'
         }
       });
-    } else {
+    } 
+    else {
       const citizenUid = decoded.uid;
       const citizen = await citizenModel.findByUid(citizenUid);
       if (!citizen) {
@@ -332,9 +364,6 @@ async function getSessionStatus(req, res) {
   }
 }
 
-// -------------------------------------------------------------
-// Current Authenticated User Profile
-// -------------------------------------------------------------
 async function getCurrentUser(req, res) {
   try {
     if (!req.user) {
@@ -372,9 +401,6 @@ async function getCurrentUser(req, res) {
   }
 }
 
-// -------------------------------------------------------------
-// Logout Session: POST /api/auth/logout
-// -------------------------------------------------------------
 async function logout(req, res) {
   try {
     res.clearCookie('xmed_token', { path: '/' });
@@ -389,11 +415,38 @@ async function logout(req, res) {
   }
 }
 
+async function loginUnified(req, res) {
+  try {
+    const { identifier, password } = req.body || {};
+    if (!identifier || !password) {
+      return res.status(400).json({ success: false, message: 'Identifier and password are required.' });
+    }
+    const id = String(identifier).trim();
+    if (id.startsWith('BD-')) {
+      return loginCitizen(req, res);
+    }
+    if (id.startsWith('BMDC-') || id.startsWith('DOC-')) {
+      return loginDoctor(req, res);
+    }
+    if (id.includes('@')) {
+      const citizen = await citizenModel.findByEmail(id);
+      if (citizen) return loginCitizen(req, res);
+      const doctor = await doctorModel.findByEmail(id);
+      if (doctor) return loginDoctor(req, res);
+    }
+    return res.status(401).json({ success: false, message: 'Invalid credentials. User account not found.' });
+  } catch (error) {
+    console.error('[Auth Error] loginUnified:', error);
+    return res.status(500).json({ success: false, message: 'Internal authentication error.' });
+  }
+}
+
 module.exports = {
   registerCitizen,
   loginCitizen,
   registerDoctor,
   loginDoctor,
+  loginUnified,
   getCurrentUser,
   getSessionStatus,
   logout

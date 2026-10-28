@@ -7,16 +7,20 @@ async function createAppointment({
   requested_date,
   is_emergency = false,
   emergency_reason = null,
-  priority_level = 1
+  priority_level = 1,
+  fee_amount = 5.00,
+  payment_status = 'PAID',
+  payment_method = 'bKash',
+  transaction_id = null
 }) {
-  // If flagged as emergency by patient, ensure priority_level is at least 2
   const effectivePriority = is_emergency && priority_level < 2 ? 2 : priority_level;
 
   const sql = `
     INSERT INTO appointments (
-      patient_uid, doctor_id, hospital_id, requested_date, is_emergency, emergency_reason, priority_level
+      patient_uid, doctor_id, hospital_id, requested_date, is_emergency, emergency_reason, priority_level,
+      fee_amount, payment_status, payment_method, transaction_id
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?);
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
   const result = await query(sql, [
     patient_uid,
@@ -25,7 +29,11 @@ async function createAppointment({
     requested_date,
     Boolean(is_emergency),
     emergency_reason,
-    effectivePriority
+    effectivePriority,
+    fee_amount,
+    payment_status,
+    payment_method,
+    transaction_id
   ]);
 
   return await getAppointmentById(result.insertId);
@@ -37,7 +45,11 @@ async function bookAppointmentViaProcedure({
   hospital_id,
   requested_date,
   is_emergency = false,
-  emergency_reason = null
+  emergency_reason = null,
+  fee_amount = 5.00,
+  payment_status = 'PAID',
+  payment_method = 'bKash',
+  transaction_id = null
 }) {
   const sql = `CALL sp_book_appointment(?, ?, ?, ?, ?, ?, @p_apt_id, @p_serial, @p_priority);`;
   const results = await query(sql, [
@@ -49,12 +61,23 @@ async function bookAppointmentViaProcedure({
     emergency_reason || 'General Consultation'
   ]);
 
-  // MariaDB/MySQL returns procedure result sets as nested arrays
+  let appointment = null;
   if (Array.isArray(results) && results.length > 0) {
     const firstSet = Array.isArray(results[0]) ? results[0] : results;
-    if (firstSet.length > 0) return firstSet[0];
+    if (firstSet.length > 0) appointment = firstSet[0];
   }
-  return null;
+
+  if (appointment && appointment.appointment_id) {
+    await query(
+      `UPDATE appointments 
+       SET fee_amount = ?, payment_status = ?, payment_method = ?, transaction_id = ? 
+       WHERE appointment_id = ?;`,
+      [fee_amount, payment_status, payment_method, transaction_id, appointment.appointment_id]
+    );
+    return await getAppointmentById(appointment.appointment_id);
+  }
+
+  return appointment;
 }
 
 async function getAppointmentById(appointment_id) {
@@ -79,6 +102,10 @@ async function getAppointmentById(appointment_id) {
       a.is_emergency,
       a.emergency_reason,
       a.priority_level,
+      a.fee_amount,
+      a.payment_status,
+      a.payment_method,
+      a.transaction_id,
       a.applied_at
     FROM appointments a
     JOIN citizens c ON a.patient_uid = c.uid
@@ -113,6 +140,10 @@ async function getAppointments({ patient_uid, doctor_id, status, is_emergency, r
       a.is_emergency,
       a.emergency_reason,
       a.priority_level,
+      a.fee_amount,
+      a.payment_status,
+      a.payment_method,
+      a.transaction_id,
       a.applied_at
     FROM appointments a
     JOIN citizens c ON a.patient_uid = c.uid
@@ -143,8 +174,6 @@ async function getAppointments({ patient_uid, doctor_id, status, is_emergency, r
     params.push(requested_date);
   }
 
-  // Strict FCFS with Emergency Priority:
-  // Priority 3 (Doctor-Approved Emergency) -> Priority 2 (Patient Emergency) -> Regular (applied_at / serial_no)
   sql += ' ORDER BY a.priority_level DESC, a.is_emergency DESC, a.requested_date ASC, a.serial_no ASC, a.applied_at ASC';
 
   return await query(sql, params);
@@ -202,6 +231,10 @@ async function getDoctorAppointmentQueue(doctorId, status = 'PENDING') {
       a.is_emergency,
       a.emergency_reason,
       a.priority_level,
+      a.fee_amount,
+      a.payment_status,
+      a.payment_method,
+      a.transaction_id,
       a.applied_at
     FROM appointments a
     JOIN citizens c ON a.patient_uid = c.uid
@@ -239,7 +272,7 @@ async function decideAppointment(appointmentId, { action, notes, priority_level 
     newStatus = 'REJECTED';
   } else if (action === 'EMERGENCY_PRIORITY' || action === 'EMERGENCY') {
     newStatus = 'ACCEPTED';
-    newPriority = 3; // Elevated Doctor Emergency
+    newPriority = 3;
     if (!serialNo) {
       const [maxSer] = await query(
         'SELECT IFNULL(MAX(serial_no), 0) + 1 AS next_ser FROM appointments WHERE doctor_id = ? AND requested_date = ?;',

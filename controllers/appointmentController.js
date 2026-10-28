@@ -12,6 +12,11 @@ async function createAppointment(req, res) {
       });
     }
 
+    const fee_amount = parseFloat(req.body.fee_amount) || 5.00;
+    const payment_method = req.body.payment_method || 'bKash';
+    const transaction_id = req.body.transaction_id || ('TRX-' + Math.random().toString(36).substring(2, 10).toUpperCase());
+    const payment_status = req.body.payment_status || 'PAID';
+
     const appointment = await appointmentModel.createAppointment({
       patient_uid,
       doctor_id,
@@ -19,7 +24,11 @@ async function createAppointment(req, res) {
       requested_date,
       is_emergency,
       emergency_reason,
-      priority_level: is_emergency ? 2 : 1
+      priority_level: is_emergency ? 2 : 1,
+      fee_amount,
+      payment_status,
+      payment_method,
+      transaction_id
     });
 
     res.status(201).json({
@@ -35,7 +44,6 @@ async function createAppointment(req, res) {
   }
 }
 
-// Atomic Concurrency-Controlled Booking via Stored Procedure sp_book_appointment
 async function bookAppointment(req, res) {
   try {
     const { doctor_id, hospital_id, requested_date, is_emergency, emergency_reason } = req.body;
@@ -48,13 +56,22 @@ async function bookAppointment(req, res) {
       });
     }
 
+    const fee_amount = parseFloat(req.body.fee_amount) || 5.00;
+    const payment_method = req.body.payment_method || 'bKash';
+    const transaction_id = req.body.transaction_id || ('TRX-' + Math.random().toString(36).substring(2, 10).toUpperCase());
+    const payment_status = req.body.payment_status || 'PAID';
+
     const appointment = await appointmentModel.bookAppointmentViaProcedure({
       patient_uid: patient_uid.trim().toUpperCase(),
       doctor_id,
       hospital_id,
       requested_date,
       is_emergency: Boolean(is_emergency),
-      emergency_reason
+      emergency_reason,
+      fee_amount,
+      payment_status,
+      payment_method,
+      transaction_id
     });
 
     if (!appointment) {
@@ -81,7 +98,6 @@ async function getAppointments(req, res) {
   try {
     const filter = { ...req.query };
 
-    // Role-based restrictions
     if (req.user && req.user.role === 'patient') {
       filter.patient_uid = req.user.uid;
     } else if (req.user && req.user.role === 'doctor') {
@@ -89,6 +105,7 @@ async function getAppointments(req, res) {
     }
 
     const data = await appointmentModel.getAppointments(filter);
+
     res.json({
       success: true,
       count: data.length,
@@ -107,6 +124,7 @@ async function getAppointmentById(req, res) {
     if (!data) {
       return res.status(404).json({ success: false, message: 'Appointment record not found.' });
     }
+
     res.json({ success: true, data });
   } catch (err) {
     console.error('[AppointmentController] Error fetching appointment:', err.message);
@@ -141,7 +159,6 @@ async function updateAppointmentStatus(req, res) {
   }
 }
 
-// Public Appointment Request (without mandatory prior login)
 async function requestAppointmentPublic(req, res) {
   try {
     let {
@@ -152,7 +169,11 @@ async function requestAppointmentPublic(req, res) {
       hospital_id,
       requested_date,
       is_emergency,
-      emergency_reason
+      emergency_reason,
+      fee_amount,
+      payment_method,
+      transaction_id,
+      payment_status
     } = req.body;
 
     if (!doctor_id || !hospital_id || !requested_date) {
@@ -192,13 +213,22 @@ async function requestAppointmentPublic(req, res) {
       effectiveUid = 'BD-2026-8841';
     }
 
+    const effectiveFee = parseFloat(fee_amount) || 5.00;
+    const effectivePaymentMethod = payment_method || 'bKash';
+    const effectiveTrxId = transaction_id || ('TRX-' + Math.random().toString(36).substring(2, 10).toUpperCase());
+    const effectivePaymentStatus = payment_status || 'PAID';
+
     const appointment = await appointmentModel.bookAppointmentViaProcedure({
       patient_uid: effectiveUid,
       doctor_id: parseInt(doctor_id, 10),
       hospital_id: parseInt(hospital_id, 10),
       requested_date,
       is_emergency: Boolean(is_emergency),
-      emergency_reason: emergency_reason || (is_emergency ? 'Emergency outpatient triage' : 'Public routine consultation')
+      emergency_reason: emergency_reason || (is_emergency ? 'Emergency outpatient triage' : 'Public routine consultation'),
+      fee_amount: effectiveFee,
+      payment_status: effectivePaymentStatus,
+      payment_method: effectivePaymentMethod,
+      transaction_id: effectiveTrxId
     });
 
     res.status(201).json({
@@ -214,13 +244,13 @@ async function requestAppointmentPublic(req, res) {
   }
 }
 
-// Doctor appointment queue sorted by priority_level DESC, applied_at ASC
 async function getDoctorAppointmentQueue(req, res) {
   try {
     const doctorId = (req.user && req.user.doctor_id) || (req.user && req.user.id) || req.query.doctor_id || 1;
     const { status } = req.query;
 
     const queue = await appointmentModel.getDoctorAppointmentQueue(doctorId, status);
+
     res.json({
       success: true,
       count: queue.length,
@@ -232,7 +262,6 @@ async function getDoctorAppointmentQueue(req, res) {
   }
 }
 
-// Doctor decision on appointment (ACCEPT, REJECT, or EMERGENCY_PRIORITY)
 async function decideAppointment(req, res) {
   try {
     const { id } = req.params;

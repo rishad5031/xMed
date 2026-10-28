@@ -1,7 +1,6 @@
 const { query } = require('../config/db');
 const crypto = require('crypto');
 
-// Generate unique citizen UID format: BD-YYYY-XXXX
 async function generateUniqueUid() {
   const currentYear = new Date().getFullYear();
   let unique = false;

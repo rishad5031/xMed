@@ -1,18 +1,26 @@
 const { query, getConnection } = require('../config/db');
 
-// =============================================================
-// ACADEMIC DBMS LAB EVALUATION CONTROLLER
-// Direct execution of raw parameterized SQL queries (No ORMs)
-// =============================================================
-
 /**
- * Requirement 2: Aggregation with GROUP BY and HAVING
- * Endpoint: GET /api/analytics/frequent-patients
- * Description: Finds all patients who have received more than the average
- * consultation frequency across the entire hospital system.
+ * Controller: getFrequentPatients
+ * HTTP Method: GET
+ * Route: /api/analytics/frequent-patients
+ * Access: Public / Clinical Analytics
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Defines asynchronous route handler accepting standard Express (req, res) objects.
+ * 2. Wraps execution in try-catch to intercept database connectivity or syntax errors.
+ * 3. Constructs raw SQL query combining GROUP BY, COUNT() aggregation, and a nested AVG() subquery.
+ * 4. FROM citizens c JOIN prescriptions p ON c.uid = p.patient_uid matches citizen records with their prescriptions.
+ * 5. GROUP BY collapses multiple prescription rows per citizen down to unique patient entity tuples.
+ * 6. HAVING clause filters grouped rows after aggregation, retaining only those whose consultation
+ *    count is strictly greater than the scalar average returned by the inner subquery.
+ * 7. Inner subquery computes the overall mean consultations per patient across the entire hospital system.
+ * 8. ORDER BY consultation_count DESC sorts the most frequent hospital visitors to the top.
+ * 9. Awaits pool query execution and returns structured JSON payload with academic DBMS metadata.
  */
 async function getFrequentPatients(req, res) {
   try {
+
     const sql = `
       SELECT 
         c.uid AS patient_uid,
@@ -36,6 +44,7 @@ async function getFrequentPatients(req, res) {
     `;
 
     const results = await query(sql);
+
     return res.json({
       success: true,
       dbms_technique: 'Aggregation with GROUP BY and HAVING comparing against AVG() nested subquery',
@@ -49,13 +58,23 @@ async function getFrequentPatients(req, res) {
 }
 
 /**
- * Requirement 4: Correlated / Nested Subquery
- * Endpoint: GET /api/analytics/high-usage-medicines
- * Description: Finds medicines prescribed more frequently than the overall average
- * drug prescription count using a nested subquery.
+ * Controller: getHighUsageMedicines
+ * HTTP Method: GET
+ * Route: /api/analytics/high-usage-medicines
+ * Access: Public / Clinical Analytics
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Defines asynchronous route handler for pharmaceutical drug usage analytics.
+ * 2. Constructs SQL query joining the catalog table 'medicines' with 'prescription_items'.
+ * 3. Aggregates with COUNT(pi.item_id) to calculate total prescription instances per medicine.
+ * 4. Applies HAVING filter using a nested subquery that derives the benchmark average:
+ *    (SELECT AVG(drug_usage) FROM (SELECT COUNT(item_id) AS drug_usage FROM prescription_items GROUP BY medicine_id) AS sub)
+ * 5. Orders output descending so high-demand pharmaceuticals appear first.
+ * 6. Returns JSON dataset with metadata for academic laboratory reporting.
  */
 async function getHighUsageMedicines(req, res) {
   try {
+
     const sql = `
       SELECT 
         m.medicine_id,
@@ -79,6 +98,7 @@ async function getHighUsageMedicines(req, res) {
     `;
 
     const results = await query(sql);
+
     return res.json({
       success: true,
       dbms_technique: 'Nested Subquery with GROUP BY and HAVING filter',
@@ -87,17 +107,28 @@ async function getHighUsageMedicines(req, res) {
     });
   } catch (error) {
     console.error('[AnalyticsController] getHighUsageMedicines error:', error);
+
     return res.status(500).json({ success: false, message: 'Database error in high-usage-medicines subquery.' });
   }
 }
 
 /**
- * Requirement 3A: Multi-Table INNER JOIN
- * Endpoint: GET /api/analytics/prescriptions-joined
- * Description: Retrieves medical records joining prescriptions, citizens, and doctors.
+ * Controller: getPrescriptionsInnerJoin
+ * HTTP Method: GET
+ * Route: /api/analytics/prescriptions-joined
+ * Access: Public / Clinical Analytics
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Defines asynchronous route handler for multi-table relational join inspection.
+ * 2. Selects diagnostic observations, patient identity, and doctor credentials across 3 tables.
+ * 3. INNER JOIN citizens ensures only prescriptions with valid registered patients are returned.
+ * 4. INNER JOIN doctors ensures only prescriptions authored by verified clinicians are returned.
+ * 5. Orders chronologically descending by creation timestamp and caps result set with LIMIT 25.
+ * 6. Returns structured JSON containing combined relational attributes.
  */
 async function getPrescriptionsInnerJoin(req, res) {
   try {
+
     const sql = `
       SELECT 
         p.prescription_id,
@@ -119,6 +150,7 @@ async function getPrescriptionsInnerJoin(req, res) {
     `;
 
     const results = await query(sql);
+
     return res.json({
       success: true,
       dbms_technique: 'Multi-Table INNER JOIN (prescriptions ⋈ citizens ⋈ doctors)',
@@ -132,13 +164,22 @@ async function getPrescriptionsInnerJoin(req, res) {
 }
 
 /**
- * Requirement 3B: Outer LEFT JOIN
- * Endpoint: GET /api/analytics/citizens-reports-left-join
- * Description: Lists all citizens joined with diagnostic reports, including citizens
- * who have zero uploaded reports.
+ * Controller: getCitizensReportsLeftJoin
+ * HTTP Method: GET
+ * Route: /api/analytics/citizens-reports-left-join
+ * Access: Public / Clinical Analytics
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Defines asynchronous route handler for LEFT OUTER JOIN inspection.
+ * 2. Selects master citizen demographic fields alongside diagnostic test results.
+ * 3. LEFT JOIN diagnostic_reports guarantees every citizen is returned at least once;
+ *    citizens without reports receive NULL in report_id, test_name, and report_file_url.
+ * 4. Orders by citizen UID ascending and report upload timestamp descending.
+ * 5. Returns complete relational dataset showing both matching and non-matching rows.
  */
 async function getCitizensReportsLeftJoin(req, res) {
   try {
+
     const sql = `
       SELECT 
         c.uid AS patient_uid,
@@ -156,6 +197,7 @@ async function getCitizensReportsLeftJoin(req, res) {
     `;
 
     const results = await query(sql);
+
     return res.json({
       success: true,
       dbms_technique: 'LEFT OUTER JOIN (citizens ⟕ diagnostic_reports)',
@@ -164,18 +206,29 @@ async function getCitizensReportsLeftJoin(req, res) {
     });
   } catch (error) {
     console.error('[AnalyticsController] getCitizensReportsLeftJoin error:', error);
+
     return res.status(500).json({ success: false, message: 'Database error in LEFT JOIN execution.' });
   }
 }
 
 /**
- * Requirement 5: Reusable Database View
- * Endpoint: GET /api/analytics/complete-patient-history/:uid
- * Description: Queries the virtual view vw_complete_patient_history.
+ * Controller: getPatientHistoryFromView
+ * HTTP Method: GET
+ * Route: /api/analytics/complete-patient-history/:uid
+ * Access: Authenticated / Clinical Analytics
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Extracts target patient citizen UID from Express route parameter req.params.
+ * 2. Constructs SQL SELECT directly from the database view 'vw_complete_patient_history'.
+ * 3. Parameterizes target patient UID using '?' placeholder to strictly prevent SQL injection.
+ * 4. Orders patient consultation history in reverse chronological sequence (newest first).
+ * 5. Returns parsed history tuples retrieved seamlessly through the database abstraction view.
  */
 async function getPatientHistoryFromView(req, res) {
   try {
+
     const { uid } = req.params;
+
     const sql = `
       SELECT * 
       FROM vw_complete_patient_history 
@@ -184,6 +237,7 @@ async function getPatientHistoryFromView(req, res) {
     `;
 
     const results = await query(sql, [uid]);
+
     return res.json({
       success: true,
       dbms_technique: 'Database Virtual VIEW query on vw_complete_patient_history',
@@ -198,13 +252,25 @@ async function getPatientHistoryFromView(req, res) {
 }
 
 /**
- * Requirement 1: DML UPDATE Operation
- * Endpoint: PUT /api/patient/profile
- * Description: Updates citizen contact information using raw parameterized SQL.
+ * Controller: updatePatientProfile
+ * HTTP Method: PUT
+ * Route: /api/patient/profile
+ * Access: Authenticated Citizen (req.user)
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Obtains authenticated citizen UID from verified JWT payload (req.user.uid).
+ * 2. Extracts updated phone number and email address from incoming JSON request body.
+ * 3. Validates that both required contact fields are present before issuing database write.
+ * 4. Constructs raw SQL UPDATE query targeting the 'citizens' relational table.
+ * 5. Parameterizes [phone.trim(), email.trim(), uid] in prepared statement to thwart SQL injection.
+ * 6. Executes DML operation on database connection pool.
+ * 7. Returns HTTP 200 confirmation acknowledging successful profile modification.
  */
 async function updatePatientProfile(req, res) {
   try {
+
     const uid = req.user.uid;
+
     const { phone, email } = req.body;
 
     if (!phone || !email) {
@@ -231,15 +297,25 @@ async function updatePatientProfile(req, res) {
 }
 
 /**
- * Unified Patient Longitudinal History
- * Endpoint: GET /api/patients/:uid/history
- * Joins prescriptions, prescription_items, and patient_self_medications into a single chronological array.
+ * Controller: getPatientUnifiedHistory
+ * HTTP Method: GET
+ * Route: /api/patients/:uid/history
+ * Access: Authenticated Doctor / Patient
+ * 
+ * Line-by-Line Breakdown:
+ * 1. Extracts patient UID parameter from request URL.
+ * 2. Step 1: Queries official doctor prescriptions joined with doctor metadata for the patient.
+ * 3. Step 2: Iterates through each prescription to query child 'prescription_items' joined with 'medicines' catalog.
+ * 4. Step 3: Queries self-reported over-the-counter (OTC) medications logged by the citizen.
+ * 5. Step 4: Normalizes and merges both clinical consultation and self-medication records into a single unified array.
+ * 6. Sorts combined health timeline in descending chronological order (newest health event first).
+ * 7. Returns consolidated medical history JSON with summary statistics.
  */
 async function getPatientUnifiedHistory(req, res) {
   try {
+
     const { uid } = req.params;
 
-    // 1. Fetch prescriptions with doctor details
     const rxSql = `
       SELECT 
         p.prescription_id,
@@ -257,7 +333,6 @@ async function getPatientUnifiedHistory(req, res) {
     `;
     const prescriptions = await query(rxSql, [uid]);
 
-    // 2. Fetch items for each prescription
     for (const rx of prescriptions) {
       const itemsSql = `
         SELECT 
@@ -277,7 +352,6 @@ async function getPatientUnifiedHistory(req, res) {
       rx.items = await query(itemsSql, [rx.prescription_id]);
     }
 
-    // 3. Fetch self-reported / emergency medications
     const selfSql = `
       SELECT 
         log_id,
@@ -293,7 +367,6 @@ async function getPatientUnifiedHistory(req, res) {
     `;
     const selfMeds = await query(selfSql, [uid]);
 
-    // 4. Combine into a single unified chronological array
     const unifiedHistory = [
       ...prescriptions.map(p => ({
         type: 'prescription',
@@ -319,6 +392,7 @@ async function getPatientUnifiedHistory(req, res) {
     });
   } catch (error) {
     console.error('[AnalyticsController] getPatientUnifiedHistory error:', error);
+
     return res.status(500).json({ success: false, message: 'Failed to retrieve unified patient history.' });
   }
 }

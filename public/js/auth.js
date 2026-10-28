@@ -1,9 +1,4 @@
-// =============================================================
-// xMED Authentication Controller (Client-Side)
-// =============================================================
-
 document.addEventListener('DOMContentLoaded', () => {
-  // If already logged in, redirect to respective dashboard
   const user = Auth.getUser();
   const token = Auth.getToken();
   if (token && user) {
@@ -21,37 +16,46 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAuthForms();
 });
 
-// Setup Login Tabs (Patient vs Doctor)
 function setupLoginTabs() {
   const patientTabBtn = document.getElementById('tab-patient-login');
   const doctorTabBtn = document.getElementById('tab-doctor-login');
   const patientForm = document.getElementById('form-patient-login');
   const doctorForm = document.getElementById('form-doctor-login');
+  const demoCitizensStrip = document.getElementById('demo-citizens-strip');
+  const demoDoctorsStrip = document.getElementById('demo-doctors-strip');
 
   if (!patientTabBtn || !doctorTabBtn) return;
 
-  patientTabBtn.addEventListener('click', () => {
-    patientTabBtn.classList.add('bg-sky-500', 'text-white', 'shadow-lg');
-    patientTabBtn.classList.remove('text-slate-400', 'hover:text-white');
-    doctorTabBtn.classList.remove('bg-teal-500', 'text-white', 'shadow-lg');
-    doctorTabBtn.classList.add('text-slate-400', 'hover:text-white');
+  const activeClasses = ['bg-emerald-500', 'bg-sky-500', 'bg-teal-500', 'text-white', 'shadow-lg', 'shadow-emerald-500/25', 'shadow-teal-500/25'];
+  const inactiveClasses = ['text-slate-400', 'hover:text-white', 'bg-transparent', 'shadow-none'];
 
-    patientForm.classList.remove('hidden');
-    doctorForm.classList.add('hidden');
+  patientTabBtn.addEventListener('click', () => {
+    patientTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
+    doctorTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
+
+    patientTabBtn.classList.add('bg-emerald-500', 'text-white', 'shadow-lg', 'shadow-emerald-500/25');
+    doctorTabBtn.classList.add('text-slate-400', 'hover:text-white', 'bg-transparent');
+
+    if (patientForm) patientForm.classList.remove('hidden');
+    if (doctorForm) doctorForm.classList.add('hidden');
+    if (demoCitizensStrip) demoCitizensStrip.classList.remove('hidden');
+    if (demoDoctorsStrip) demoDoctorsStrip.classList.add('hidden');
   });
 
   doctorTabBtn.addEventListener('click', () => {
-    doctorTabBtn.classList.add('bg-teal-500', 'text-white', 'shadow-lg');
-    doctorTabBtn.classList.remove('text-slate-400', 'hover:text-white');
-    patientTabBtn.classList.remove('bg-sky-500', 'text-white', 'shadow-lg');
-    patientTabBtn.classList.add('text-slate-400', 'hover:text-white');
+    patientTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
+    doctorTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
 
-    doctorForm.classList.remove('hidden');
-    patientForm.classList.add('hidden');
+    doctorTabBtn.classList.add('bg-teal-500', 'text-white', 'shadow-lg', 'shadow-teal-500/25');
+    patientTabBtn.classList.add('text-slate-400', 'hover:text-white', 'bg-transparent');
+
+    if (doctorForm) doctorForm.classList.remove('hidden');
+    if (patientForm) patientForm.classList.add('hidden');
+    if (demoDoctorsStrip) demoDoctorsStrip.classList.remove('hidden');
+    if (demoCitizensStrip) demoCitizensStrip.classList.add('hidden');
   });
 }
 
-// Setup Register Tabs (Patient vs Doctor)
 function setupRegisterTabs() {
   const patientRegTabBtn = document.getElementById('tab-patient-reg');
   const doctorRegTabBtn = document.getElementById('tab-doctor-reg');
@@ -60,30 +64,33 @@ function setupRegisterTabs() {
 
   if (!patientRegTabBtn || !doctorRegTabBtn) return;
 
-  patientRegTabBtn.addEventListener('click', () => {
-    patientRegTabBtn.classList.add('bg-sky-500', 'text-white', 'shadow-lg');
-    patientRegTabBtn.classList.remove('text-slate-400', 'hover:text-white');
-    doctorRegTabBtn.classList.remove('bg-teal-500', 'text-white', 'shadow-lg');
-    doctorRegTabBtn.classList.add('text-slate-400', 'hover:text-white');
+  const activeClasses = ['bg-emerald-500', 'bg-sky-500', 'bg-teal-500', 'text-white', 'shadow-lg', 'shadow-emerald-500/25', 'shadow-teal-500/25'];
+  const inactiveClasses = ['text-slate-400', 'hover:text-white', 'bg-transparent', 'shadow-none'];
 
-    patientRegForm.classList.remove('hidden');
-    doctorRegForm.classList.add('hidden');
+  patientRegTabBtn.addEventListener('click', () => {
+    patientRegTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
+    doctorRegTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
+
+    patientRegTabBtn.classList.add('bg-emerald-500', 'text-white', 'shadow-lg', 'shadow-emerald-500/25');
+    doctorRegTabBtn.classList.add('text-slate-400', 'hover:text-white', 'bg-transparent');
+
+    if (patientRegForm) patientRegForm.classList.remove('hidden');
+    if (doctorRegForm) doctorRegForm.classList.add('hidden');
   });
 
   doctorRegTabBtn.addEventListener('click', () => {
-    doctorRegTabBtn.classList.add('bg-teal-500', 'text-white', 'shadow-lg');
-    doctorRegTabBtn.classList.remove('text-slate-400', 'hover:text-white');
-    patientRegTabBtn.classList.remove('bg-sky-500', 'text-white', 'shadow-lg');
-    patientRegTabBtn.classList.add('text-slate-400', 'hover:text-white');
+    patientRegTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
+    doctorRegTabBtn.classList.remove(...activeClasses, ...inactiveClasses);
 
-    doctorRegForm.classList.remove('hidden');
-    patientRegForm.classList.add('hidden');
+    doctorRegTabBtn.classList.add('bg-teal-500', 'text-white', 'shadow-lg', 'shadow-teal-500/25');
+    patientRegTabBtn.classList.add('text-slate-400', 'hover:text-white', 'bg-transparent');
+
+    if (doctorRegForm) doctorRegForm.classList.remove('hidden');
+    if (patientRegForm) patientRegForm.classList.add('hidden');
   });
 }
 
-// Form Handlers & Submission
 function setupAuthForms() {
-  // 1. Patient Login
   const patientLoginForm = document.getElementById('form-patient-login');
   if (patientLoginForm) {
     patientLoginForm.addEventListener('submit', async (e) => {
@@ -115,12 +122,11 @@ function setupAuthForms() {
       } catch (err) {
         showToast('Network connection error', 'error');
       } finally {
-        setLoading(submitBtn, false, 'Access Citizen Portal');
+        setLoading(submitBtn, false, 'Sign In');
       }
     });
   }
 
-  // 2. Doctor Login
   const doctorLoginForm = document.getElementById('form-doctor-login');
   if (doctorLoginForm) {
     doctorLoginForm.addEventListener('submit', async (e) => {
@@ -152,12 +158,11 @@ function setupAuthForms() {
       } catch (err) {
         showToast('Network connection error', 'error');
       } finally {
-        setLoading(submitBtn, false, 'Enter Doctor Workspace');
+        setLoading(submitBtn, false, 'Sign In');
       }
     });
   }
 
-  // 3. Citizen Registration
   const citizenRegForm = document.getElementById('form-patient-reg');
   if (citizenRegForm) {
     citizenRegForm.addEventListener('submit', async (e) => {
@@ -193,12 +198,11 @@ function setupAuthForms() {
       } catch (err) {
         showToast('Network error during registration', 'error');
       } finally {
-        setLoading(submitBtn, false, 'Register as Citizen');
+        setLoading(submitBtn, false, 'Create Citizen UID');
       }
     });
   }
 
-  // 4. Doctor Registration
   const doctorRegForm = document.getElementById('form-doctor-reg');
   if (doctorRegForm) {
     doctorRegForm.addEventListener('submit', async (e) => {
@@ -233,7 +237,7 @@ function setupAuthForms() {
       } catch (err) {
         showToast('Network error during doctor registration', 'error');
       } finally {
-        setLoading(submitBtn, false, 'Register as Doctor');
+        setLoading(submitBtn, false, 'Submit for Verification');
       }
     });
   }
@@ -259,7 +263,6 @@ function setLoading(btn, isLoading, text) {
   }
 }
 
-// Quick Demo Account Helpers for Instant Testing
 function fillDemoPatient() {
   const idInput = document.getElementById('patient-login-id');
   const passInput = document.getElementById('patient-login-pass');

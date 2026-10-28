@@ -47,7 +47,6 @@ async function getHospitals({ area, city, specialization } = {}) {
 
   const rows = await query(sql, params);
 
-  // Group doctors under each hospital
   const hospitalMap = new Map();
 
   for (const row of rows) {

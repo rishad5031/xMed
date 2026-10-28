@@ -1,12 +1,4 @@
-// =============================================================
-// xMED Government Essential Free Drugs Model
-// Directorate General of Health Services (DGHS) & EDCL Formulary
-// Official Bangladesh National Essential Drugs List (NEDL)
-// 100% Free of Cost at Government Hospitals & Community Clinics
-// =============================================================
-
 const GOVERNMENT_FREE_DRUGS = [
-  // --- SECTION 1: EMERGENCY & CRITICAL RESUSCITATION DRUGS ---
   {
     id: 'BD-EDCL-EM-01',
     brand_name: 'EDCL Adrenaline 1mg/ml Injection',
@@ -278,7 +270,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Sublingual'
   },
 
-  // --- SECTION 2: ESSENTIAL ANTIBIOTICS & ANTI-INFECTIVES ---
   {
     id: 'BD-EDCL-AB-01',
     brand_name: 'EDCL Amoxicillin 500mg Capsule',
@@ -445,7 +436,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Slow IV Infusion'
   },
 
-  // --- SECTION 3: ANALGESICS, ANTIPYRETICS & ANTI-INFLAMMATORY ---
   {
     id: 'BD-EDCL-AN-01',
     brand_name: 'EDCL Paracetamol 500mg Tablet',
@@ -522,7 +512,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Oral (Chewed in Emergency)'
   },
 
-  // --- SECTION 4: GASTROINTESTINAL & ACID PEPTIC MEDICINES ---
   {
     id: 'BD-EDCL-GI-01',
     brand_name: 'EDCL Antacid Compound Tablet',
@@ -584,7 +573,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Slow IV Injection'
   },
 
-  // --- SECTION 5: RESPIRATORY & ANTIHISTAMINES ---
   {
     id: 'BD-EDCL-RS-01',
     brand_name: 'EDCL Salbutamol 4mg Tablet',
@@ -676,7 +664,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Slow IV Infusion'
   },
 
-  // --- SECTION 6: MATERNAL, REPRODUCTIVE & CHILD NUTRITION ---
   {
     id: 'BD-EDCL-MH-01',
     brand_name: 'EDCL Iron & Folic Acid Tablet',
@@ -768,7 +755,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Oral'
   },
 
-  // --- SECTION 7: CARDIOVASCULAR & ANTIHYPERTENSIVE ---
   {
     id: 'BD-EDCL-CV-01',
     brand_name: 'EDCL Amlodipine 5mg Tablet',
@@ -830,7 +816,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Oral'
   },
 
-  // --- SECTION 8: ANTIDIABETIC MEDICATIONS ---
   {
     id: 'BD-EDCL-DM-01',
     brand_name: 'EDCL Metformin 500mg Tablet',
@@ -862,7 +847,6 @@ const GOVERNMENT_FREE_DRUGS = [
     route_of_admin: 'Oral'
   },
 
-  // --- SECTION 9: OPHTHALMIC, TOPICAL & DERMATOLOGICAL ---
   {
     id: 'BD-EDCL-OP-01',
     brand_name: 'EDCL Gentamicin 0.3% Eye/Ear Drops',
@@ -940,7 +924,47 @@ const GOVERNMENT_FREE_DRUGS = [
   }
 ];
 
-// --- Accessor & Search Methods ---
+function resolveDrugImage(drug) {
+  if (!drug) return '/images/drugs/tablets.svg';
+  const form = (drug.dosage_form || '').toLowerCase();
+  const name = (drug.brand_name || '' + ' ' + (drug.generic_name || '')).toLowerCase();
+
+  if (name.includes('povidone') || name.includes('iodine') || form.includes('topical solution')) {
+    return '/images/drugs/antiseptic.svg';
+  }
+  if (form.includes('ors') || form.includes('powder for solution') || name.includes('oral rehydration') || name.includes('ors')) {
+    return '/images/drugs/ors.svg';
+  }
+  if (form.includes('inhal') || form.includes('nebul') || form.includes('respule') || form.includes('evohaler')) {
+    return '/images/drugs/inhaler.svg';
+  }
+  if (form.includes('infusion') || form.includes('saline') || form.includes('iv fluid') || form.includes('bag')) {
+    return '/images/drugs/iv-infusion.svg';
+  }
+  if (form.includes('eye') || form.includes('ear') || form.includes('drops') || form.includes('ophthalmic') || form.includes('otic')) {
+    return '/images/drugs/eyedrops.svg';
+  }
+  if (form.includes('cream') || form.includes('ointment') || form.includes('tube') || form.includes('emulsion') || form.includes('gel')) {
+    return '/images/drugs/cream-tube.svg';
+  }
+  if (form.includes('vial') || name.includes('vial') || name.includes('insulin') || name.includes('hydrocortisone') || name.includes('ceftriaxone')) {
+    return '/images/drugs/vial.svg';
+  }
+  if (form.includes('ampoule') || form.includes('injection') || name.includes('adrenaline') || name.includes('atropine') || name.includes('diazepam') || name.includes('furosemide') || name.includes('magnesium') || name.includes('oxytocin') || name.includes('tetanus')) {
+    return '/images/drugs/ampoule.svg';
+  }
+  if (form.includes('syrup') || form.includes('suspension') || form.includes('liquid') || form.includes('elixir')) {
+    return '/images/drugs/syrup.svg';
+  }
+  if (form.includes('capsule') || form.includes('softgel') || name.includes('capsule') || name.includes('omeprazole 20mg')) {
+    return '/images/drugs/capsules.svg';
+  }
+  return '/images/drugs/tablets.svg';
+}
+
+GOVERNMENT_FREE_DRUGS.forEach(drug => {
+  drug.image = resolveDrugImage(drug);
+});
 
 function getAllGovernmentDrugs(options = {}) {
   let list = [...GOVERNMENT_FREE_DRUGS];
@@ -955,7 +979,7 @@ function getAllGovernmentDrugs(options = {}) {
 
   if (options.search) {
     const q = options.search.toLowerCase().trim();
-    list = list.filter(d => 
+    list = list.filter(d =>
       d.brand_name.toLowerCase().includes(q) ||
       d.generic_name.toLowerCase().includes(q) ||
       d.category.toLowerCase().includes(q) ||
@@ -984,5 +1008,6 @@ module.exports = {
   getAllGovernmentDrugs,
   getEmergencyDrugs,
   getDrugById,
-  getDrugCategories
+  getDrugCategories,
+  resolveDrugImage
 };

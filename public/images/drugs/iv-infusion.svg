@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="100%" height="100%">
+  <defs>
+    <radialGradient id="iv-bg-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0284C7" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="iv-fluid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#BAE6FD" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#7DD3FC" stop-opacity="0.75"/>
+    </linearGradient>
+    <linearGradient id="iv-glass-bag" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8"/>
+      <stop offset="20%" stop-color="#F8FAFC" stop-opacity="0.4"/>
+      <stop offset="80%" stop-color="#F8FAFC" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#CBD5E1" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="iv-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0369A1" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <circle cx="80" cy="80" r="70" fill="url(#iv-bg-glow)" />
+
+  <g filter="url(#iv-shadow)">
+    <!-- Hanging Eyelet Top -->
+    <path d="M72 18 L88 18 C90 18, 92 20, 90 24 L86 28 L74 28 L70 24 C68 20, 70 18, 72 18 Z" fill="#94A3B8"/>
+    <circle cx="80" cy="23" r="3" fill="#0A0C0E"/>
+
+    <!-- Bag Main Body -->
+    <path d="M54 36 C54 30, 60 28, 70 28 L90 28 C100 28, 106 30, 106 36 L104 122 C104 128, 98 132, 90 132 L70 132 C62 132, 56 128, 56 122 Z" 
+          fill="url(#iv-glass-bag)" stroke="#94A3B8" stroke-width="1.2"/>
+
+    <!-- Fluid level inside -->
+    <path d="M58 54 L102 54 L101 120 C101 126, 96 130, 88 130 L72 130 C64 130, 59 126, 59 120 Z" 
+          fill="url(#iv-fluid)"/>
+    <ellipse cx="80" cy="54" rx="22" ry="3" fill="#E0F2FE"/>
+
+    <!-- Graduation Scale on Bag (ml lines) -->
+    <line x1="94" y1="65" x2="100" y2="65" stroke="#0369A1" stroke-width="1"/>
+    <line x1="96" y1="75" x2="100" y2="75" stroke="#0369A1" stroke-width="1"/>
+    <line x1="94" y1="85" x2="100" y2="85" stroke="#0369A1" stroke-width="1"/>
+    <line x1="96" y1="95" x2="100" y2="95" stroke="#0369A1" stroke-width="1"/>
+    <line x1="94" y1="105" x2="100" y2="105" stroke="#0369A1" stroke-width="1"/>
+
+    <!-- Blue Medical IV Label -->
+    <rect x="62" y="68" width="30" height="38" rx="3" fill="#FFFFFF" opacity="0.9" stroke="#CBD5E1" stroke-width="0.8"/>
+    <rect x="65" y="73" width="18" height="3" rx="1" fill="#0284C7"/>
+    <rect x="65" y="79" width="24" height="2" rx="1" fill="#64748B"/>
+    <rect x="65" y="84" width="20" height="2" rx="1" fill="#94A3B8"/>
+    <text x="77" y="99" fill="#0284C7" font-family="monospace" font-weight="900" font-size="8" text-anchor="middle">1000ml</text>
+
+    <!-- Bottom Ports -->
+    <rect x="68" y="132" width="8" height="12" rx="2" fill="#0284C7"/>
+    <rect x="84" y="132" width="8" height="15" rx="2" fill="#CBD5E1" stroke="#94A3B8" stroke-width="0.8"/>
+    <circle cx="72" cy="142" r="1.5" fill="#FFFFFF"/>
+  </g>
+</svg>

@@ -1,7 +1,3 @@
-// =============================================================
-// xMED Doctors Clinical Blog & Insights Controller
-// =============================================================
-
 let allBlogs = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -127,7 +123,6 @@ function setupCategoryFilters() {
   });
 }
 
-// Full Article Modal Reader
 async function openBlogModal(id) {
   let modal = document.getElementById('blog-modal');
   if (!modal) {

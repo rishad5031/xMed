@@ -1,8 +1,3 @@
-// =============================================================
-// xMED Doctors & Hospitals Directory Client Controller
-// File: public/js/directory.js
-// =============================================================
-
 let allHospitalsData = [];
 let allDoctorsList = [];
 
@@ -17,12 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const emergencyReasonGroup = document.getElementById('emergencyReasonGroup');
   const modalDate = document.getElementById('modalDate');
 
-  // Set minimum date to today
   const today = new Date().toISOString().slice(0, 10);
   modalDate.min = today;
   modalDate.value = today;
 
-  // Auto-fill logged-in patient UID if available
   const storedUser = localStorage.getItem('user');
   if (storedUser) {
     try {
@@ -33,16 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
   }
 
-  // Load hospitals & doctors from API
   loadHospitals();
 
-  // Search & Area Filter listeners
   searchInput.addEventListener('input', filterAndRenderDoctors);
   areaFilter.addEventListener('change', () => {
     loadHospitals(areaFilter.value);
   });
 
-  // Emergency checkbox toggle
   modalIsEmergency.addEventListener('change', () => {
     if (modalIsEmergency.checked) {
       emergencyReasonGroup.classList.remove('hidden');
@@ -51,14 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Modal close handlers
   closeModalBtn.addEventListener('click', closeModal);
   cancelModalBtn.addEventListener('click', closeModal);
   bookingModal.addEventListener('click', (e) => {
     if (e.target === bookingModal) closeModal();
   });
 
-  // Booking Form Submission via sp_book_appointment endpoint
   bookingForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = document.getElementById('submitBookingBtn');
@@ -137,7 +125,7 @@ async function loadHospitals(area = '') {
 
     if (json.success && Array.isArray(json.data)) {
       allHospitalsData = json.data;
-      // Flatten doctors with hospital context
+
       allDoctorsList = [];
       allHospitalsData.forEach(h => {
         if (Array.isArray(h.doctors)) {

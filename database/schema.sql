@@ -152,6 +152,10 @@ CREATE TABLE IF NOT EXISTS `appointments` (
   `is_emergency` BOOLEAN DEFAULT FALSE,
   `emergency_reason` TEXT NULL,
   `priority_level` INT DEFAULT 1, -- 1: Regular FCFS, 2: Patient Emergency, 3: Doctor-Approved Emergency
+  `fee_amount` DECIMAL(10,2) DEFAULT 5.00,
+  `payment_status` ENUM('PENDING', 'PAID', 'REFUNDED') DEFAULT 'PAID',
+  `payment_method` VARCHAR(50) DEFAULT 'bKash',
+  `transaction_id` VARCHAR(100) NULL,
   `applied_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `pk_appointments` PRIMARY KEY (`appointment_id`),

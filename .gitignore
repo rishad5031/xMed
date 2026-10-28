@@ -13,6 +13,8 @@ yarn-error.log*
 # Operating System & Editor Metadata
 .DS_Store
 Thumbs.db
+Icon?
+Icon*
 .vscode/
 .idea/
 

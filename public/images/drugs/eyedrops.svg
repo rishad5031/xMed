@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="100%" height="100%">
+  <defs>
+    <radialGradient id="eye-bg-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="eye-cap" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="eye-bottle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="40%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <filter id="eye-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#1D4ED8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <circle cx="80" cy="80" r="70" fill="url(#eye-bg-glow)" />
+
+  <g filter="url(#eye-shadow)">
+    <!-- Dropper Tip (Nozzle) -->
+    <path d="M78 22 L82 22 L83 34 L77 34 Z" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.8"/>
+
+    <!-- Dropper Cap (Blue Ribbed) -->
+    <path d="M74 34 L86 34 L88 56 L72 56 Z" fill="url(#eye-cap)" stroke="#1D4ED8" stroke-width="1"/>
+    <!-- Cap Ribs -->
+    <line x1="76" y1="36" x2="75" y2="54" stroke="#93C5FD" stroke-width="0.8"/>
+    <line x1="80" y1="36" x2="80" y2="54" stroke="#93C5FD" stroke-width="0.8"/>
+    <line x1="84" y1="36" x2="85" y2="54" stroke="#93C5FD" stroke-width="0.8"/>
+
+    <!-- Safety Ring -->
+    <rect x="71" y="56" width="18" height="4" rx="1" fill="#1E40AF"/>
+
+    <!-- Plastic Bottle Body -->
+    <path d="M62 66 C62 60, 68 59, 72 59 L88 59 C92 59, 98 60, 98 66 L98 122 C98 130, 92 134, 80 134 C68 134, 62 130, 62 122 Z" 
+          fill="url(#eye-bottle)" stroke="#CBD5E1" stroke-width="1.2"/>
+
+    <!-- Label with Eye Icon -->
+    <rect x="65" y="76" width="30" height="36" rx="3" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="0.8"/>
+    
+    <!-- Stylized Eye Graphic -->
+    <path d="M71 90 Q80 83 89 90 Q80 97 71 90 Z" fill="#3B82F6" opacity="0.8"/>
+    <circle cx="80" cy="90" r="3" fill="#1E3A8A"/>
+    <circle cx="81" cy="89" r="1" fill="#FFFFFF"/>
+
+    <text x="80" y="105" fill="#1E40AF" font-family="monospace" font-weight="800" font-size="6.5" text-anchor="middle">5ml STERILE</text>
+
+    <!-- Falling Micro Droplet -->
+    <path d="M80 12 C80 12, 77 16, 77 18 C77 19.6, 78.3 21, 80 21 C81.7 21, 83 19.6, 83 18 C83 16, 80 12, 80 12 Z" fill="#60A5FA"/>
+  </g>
+</svg>

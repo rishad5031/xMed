@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Universal Real-Time Messaging Client Script
-// Cross-Role Comms: Citizen <-> Doctor <-> Citizen
-// =============================================================
-
 let activeChatTargetUid = null;
 let activeChatTargetName = null;
 let chatPollInterval = null;
@@ -84,14 +79,12 @@ async function openChatThread(targetUid, targetName) {
   if (emptyState) emptyState.classList.add('hidden');
   if (activeWindow) activeWindow.classList.remove('hidden');
 
-  // Highlight active conversation item in sidebar
   document.querySelectorAll('.chat-conversation-item').forEach(item => {
     item.classList.remove('chat-conversation-active');
   });
 
   await fetchThreadMessages();
 
-  // Reset polling
   if (chatPollInterval) clearInterval(chatPollInterval);
   chatPollInterval = setInterval(fetchThreadMessages, 4000);
 }
@@ -138,7 +131,6 @@ async function fetchThreadMessages() {
       `;
     }).join('');
 
-    // Scroll to bottom smoothly
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   } catch (err) {
@@ -228,7 +220,7 @@ function closeNewChatModal() {
 }
 
 function startDirectChat(uid, name) {
-  // Switch to messages tab
+
   if (typeof switchDashboardTab === 'function') {
     switchDashboardTab('messages');
   }

@@ -11,7 +11,6 @@ describe('Backend Endpoint & Security Validation Suite', () => {
     await pool.end();
   });
 
-  // 1. Authentication Tests
   describe('Authentication Endpoints', () => {
     test('Citizen Login: Valid credentials should return HTTP 200 and JWT', async () => {
       const res = await request(app)
@@ -56,7 +55,6 @@ describe('Backend Endpoint & Security Validation Suite', () => {
     });
   });
 
-  // 2. Advanced Analytics Endpoints
   describe('DBMS Analytics Endpoints', () => {
     test('GET /api/analytics/frequent-patients: Assert HTTP 200 and verify payload structure', async () => {
       const res = await request(app).get('/api/analytics/frequent-patients');
@@ -86,7 +84,6 @@ describe('Backend Endpoint & Security Validation Suite', () => {
     });
   });
 
-  // 3. ACID Multi-Table Transaction Test
   describe('E-Prescription ACID Atomic Creation', () => {
     test('POST /api/prescriptions: Submit prescription and verify atomic insertion across tables', async () => {
       expect(doctorToken).toBeTruthy();
@@ -114,26 +111,21 @@ describe('Backend Endpoint & Security Validation Suite', () => {
 
       const newRxId = res.body.prescription.prescription_id;
 
-      // Verify prescription row exists in DB
       const [rxRow] = await query('SELECT * FROM prescriptions WHERE prescription_id = ?', [newRxId]);
       expect(rxRow).toBeDefined();
       expect(rxRow.patient_uid).toBe('BD-2000-0001');
 
-      // Verify items exist in prescription_items
       const items = await query('SELECT * FROM prescription_items WHERE prescription_id = ?', [newRxId]);
       expect(items.length).toBe(2);
 
-      // Cleanup test prescription (cascades to items)
       await query('DELETE FROM prescriptions WHERE prescription_id = ?', [newRxId]);
     });
   });
 
-  // 4. Rate Limiting Security Test
   describe('API Security & Rate Limiting', () => {
     test('Rate Limiting: Dispatch rapid requests to /api/auth/login and assert HTTP 429', async () => {
       let rateLimited = null;
 
-      // Dispatch rapid sequential requests to breach limit
       for (let i = 0; i < 25; i++) {
         const res = await request(app)
           .post('/api/auth/login')

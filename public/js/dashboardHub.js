@@ -1,33 +1,23 @@
-// =============================================================
-// xMED - Universal Dashboard Hub Controller
-// Unified Multi-Tab Modular Interface for Patient & Doctor Portals
-// =============================================================
-
 function switchDashboardTab(tabId) {
-  // 1. Hide all panels
   document.querySelectorAll('.dashboard-tab-panel').forEach(panel => {
     panel.classList.add('hidden');
   });
 
-  // 2. Remove active class from all tab buttons
   document.querySelectorAll('.liquid-tab-btn').forEach(btn => {
     btn.classList.remove('liquid-tab-active');
   });
 
-  // 3. Show targeted panel
   const targetPanel = document.getElementById(`panel-${tabId}`);
   if (targetPanel) {
     targetPanel.classList.remove('hidden');
     targetPanel.classList.add('animate-liquid-entrance');
   }
 
-  // 4. Highlight active button
   const targetBtn = document.getElementById(`tab-btn-${tabId}`);
   if (targetBtn) {
     targetBtn.classList.add('liquid-tab-active');
   }
 
-  // 5. Trigger lazy loading / component activation
   if (tabId === 'blood' && typeof loadBloodPosts === 'function') {
     loadBloodStats();
     loadBloodPosts();
@@ -40,7 +30,6 @@ function switchDashboardTab(tabId) {
   }
 }
 
-// Medicine Catalog Tab Loader
 async function loadDashboardMedicines(query = '') {
   const container = document.getElementById('dashboard-medicines-list');
   if (!container) return;
@@ -99,7 +88,6 @@ async function loadDashboardMedicines(query = '') {
   }
 }
 
-// Health Blog Articles Tab Loader
 async function loadDashboardBlogs(query = '') {
   const container = document.getElementById('dashboard-blogs-grid');
   if (!container) return;
@@ -192,7 +180,6 @@ function closeBlogDetailModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// Attach listener to search inputs
 document.addEventListener('DOMContentLoaded', () => {
   const medSearch = document.getElementById('dashboard-med-search');
   if (medSearch) {

@@ -1,9 +1,5 @@
 const { query } = require('../config/db');
 
-// =============================================================
-// Patient Self-Medications & Emergency OTC Logging Model
-// =============================================================
-
 async function createSelfMedication({ patient_uid, medicine_name, reason_or_emergency, dosage_taken, date_taken }) {
   const sql = `
     INSERT INTO patient_self_medications 

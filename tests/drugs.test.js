@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Automated Test Suite: Bangladesh Government Free Drugs
-// Directorate General of Health Services (DGHS) & EDCL Formulary
-// =============================================================
-
 const request = require('supertest');
 const app = require('../server');
 
@@ -17,7 +12,6 @@ describe('Bangladesh Government Free & Emergency Essential Drugs API', () => {
       expect(Array.isArray(res.body.data)).toBe(true);
       expect(res.body.data.length).toBeGreaterThanOrEqual(10);
 
-      // Verify that every returned drug is strictly marked as emergency
       res.body.data.forEach(drug => {
         expect(drug.is_emergency).toBe(true);
         expect(drug).toHaveProperty('id');

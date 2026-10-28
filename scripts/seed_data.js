@@ -1,10 +1,3 @@
-// =============================================================
-// xMED Massive Clinical Seed Data Generator
-// Unified Seeding Pipeline: 6 Hospitals, 20 Doctors, 100 Patients,
-// 500+ Historical Prescriptions, OTC Self-Meds, and 50+ Multi-Status Appointments
-// All passwords default to: Password123!
-// =============================================================
-
 const bcrypt = require('bcryptjs');
 const { query, getConnection } = require('../config/db');
 
@@ -14,13 +7,11 @@ async function seedDatabase() {
   console.log('======================================================\n');
 
   try {
-    // 1. Generate Global Password Hash
     const rawPassword = 'Password123!';
     console.log(`[1/6] Hashing global password "${rawPassword}"...`);
     const passwordHash = bcrypt.hashSync(rawPassword, 10);
     console.log('✓ Password hash generated.\n');
 
-    // 2. Seed 6 Distinct Hospitals
     console.log('[2/6] Seeding 6 Distinct Academic & Specialized Hospitals...');
     const hospitalData = [
       {
@@ -85,7 +76,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Successfully seeded/verified 6 Hospitals (${hospitalIds.length} IDs mapped).\n`);
 
-    // 3. Seed 20 Unique Doctors (Distributed & Enhanced)
     console.log('[3/6] Seeding 20 Unique Certified Doctors with Shifts & Biographies...');
     const doctorProfiles = [
       {
@@ -93,7 +83,7 @@ async function seedDatabase() {
         spec: 'Cardiology',
         phone: '+8801711000001',
         email: 'dr.tanvir@xmed.gov.bd',
-        hospIndex: 0, // Dhanmondi
+        hospIndex: 0,
         fee: 1000.00,
         days: 'Sat,Sun,Mon,Tue,Wed',
         start: '09:00:00',
@@ -106,7 +96,7 @@ async function seedDatabase() {
         spec: 'Pulmonology',
         phone: '+8801711000002',
         email: 'dr.nusrat@xmed.gov.bd',
-        hospIndex: 1, // Uttara
+        hospIndex: 1,
         fee: 800.00,
         days: 'Sun,Mon,Tue,Wed,Thu',
         start: '16:00:00',
@@ -119,7 +109,7 @@ async function seedDatabase() {
         spec: 'Dermatology',
         phone: '+8801711000003',
         email: 'dr.shakil@xmed.gov.bd',
-        hospIndex: 2, // Mirpur
+        hospIndex: 2,
         fee: 600.00,
         days: 'Sat,Mon,Wed,Fri',
         start: '10:00:00',
@@ -132,7 +122,7 @@ async function seedDatabase() {
         spec: 'Pediatrics',
         phone: '+8801711000004',
         email: 'dr.farzana@xmed.gov.bd',
-        hospIndex: 3, // Gulshan
+        hospIndex: 3,
         fee: 1200.00,
         days: 'Sat,Sun,Tue,Thu',
         start: '09:00:00',
@@ -145,7 +135,7 @@ async function seedDatabase() {
         spec: 'General Surgery',
         phone: '+8801711000005',
         email: 'dr.mahmudul@xmed.gov.bd',
-        hospIndex: 4, // Mohakhali
+        hospIndex: 4,
         fee: 900.00,
         days: 'Sat,Sun,Mon,Tue,Wed',
         start: '10:00:00',
@@ -158,7 +148,7 @@ async function seedDatabase() {
         spec: 'Orthopedics',
         phone: '+8801711000006',
         email: 'dr.sharmin@xmed.gov.bd',
-        hospIndex: 5, // Agrabad
+        hospIndex: 5,
         fee: 800.00,
         days: 'Sat,Sun,Mon,Wed,Thu',
         start: '16:00:00',
@@ -171,7 +161,7 @@ async function seedDatabase() {
         spec: 'Neuromedicine',
         phone: '+8801711000007',
         email: 'dr.kazi.arifur@xmed.gov.bd',
-        hospIndex: 0, // Dhanmondi
+        hospIndex: 0,
         fee: 1200.00,
         days: 'Sat,Sun,Tue,Wed',
         start: '16:00:00',
@@ -184,7 +174,7 @@ async function seedDatabase() {
         spec: 'Gastroenterology',
         phone: '+8801711000008',
         email: 'dr.samira@xmed.gov.bd',
-        hospIndex: 1, // Uttara
+        hospIndex: 1,
         fee: 900.00,
         days: 'Sat,Sun,Mon,Tue,Wed',
         start: '09:00:00',
@@ -197,7 +187,7 @@ async function seedDatabase() {
         spec: 'Nephrology',
         phone: '+8801711000009',
         email: 'dr.mokhlesur@xmed.gov.bd',
-        hospIndex: 2, // Mirpur
+        hospIndex: 2,
         fee: 800.00,
         days: 'Sun,Mon,Tue,Thu',
         start: '16:00:00',
@@ -210,7 +200,7 @@ async function seedDatabase() {
         spec: 'Endocrinology',
         phone: '+8801711000010',
         email: 'dr.sabina@xmed.gov.bd',
-        hospIndex: 3, // Gulshan
+        hospIndex: 3,
         fee: 1000.00,
         days: 'Sat,Mon,Wed,Thu',
         start: '10:00:00',
@@ -223,7 +213,7 @@ async function seedDatabase() {
         spec: 'Otolaryngology (ENT)',
         phone: '+8801711000011',
         email: 'dr.imtiaz@xmed.gov.bd',
-        hospIndex: 4, // Mohakhali
+        hospIndex: 4,
         fee: 700.00,
         days: 'Sat,Sun,Mon,Tue,Wed',
         start: '09:00:00',
@@ -236,7 +226,7 @@ async function seedDatabase() {
         spec: 'Psychiatry',
         phone: '+8801711000012',
         email: 'dr.rashedul@xmed.gov.bd',
-        hospIndex: 5, // Agrabad
+        hospIndex: 5,
         fee: 800.00,
         days: 'Sun,Tue,Thu,Fri',
         start: '16:00:00',
@@ -249,7 +239,7 @@ async function seedDatabase() {
         spec: 'Oncology',
         phone: '+8801711000013',
         email: 'dr.shireen@xmed.gov.bd',
-        hospIndex: 0, // Dhanmondi
+        hospIndex: 0,
         fee: 1500.00,
         days: 'Sat,Sun,Mon,Tue',
         start: '10:00:00',
@@ -262,7 +252,7 @@ async function seedDatabase() {
         spec: 'Urology',
         phone: '+8801711000014',
         email: 'dr.zahirul@xmed.gov.bd',
-        hospIndex: 1, // Uttara
+        hospIndex: 1,
         fee: 900.00,
         days: 'Sun,Mon,Wed,Thu',
         start: '16:00:00',
@@ -275,7 +265,7 @@ async function seedDatabase() {
         spec: 'Rheumatology',
         phone: '+8801711000015',
         email: 'dr.mehreen@xmed.gov.bd',
-        hospIndex: 2, // Mirpur
+        hospIndex: 2,
         fee: 700.00,
         days: 'Sat,Mon,Tue,Wed',
         start: '09:00:00',
@@ -288,7 +278,7 @@ async function seedDatabase() {
         spec: 'Ophthalmology',
         phone: '+8801711000016',
         email: 'dr.asad@xmed.gov.bd',
-        hospIndex: 3, // Gulshan
+        hospIndex: 3,
         fee: 1000.00,
         days: 'Sat,Sun,Tue,Wed',
         start: '10:00:00',
@@ -301,7 +291,7 @@ async function seedDatabase() {
         spec: 'Hematology',
         phone: '+8801711000017',
         email: 'dr.laila@xmed.gov.bd',
-        hospIndex: 4, // Mohakhali
+        hospIndex: 4,
         fee: 900.00,
         days: 'Sun,Mon,Wed,Thu',
         start: '09:00:00',
@@ -314,7 +304,7 @@ async function seedDatabase() {
         spec: 'Family Medicine',
         phone: '+8801711000018',
         email: 'dr.monirul@xmed.gov.bd',
-        hospIndex: 5, // Agrabad
+        hospIndex: 5,
         fee: 500.00,
         days: 'Sat,Sun,Mon,Tue,Wed,Thu',
         start: '10:00:00',
@@ -327,7 +317,7 @@ async function seedDatabase() {
         spec: 'Internal Medicine',
         phone: '+8801711000019',
         email: 'dr.tasneem@xmed.gov.bd',
-        hospIndex: 0, // Dhanmondi
+        hospIndex: 0,
         fee: 900.00,
         days: 'Sat,Sun,Mon,Tue,Wed',
         start: '16:00:00',
@@ -340,7 +330,7 @@ async function seedDatabase() {
         spec: 'Emergency Medicine',
         phone: '+8801711000020',
         email: 'dr.kibria@xmed.gov.bd',
-        hospIndex: 1, // Uttara
+        hospIndex: 1,
         fee: 1000.00,
         days: 'Sat,Sun,Mon,Tue,Wed,Thu',
         start: '10:00:00',
@@ -391,7 +381,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Successfully seeded 20 Doctors (DOC-1001 to DOC-1020, BMDC-10001 to BMDC-10020) across 6 Hospitals.\n`);
 
-    // 4. Seed 100 Unique Citizens/Patients with Location Details
     console.log('[4/6] Seeding 100 Unique Citizens (BD-2000-0001 to BD-2000-0100) with Location & Addresses...');
     const firstNames = [
       'Rahim', 'Karim', 'Nafis', 'Siddiq', 'Tanvir', 'Hasan', 'Mahmud', 'Arif', 'Salman', 'Jubayer',
@@ -421,7 +410,6 @@ async function seedDatabase() {
       const gender = (i % 2 === 0) ? 'Female' : 'Male';
       const blood = bloodGroups[i % bloodGroups.length];
       
-      // DOB between 2000-01-01 and 2024-01-01 (Strictly satisfies dob >= '2000-01-01' and dob <= CURRENT_DATE)
       const birthYear = 2000 + (i % 24);
       const birthMonth = String(1 + (i % 12)).padStart(2, '0');
       const birthDay = String(1 + (i % 28)).padStart(2, '0');
@@ -455,10 +443,8 @@ async function seedDatabase() {
     }
     console.log(`✓ Successfully seeded 100 Citizens (BD-2000-0001 to BD-2000-0100) mapped to 6 Regional Areas.\n`);
 
-    // 5. Seed 500+ Historical Prescriptions & Self-Medications
     console.log('[5/6] Seeding 500+ Historical Prescriptions and Emergency Self-Medications...');
 
-    // Fetch medicine catalog
     const medicines = await query('SELECT medicine_id, brand_name, generic_name, dosage_form, strength FROM medicines;');
     if (!medicines || medicines.length === 0) {
       throw new Error('No medicines found in database! Please run scripts/init_db.js first.');
@@ -554,7 +540,6 @@ async function seedDatabase() {
       }
     ];
 
-    // Clear existing prescriptions & items to guarantee fresh atomic seeding
     await query('SET FOREIGN_KEY_CHECKS = 0;');
     await query('TRUNCATE TABLE prescription_items;');
     await query('TRUNCATE TABLE prescription_audit_logs;');
@@ -572,15 +557,14 @@ async function seedDatabase() {
 
     for (let cIdx = 0; cIdx < citizenUids.length; cIdx++) {
       const patientUid = citizenUids[cIdx];
-      // 5 to 10 prescriptions per patient = ~750 total prescriptions
+
       const rxCountForPatient = 5 + (cIdx % 6);
 
       for (let r = 0; r < rxCountForPatient; r++) {
-        // Distribute across 20 doctors
+
         const docId = doctorIds[(cIdx * 3 + r) % doctorIds.length];
         const diagObj = diagnosesCatalog[(cIdx + r * 2) % diagnosesCatalog.length];
 
-        // Stagger dates backwards over past 24 months
         const daysAgo = 1 + (r * 45) + (cIdx % 15);
         const rxDate = new Date();
         rxDate.setDate(rxDate.getDate() - daysAgo);
@@ -593,7 +577,6 @@ async function seedDatabase() {
         const rxId = rxResult.insertId;
         totalPrescriptionsSeeded++;
 
-        // Add 2 to 4 medicines per prescription
         const itemCount = 2 + ((cIdx + r) % 3);
         for (let it = 0; it < itemCount; it++) {
           const medIndex = (cIdx * 7 + r * 3 + it * 5) % medicines.length;
@@ -609,7 +592,7 @@ async function seedDatabase() {
             totalItemsSeeded++;
           } catch (itemErr) {
             if (itemErr.sqlMessage && itemErr.sqlMessage.includes('ALLERGY CONFLICT')) {
-              // Trigger safely caught an allergy conflict
+
             } else {
               throw itemErr;
             }
@@ -617,7 +600,6 @@ async function seedDatabase() {
         }
       }
 
-      // Seed 1 to 3 self-medications per patient
       const selfMedCount = 1 + (cIdx % 3);
       for (let sm = 0; sm < selfMedCount; sm++) {
         const sample = selfMedSamples[(cIdx + sm) % selfMedSamples.length];
@@ -635,7 +617,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${totalPrescriptionsSeeded} Prescriptions, ${totalItemsSeeded} Items, and ${totalSelfMedsSeeded} Self-Meds.\n`);
 
-    // 6. Seed 50+ Multi-Status Appointments
     console.log('[6/6] Seeding 50+ Multi-Status Appointments (Pending FCFS, Patient Emergencies, Doctor-Approved)...');
     const emergencyReasons = [
       'Severe acute crushing substernal chest pain radiating to left shoulder with heavy sweating.',
@@ -658,7 +639,6 @@ async function seedDatabase() {
       const docId = doctorIds[docIndex];
       const hospId = hospitalIds[doctorProfiles[docIndex].hospIndex];
 
-      // Schedule dates: upcoming 7 days or past 3 days
       const daysOffset = (aptIdx % 10) - 3;
       const targetDate = new Date();
       targetDate.setDate(targetDate.getDate() + daysOffset);
@@ -672,7 +652,7 @@ async function seedDatabase() {
       let serialNo = null;
 
       if (aptIdx % 5 === 0) {
-        // Group A: Doctor-Approved Emergencies (priority 3, top of schedule)
+
         isEmergency = true;
         emergencyReason = emergencyReasons[aptIdx % emergencyReasons.length];
         priorityLevel = 3;
@@ -680,32 +660,32 @@ async function seedDatabase() {
         serialNo = 1;
         scheduledTime = '09:15:00';
       } else if (aptIdx % 4 === 0) {
-        // Group B: Patient-Flagged Emergency (priority 2, urgent review)
+
         isEmergency = true;
         emergencyReason = emergencyReasons[aptIdx % emergencyReasons.length];
         priorityLevel = 2;
         status = 'PENDING';
       } else if (aptIdx % 3 === 0) {
-        // Group C: Regular Doctor-Accepted appointment
+
         isEmergency = false;
         priorityLevel = 1;
         status = 'ACCEPTED';
         serialNo = 2 + (aptIdx % 10);
         scheduledTime = `${10 + (aptIdx % 6)}:30:00`;
       } else if (aptIdx % 7 === 0) {
-        // Group D: Completed appointment
+
         isEmergency = false;
         priorityLevel = 1;
         status = 'COMPLETED';
         serialNo = 5;
         scheduledTime = '11:00:00';
       } else if (aptIdx % 11 === 0) {
-        // Group E: Cancelled / Rejected
+
         isEmergency = false;
         priorityLevel = 1;
         status = (aptIdx % 2 === 0) ? 'CANCELLED' : 'REJECTED';
       } else {
-        // Group F: Standard Pending FCFS request
+
         isEmergency = false;
         priorityLevel = 1;
         status = 'PENDING';
@@ -726,7 +706,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${totalAppointmentsSeeded} Multi-Status Appointments across 6 Hospitals.\n`);
 
-    // 7. Seed Allergens & Patient Contraindications
     console.log('[7/8] Seeding Allergens, Drug Contraindications & Patient Allergy Profiles...');
     const allergenList = ['Penicillin', 'Sulfa drugs', 'Aspirin', 'Cephalosporins', 'NSAIDs'];
     const allergenMap = new Map();
@@ -737,7 +716,6 @@ async function seedDatabase() {
       allergenMap.set(alg, row.allergen_id);
     }
 
-    // Map medicines to allergens
     const penId = allergenMap.get('Penicillin');
     const aspId = allergenMap.get('Aspirin');
     const sulId = allergenMap.get('Sulfa drugs');
@@ -763,7 +741,6 @@ async function seedDatabase() {
       }
     }
 
-    // Seed test patient allergies (including BD-2000-0001 Penicillin SEVERE)
     const patientAllergySeeds = [
       { uid: 'BD-2000-0001', allergen: 'Penicillin', severity: 'SEVERE' },
       { uid: 'BD-2000-0002', allergen: 'Aspirin', severity: 'MODERATE' },
@@ -787,7 +764,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${allergenList.length} Allergens, ${totalMedAllergens} Drug Mappings, and ${totalPatientAllergies} Patient Profiles.\n`);
 
-    // 8. Seed Hospital Departments & Ward Beds
     console.log('[8/8] Seeding Hospital Departments & Real-Time Ward Beds...');
     const departmentNames = [
       'Cardiology Ward',
@@ -817,7 +793,6 @@ async function seedDatabase() {
         }
         totalDepts++;
 
-        // Seed 4 beds per department
         for (let b = 1; b <= 4; b++) {
           const bedNumber = `B-${hId}${dIdx + 1}-0${b}`;
           let status = 'AVAILABLE';
@@ -841,7 +816,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${totalDepts} Departments and ${totalBeds} Beds across 6 Hospitals.\n`);
 
-    // 7. Seed Blood Donation & Request Hub (50 Detailed Posts)
     console.log('[7/9] Seeding Blood Donation & Request Exchange Hub (50 Unique Posts)...');
     const hubBloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
     const hubAreas = ['Dhanmondi', 'Uttara', 'Mirpur', 'Gulshan', 'Mohakhali', 'Agrabad', 'Banani', 'Badda'];
@@ -876,18 +850,16 @@ async function seedDatabase() {
     const bloodPostsData = [];
     for (let i = 0; i < 50; i++) {
       const authorUid = citizenUids[i % citizenUids.length] || `BD-2000-000${(i % 9) + 1}`;
-      const isRequest = i < 25; // 25 REQUEST, 25 DONATE
+      const isRequest = i < 25;
       const postType = isRequest ? 'REQUEST' : 'DONATE';
       const bloodGroup = hubBloodGroups[i % hubBloodGroups.length];
       const area = hubAreas[i % hubAreas.length];
       const hospitalName = isRequest ? hospitalsList[i % hospitalsList.length] : null;
       
-      // Status distribution: 35 OPEN, 10 FULFILLED, 5 CLOSED
       let status = 'OPEN';
       if (i >= 35 && i < 45) status = 'FULFILLED';
       else if (i >= 45) status = 'CLOSED';
 
-      // Urgency distribution
       let urgency = 'NORMAL';
       if (isRequest) {
         if (i % 3 === 0) urgency = 'CRITICAL_EMERGENCY';
@@ -895,7 +867,6 @@ async function seedDatabase() {
         else urgency = 'NORMAL';
       }
 
-      // Hemoglobin distribution: 12.0 - 16.0 for donors, null or lower for requests
       let hemoglobin = null;
       if (!isRequest) {
         hemoglobin = parseFloat((12.5 + ((i * 3) % 35) * 0.1).toFixed(1));
@@ -937,7 +908,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${totalBloodPosts} Blood Posts (25 DONATE & 25 REQUEST with 35 OPEN, 10 FULFILLED, 5 CLOSED).\n`);
 
-    // 8. Seed Multi-Threaded Cross-Role Messaging System (Every Citizen <-> 5 Distinct Doctors)
     console.log('[8/9] Seeding Multi-Threaded Doctor-Patient Messages (100 Patients x 5 Doctors = 500 Threads)...');
     
     const dialogueArchetypes = [
@@ -1042,7 +1012,6 @@ async function seedDatabase() {
     for (let cIdx = 0; cIdx < citizenUids.length; cIdx++) {
       const patientUid = citizenUids[cIdx];
 
-      // Assign 5 distinct doctors for every patient
       for (let k = 0; k < 5; k++) {
         const docIndex = (cIdx * 3 + k) % doctorIds.length;
         const doctorUid = `DOC-${1001 + docIndex}`;
@@ -1058,10 +1027,8 @@ async function seedDatabase() {
           const senderUid = isCitizen ? patientUid : doctorUid;
           const receiverUid = isCitizen ? doctorUid : patientUid;
 
-          // Sequential timestamps spaced by 30 to 90 minutes
           const msgTime = new Date(threadBaseTime.getTime() + m * (45 * 60 * 1000) + (cIdx * 60000));
 
-          // Older messages are read; the final message has a realistic chance of being unread (for notification testing)
           const isLastMessage = m === archetype.messages.length - 1;
           const isRead = isLastMessage ? (((cIdx + k) % 3 === 0) ? 0 : 1) : 1;
 
@@ -1070,7 +1037,6 @@ async function seedDatabase() {
       }
     }
 
-    // Batch insert messages in chunks of 300 to optimize throughput
     const chunkSize = 300;
     for (let i = 0; i < messageBatch.length; i += chunkSize) {
       const chunk = messageBatch.slice(i, i + chunkSize);
@@ -1085,7 +1051,6 @@ async function seedDatabase() {
     }
     console.log(`✓ Seeded ${totalMessagesSeeded} Cross-Role Messages across 500 Patient-Doctor conversation threads.\n`);
 
-    // 9. Seed Community Health Blogs (16+ Articles)
     console.log('[9/9] Seeding Community Health Blogs & Clinical Knowledge Feed (16 Detailed Articles)...');
     const blogsData = [
       {

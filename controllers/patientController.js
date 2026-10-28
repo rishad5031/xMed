@@ -3,7 +3,6 @@ const prescriptionModel = require('../models/prescriptionModel');
 const reportModel = require('../models/reportModel');
 const selfMedicationModel = require('../models/selfMedicationModel');
 
-// Fetch patient's full dashboard data with pagination support
 async function getPatientDashboard(req, res) {
   try {
     const uid = req.user.uid;
@@ -22,13 +21,8 @@ async function getPatientDashboard(req, res) {
       age = new Date().getFullYear() - birthDate.getFullYear();
     }
 
-    // Fetch paginated prescription timeline
     const prescriptions = await prescriptionModel.getPrescriptionsByPatientUid(uid, limit, offset);
-
-    // Fetch self-reported / emergency medications
     const self_medications = await selfMedicationModel.getSelfMedicationsByPatientUid(uid);
-
-    // Fetch diagnostic lab reports
     const reports = await reportModel.getReportsByPatientUid(uid);
 
     return res.json({
@@ -56,7 +50,6 @@ async function getPatientDashboard(req, res) {
   }
 }
 
-// Longitudinal Vitals History for Chart.js
 async function getPatientVitals(req, res) {
   try {
     const uid = req.user.uid;
@@ -65,7 +58,6 @@ async function getPatientVitals(req, res) {
       return res.status(404).json({ success: false, message: 'Citizen not found.' });
     }
 
-    // Historical clinical vitals trend data
     const vitals = {
       bloodPressure: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -96,7 +88,6 @@ async function getPatientVitals(req, res) {
   }
 }
 
-// Upload a new diagnostic lab report
 async function uploadDiagnosticReport(req, res) {
   try {
     const uid = req.user.uid;
@@ -129,7 +120,6 @@ async function uploadDiagnosticReport(req, res) {
   }
 }
 
-// Get diagnostic reports
 async function getPatientReports(req, res) {
   try {
     const uid = req.user.uid;
@@ -141,7 +131,6 @@ async function getPatientReports(req, res) {
   }
 }
 
-// Delete report
 async function deleteDiagnosticReport(req, res) {
   try {
     const uid = req.user.uid;
@@ -157,7 +146,6 @@ async function deleteDiagnosticReport(req, res) {
   }
 }
 
-// Log Emergency / OTC Self-Medication
 async function logSelfMedication(req, res) {
   try {
     const uid = req.user.uid;
@@ -189,7 +177,6 @@ async function logSelfMedication(req, res) {
   }
 }
 
-// Get Self-Medications list
 async function getSelfMedications(req, res) {
   try {
     const uid = req.params.uid || req.user.uid;

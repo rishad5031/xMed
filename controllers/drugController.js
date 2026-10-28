@@ -1,14 +1,5 @@
-// =============================================================
-// xMED Government Drug Controller
-// Directorate General of Health Services (DGHS) & EDCL Formulary
-// =============================================================
-
 const governmentDrugModel = require('../models/governmentDrugModel');
 
-/**
- * GET /api/drugs/government-essential
- * Fetches officially supplied free government drugs with optional filters.
- */
 function getGovernmentDrugs(req, res) {
   try {
     const { search, category, emergency } = req.query;
@@ -37,10 +28,6 @@ function getGovernmentDrugs(req, res) {
   }
 }
 
-/**
- * GET /api/drugs/emergency
- * Curated life-saving emergency drugs officially distributed at zero cost.
- */
 function getEmergencyDrugs(req, res) {
   try {
     const emergencyDrugs = governmentDrugModel.getEmergencyDrugs();
@@ -61,10 +48,6 @@ function getEmergencyDrugs(req, res) {
   }
 }
 
-/**
- * GET /api/drugs/government-essential/:id
- * Retrieve details for a single government essential drug.
- */
 function getDrugDetails(req, res) {
   try {
     const { id } = req.params;

@@ -1,8 +1,3 @@
-// =============================================================
-// xMED - Universal Real-Time Cross-Role Messaging Model
-// Citizen <-> Citizen, Doctor <-> Citizen, Doctor <-> Doctor
-// =============================================================
-
 const { query } = require('../config/db');
 
 async function sendMessage({ sender_uid, receiver_uid, message_text }) {
@@ -16,7 +11,7 @@ async function sendMessage({ sender_uid, receiver_uid, message_text }) {
 }
 
 async function getMessageThread(uid1, uid2) {
-  // Mark incoming messages as read
+
   await query(`
     UPDATE messages 
     SET is_read = TRUE 
@@ -40,7 +35,7 @@ async function getMessageThread(uid1, uid2) {
 }
 
 async function getConversations(uid) {
-  // Find all distinct counterpart UIDs
+
   const threadUidsSql = `
     SELECT DISTINCT 
       CASE WHEN sender_uid = ? THEN receiver_uid ELSE sender_uid END AS contact_uid
@@ -54,7 +49,6 @@ async function getConversations(uid) {
   for (const row of threadRows) {
     const contactUid = row.contact_uid;
 
-    // Get latest message in this thread
     const [latest] = await query(`
       SELECT message_text, created_at, sender_uid, is_read
       FROM messages
@@ -64,14 +58,12 @@ async function getConversations(uid) {
       LIMIT 1;
     `, [uid, contactUid, contactUid, uid]);
 
-    // Count unread messages sent by contact to current user
     const [unread] = await query(`
       SELECT COUNT(*) AS unread_count
       FROM messages
       WHERE sender_uid = ? AND receiver_uid = ? AND is_read = FALSE;
     `, [contactUid, uid]);
 
-    // Lookup contact profile (check doctors first, then citizens)
     let contactName = contactUid;
     let contactRole = 'Citizen';
     let contactSubtitle = 'xMED Registered Patient';
@@ -111,14 +103,12 @@ async function getConversations(uid) {
     });
   }
 
-  // Sort conversations by latest message timestamp descending
   conversations.sort((a, b) => new Date(b.last_message_time || 0) - new Date(a.last_message_time || 0));
 
   return conversations;
 }
 
 async function getAvailableContacts(currentUid) {
-  // Return test doctors and patients so user can easily start a chat
   const doctors = await query(`
     SELECT 
       uid AS contact_uid,

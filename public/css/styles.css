@@ -1,31 +1,32 @@
 /* =============================================================
    xMED Ultra-Modern Design System
-   Google AI Studio Aesthetics & Multi-Context Background Engine
+   HackerRank GenAI Brand Aesthetics & Dark Obsidian Glass
    Designed by F'Studio
    ============================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ==========================================================
-   APPLE LIQUID GLASS DESIGN TOKENS
+   HACKERRANK GENAI & APPLE LIQUID GLASS DESIGN TOKENS
    ========================================================== */
 
-/* --- Light Mode Authentic Optical Liquid Glass (WWDC25 / visionOS) --- */
+/* --- Light Mode Optical Liquid Glass --- */
 :root, [data-theme="light"], html.light {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Helvetica Neue", sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-script: 'Caveat', cursive;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Ambient canvas allowing realistic background refraction */
-  --apple-canvas: radial-gradient(circle at 18% 15%, rgba(139, 187, 146, 0.15) 0%, transparent 45%),
-                  radial-gradient(circle at 82% 12%, rgba(42, 131, 95, 0.10) 0%, transparent 40%),
-                  radial-gradient(circle at 50% 85%, rgba(18, 84, 79, 0.08) 0%, transparent 55%),
+  --apple-canvas: radial-gradient(circle at 18% 15%, rgba(0, 234, 141, 0.08) 0%, transparent 45%),
+                  radial-gradient(circle at 82% 12%, rgba(18, 84, 79, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 50% 85%, rgba(18, 84, 79, 0.05) 0%, transparent 55%),
                   #FBFBFD;
   --app-bg: var(--apple-canvas);
 
-  /* Optical Crystal Glass: Pure Neutral Clarity, Zero Green Tint */
-  --liquid-glass-bg: rgba(255, 255, 255, 0.48);
-  --liquid-glass-elevated: rgba(255, 255, 255, 0.68);
-  --liquid-glass-hover: rgba(255, 255, 255, 0.85);
+  /* Optical Crystal Glass */
+  --liquid-glass-bg: rgba(255, 255, 255, 0.65);
+  --liquid-glass-elevated: rgba(255, 255, 255, 0.82);
+  --liquid-glass-hover: rgba(255, 255, 255, 0.95);
   --glass-surface: var(--liquid-glass-bg);
   --glass-surface-elevated: var(--liquid-glass-elevated);
   --glass-surface-hover: var(--liquid-glass-hover);
@@ -33,18 +34,16 @@
   --glass-bg-elevated: var(--liquid-glass-elevated);
   --glass-bg-hover: var(--liquid-glass-hover);
 
-  /* Specular Caustic Edge (Pure White Light Reflection) */
-  --liquid-glass-border: rgba(255, 255, 255, 0.75);
+  /* Specular Edge */
+  --liquid-glass-border: rgba(0, 0, 0, 0.08);
   --glass-border: var(--liquid-glass-border);
   --liquid-caustic-rim: 
     inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.40),
-    inset 1px 0 2px 0 rgba(255, 255, 255, 0.60),
-    inset -1px 0 2px 0 rgba(255, 255, 255, 0.60);
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.40);
   --glass-inner-bevel: var(--liquid-caustic-rim);
   --glass-rim: var(--liquid-caustic-rim);
 
-  /* Soft Ambient Diffraction Shadow (Neutral Dispersion - Zero Green Shade) */
+  /* Shadows */
   --liquid-diffraction-shadow: 
     0 8px 24px -4px rgba(0, 0, 0, 0.04),
     0 16px 40px -8px rgba(0, 0, 0, 0.06);
@@ -59,53 +58,55 @@
   --glass-shadow-lg: var(--liquid-diffraction-hover);
 
   /* Typography */
-  --apple-text-primary: #1D1D1F;
+  --apple-text-primary: #12161A;
   --apple-text-secondary: #424245;
   --apple-text-muted: #86868B;
-  --apple-accent: #2A835F;
+  --apple-accent: #10B981;
 
   --text-primary: var(--apple-text-primary);
   --text-secondary: #424245;
   --text-muted: #86868B;
-  --color-accent: var(--apple-accent);
-  --color-accent-hover: #1E6B4B;
-  --color-mint: #8BBB92;
+  --color-accent: #10B981;
+  --color-accent-hover: #059669;
+  --color-mint: #10B981;
 
-  --color-primary: #1D1D1F;
-  --color-tint: #8BBB92;
+  --color-primary: #12161A;
+  --color-tint: #12544F;
   --color-bg: #FBFBFD;
   --color-surface: var(--liquid-glass-elevated);
-  --color-text-main: #1D1D1F;
+  --color-text-main: #12161A;
   --bg-primary: #FBFBFD;
   --bg-surface: var(--liquid-glass-elevated);
   --border-surface: var(--liquid-glass-border);
-  --border-focus: #2A835F;
+  --border-focus: #10B981;
   --spotlight-color: rgba(0, 0, 0, 0.03);
 
   /* Inputs & Form Controls */
-  --input-bg: rgba(255, 255, 255, 0.65);
+  --input-bg: rgba(255, 255, 255, 0.75);
   --input-border: rgba(0, 0, 0, 0.12);
-  --input-focus-border: #2A835F;
+  --input-focus-border: #10B981;
 }
 
-/* --- Dark Mode Authentic Optical Liquid Glass (WWDC25 / visionOS) --- */
+/* --- Dark Mode HackerRank GenAI Aesthetic (Deep Space Black & Refined Emerald) --- */
 :root, [data-theme="dark"], html.dark {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Helvetica Neue", sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-script: 'Caveat', cursive;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Base Viewport Background: Absolute Space Black with Subtle Ambient Nodes */
-  --apple-canvas: radial-gradient(circle at 15% 15%, rgba(42, 131, 95, 0.18) 0%, transparent 50%),
-                  radial-gradient(circle at 85% 25%, rgba(18, 84, 79, 0.22) 0%, transparent 55%),
-                  radial-gradient(circle at 45% 85%, rgba(20, 20, 25, 0.40) 0%, transparent 60%),
-                  #000000;
-  --bg-base: #000000;
+  /* Base Viewport Canvas: Deep Space Black (#0A0C0E to #050607) with ambient emerald/teal radial backlights */
+  --apple-canvas: radial-gradient(circle at 50% 12%, rgba(16, 185, 129, 0.08) 0%, rgba(18, 84, 79, 0.05) 35%, transparent 65%),
+                  radial-gradient(circle at 15% 45%, rgba(16, 185, 129, 0.04) 0%, transparent 40%),
+                  radial-gradient(circle at 85% 65%, rgba(5, 150, 105, 0.04) 0%, transparent 40%),
+                  #050607;
+  --bg-base: #050607;
+  --bg-dark-deep: #050607;
   --bg-ambient-mesh: var(--apple-canvas);
   --app-bg: var(--apple-canvas);
 
-  /* Optical Crystal Glass: Pure Neutral Apple Obsidian Glass, Zero Green Shade */
-  --liquid-glass-bg: rgba(28, 28, 30, 0.48);
-  --liquid-glass-elevated: rgba(44, 44, 46, 0.62);
-  --liquid-glass-hover: rgba(58, 58, 60, 0.72);
+  /* Dark Obsidian Glass (High-Contrast Solid Backdrop 88-92% opacity) */
+  --liquid-glass-bg: rgba(18, 22, 26, 0.88);
+  --liquid-glass-elevated: rgba(18, 22, 26, 0.94);
+  --liquid-glass-hover: rgba(24, 30, 36, 0.98);
   --glass-bg: var(--liquid-glass-bg);
   --glass-bg-elevated: var(--liquid-glass-elevated);
   --glass-bg-hover: var(--liquid-glass-hover);
@@ -113,67 +114,62 @@
   --glass-surface-elevated: var(--liquid-glass-elevated);
   --glass-surface-hover: var(--liquid-glass-hover);
 
-  /* Specular Caustic Edge (Pure White Light Rim) */
-  --liquid-glass-border: rgba(255, 255, 255, 0.18);
+  /* Specular 1px Translucent Rim Border */
+  --liquid-glass-border: rgba(255, 255, 255, 0.12);
   --glass-border: var(--liquid-glass-border);
   --liquid-caustic-rim: 
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.40),
-    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.15),
-    inset 1px 0 1.5px 0 rgba(255, 255, 255, 0.22),
-    inset -1px 0 1.5px 0 rgba(255, 255, 255, 0.22);
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.60);
   --glass-rim: var(--liquid-caustic-rim);
   --glass-inner-bevel: var(--liquid-caustic-rim);
 
-  /* Soft Ambient Diffraction Shadow (Zero Harsh Black Lines) */
+  /* Refined Emerald Glow & Shadows (Toned down from harsh glare) */
+  --neon-mint-glow: 0 0 18px rgba(16, 185, 129, 0.30);
+  --neon-mint-glow-lg: 0 0 28px rgba(16, 185, 129, 0.40);
   --liquid-diffraction-shadow: 
-    0 12px 36px -4px rgba(0, 0, 0, 0.60),
-    0 24px 60px -8px rgba(0, 0, 0, 0.75);
+    0 12px 36px -4px rgba(0, 0, 0, 0.75),
+    0 24px 60px -8px rgba(0, 0, 0, 0.90);
 
   --liquid-diffraction-hover: 
-    0 16px 44px -4px rgba(0, 0, 0, 0.70),
-    0 32px 72px -10px rgba(0, 0, 0, 0.85);
+    0 16px 44px -4px rgba(0, 0, 0, 0.85),
+    0 32px 72px -10px rgba(0, 0, 0, 0.98);
 
   --glass-shadow: var(--liquid-diffraction-shadow);
-  --glass-shadow-sm: 0 4px 16px -2px rgba(0, 0, 0, 0.40);
-  --glass-shadow-md: 0 12px 36px -4px rgba(0, 0, 0, 0.60);
+  --glass-shadow-sm: 0 4px 16px -2px rgba(0, 0, 0, 0.50);
+  --glass-shadow-md: 0 12px 36px -4px rgba(0, 0, 0, 0.70);
   --glass-shadow-lg: var(--liquid-diffraction-hover);
 
-  /* Typography */
+  /* High-Contrast Typography (Crisp & Readable) */
   --apple-text-primary: #FFFFFF;
-  --apple-text-secondary: #D1E7DF;
-  --apple-text-muted: #8BBB92;
-  --apple-accent: #2A835F;
+  --apple-text-secondary: #CBD5E1;
+  --apple-text-muted: #94A3B8;
+  --apple-accent: #10B981;
 
   --text-primary: var(--apple-text-primary);
   --text-secondary: var(--apple-text-secondary);
   --text-muted: var(--apple-text-muted);
-  --accent-primary: var(--apple-accent);
-  --accent-hover: #34A074;
-  --color-accent: var(--apple-accent);
-  --color-accent-hover: #34A074;
-  --color-mint: #8BBB92;
+  --accent-primary: #10B981;
+  --accent-hover: #059669;
+  --color-accent: #10B981;
+  --color-accent-hover: #059669;
+  --color-mint: #10B981;
+  --color-cyan: #12544F;
 
-  --bg-primary: #000000;
+  --bg-primary: #050607;
   --bg-surface: var(--liquid-glass-elevated);
   --border-surface: var(--liquid-glass-border);
-  --border-focus: #2A835F;
-  --spotlight-color: rgba(255, 255, 255, 0.05);
+  --border-focus: #10B981;
+  --spotlight-color: rgba(16, 185, 129, 0.04);
 
   /* Inputs & Form Controls */
-  --input-bg: rgba(36, 36, 38, 0.65);
-  --input-border: rgba(255, 255, 255, 0.15);
-  --input-focus-border: #2A835F;
+  --input-bg: rgba(18, 22, 26, 0.92);
+  --input-border: rgba(255, 255, 255, 0.14);
+  --input-focus-border: #10B981;
 
-  /* AI Yellow Compartment Palette */
-  --ai-gold: #f59e0b;
-  --ai-amber: #d97706;
-  --ai-glow: rgba(245, 158, 11, 0.18);
-}
-
-  /* AI Yellow Compartment Palette */
-  --ai-gold: #f59e0b;
-  --ai-amber: #d97706;
-  --ai-glow: rgba(245, 158, 11, 0.18);
+  /* AI Assistant Palette */
+  --ai-mint: #10B981;
+  --ai-cyan: #06B6D4;
+  --ai-glow: rgba(16, 185, 129, 0.20);
 }
 
 /* Global Reset & Base */
@@ -232,6 +228,298 @@ html.dark .apple-glass-nav {
   background: var(--glass-bg-elevated);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow), var(--glass-rim);
+}
+
+/* =============================================================
+   HACKERRANK GENAI DARK MODE COMPONENT SUITE
+   ============================================================= */
+
+.font-script,
+.font-handwritten {
+  font-family: 'Caveat', cursive !important;
+}
+
+/* Dark Obsidian Glass (Solid High-Contrast Backdrop with 20px blur) */
+.dark-obsidian-card,
+.obsidian-card {
+  background: rgba(18, 22, 26, 0.90);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark-obsidian-card:hover,
+.obsidian-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.95), 0 0 24px rgba(16, 185, 129, 0.15);
+}
+
+/* Top Floating Nav Dock Capsule */
+.top-floating-dock {
+  background: rgba(10, 12, 14, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85), 0 0 16px rgba(16, 185, 129, 0.08);
+  transition: all 0.3s ease;
+}
+
+/* Primary Refined Emerald Pill Button (Maximum Contrast Pure Black Text) */
+.brand-neon-pill,
+.btn-neon-mint {
+  background-color: #10B981 !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.brand-neon-pill:hover,
+.btn-neon-mint:hover {
+  background-color: #059669 !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.50) !important;
+}
+
+/* Secondary Glass Outline Pill Button */
+.brand-outline-pill,
+.btn-outline-mint {
+  background: rgba(18, 22, 26, 0.80) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #FFFFFF !important;
+  border: 1px solid rgba(16, 185, 129, 0.40) !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.brand-outline-pill:hover,
+.btn-outline-mint:hover {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: #10B981 !important;
+  color: #34D399 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.30) !important;
+}
+
+/* Amber Glass Outline Pill Button (BMDC Section Style) */
+.brand-outline-amber-pill {
+  background: rgba(18, 22, 26, 0.80) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #FFFFFF !important;
+  border: 1px solid rgba(245, 158, 11, 0.40) !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.brand-outline-amber-pill:hover {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: #F59E0B !important;
+  color: #FBBF24 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.30) !important;
+}
+
+/* Ambient Radial Backlights */
+.hero-radial-backlight {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(0, 234, 141, 0.15) 0%, rgba(18, 84, 79, 0.08) 40%, rgba(10, 12, 14, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-node-glow-left {
+  position: absolute;
+  top: 25%;
+  left: 5%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(0, 234, 141, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-node-glow-right {
+  position: absolute;
+  top: 35%;
+  right: 5%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(47, 232, 150, 0.07) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =============================================================
+   CINEMATIC LAPTOP / BROWSER PRODUCT PRESENTATION
+   ============================================================= */
+
+@keyframes laptopBob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes lightTrailMove {
+  0% {
+    stroke-dashoffset: 800;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pulseGlowSlow {
+  0%, 100% {
+    opacity: 0.35;
+    filter: drop-shadow(0 0 15px rgba(0, 234, 141, 0.3));
+  }
+  50% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 35px rgba(0, 234, 141, 0.7));
+  }
+}
+
+.laptop-presentation-wrapper {
+  perspective: 1200px;
+  animation: laptopBob 8s ease-in-out infinite;
+}
+
+.laptop-frame {
+  background: #0D1215;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 0 0 1px rgba(0, 234, 141, 0.15),
+    0 24px 70px -10px rgba(0, 0, 0, 0.95),
+    0 0 50px -10px rgba(0, 234, 141, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.laptop-notch {
+  width: 140px;
+  height: 18px;
+  background: #050607;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.laptop-camera-lens {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 1px solid #10B981;
+  box-shadow: 0 0 4px #10B981;
+}
+
+.laptop-screen-glass {
+  background: rgba(18, 22, 26, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Light Trails SVG layer */
+.light-trail-animated {
+  stroke-dasharray: 400 400;
+  animation: lightTrailMove 10s linear infinite;
+}
+
+/* =============================================================
+   CINEMATIC SECTION TRANSITIONS (DARK -> LIGHT -> DARK)
+   ============================================================= */
+
+.section-dark-to-light-transition {
+  background: linear-gradient(180deg, #050607 0%, #0A0C0E 40%, #E2E8F0 85%, #F7F8F6 100%);
+  position: relative;
+}
+
+.bright-editorial-section {
+  background-color: #F7F8F6;
+  color: #0A0C0E;
+  position: relative;
+}
+
+.section-light-to-dark-transition {
+  background: linear-gradient(180deg, #F7F8F6 0%, #E2E8F0 20%, #0A0C0E 70%, #050607 100%);
+  position: relative;
+}
+
+/* Bright section card */
+.bright-glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.08), 0 0 25px rgba(16, 185, 129, 0.1);
+  transition: all 0.3s ease;
+}
+
+.bright-glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.12), 0 0 35px rgba(16, 185, 129, 0.2);
+}
+
+/* =============================================================
+   UNIFIED NATIONAL UID CONNECTED TOPOLOGY
+   ============================================================= */
+
+.uid-central-node {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(18, 22, 26, 0.9) 70%);
+  border: 1.5px solid #10B981;
+  box-shadow: 0 0 35px rgba(16, 185, 129, 0.4);
+}
+
+.uid-branch-node {
+  background: rgba(18, 22, 26, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
+}
+
+.uid-branch-node:hover {
+  border-color: #10B981;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+  transform: translateY(-3px);
 }
 
 /* =============================================================
@@ -2226,10 +2514,10 @@ html.light .blood-quote-box {
 /* Unread Notification Glow Pulse */
 @keyframes applePulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(42, 131, 95, 0.5);
+    box-shadow: 0 0 0 0 rgba(29, 84, 109, 0.5);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(42, 131, 95, 0);
+    box-shadow: 0 0 0 8px rgba(29, 84, 109, 0);
   }
 }
 
@@ -2334,7 +2622,7 @@ html.dark input:focus,
 html.dark select:focus,
 html.dark textarea:focus {
   border-color: var(--apple-accent) !important;
-  box-shadow: 0 0 0 3px rgba(42, 131, 95, 0.25), inset 0 1px 2px 0 rgba(0, 0, 0, 0.4), var(--liquid-caustic-rim) !important;
+  box-shadow: 0 0 0 3px rgba(29, 84, 109, 0.30), inset 0 1px 2px 0 rgba(0, 0, 0, 0.4), var(--liquid-caustic-rim) !important;
   outline: none !important;
 }
 
@@ -2365,12 +2653,12 @@ html.dark .text-slate-500 {
 html.dark .btn-liquid-primary,
 html.dark .btn-primary,
 html.dark .btn-accent {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.12) 100%), var(--apple-accent) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 100%), var(--apple-accent) !important;
   color: #FFFFFF !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 4px 14px 0 rgba(42, 131, 95, 0.30),
-              inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.8),
-              inset 0 -1px 1.5px 0 rgba(0, 0, 0, 0.15) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 14px 0 rgba(6, 30, 41, 0.50),
+              inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.6),
+              inset 0 -1px 1.5px 0 rgba(0, 0, 0, 0.20) !important;
 }
 
 [data-theme="dark"] .btn-liquid-primary:hover,
@@ -2380,8 +2668,9 @@ html.dark .btn-liquid-primary:hover,
 html.dark .btn-primary:hover,
 html.dark .btn-accent:hover {
   transform: translateY(-1.5px) scale(1.02);
-  box-shadow: 0 8px 22px 0 rgba(42, 131, 95, 0.40),
-              inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95) !important;
+  background: #266A8A !important;
+  box-shadow: 0 8px 22px 0 rgba(6, 30, 41, 0.60),
+              inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.85) !important;
 }
 
 [data-theme="dark"] .btn-liquid-secondary,
@@ -2416,8 +2705,8 @@ html.dark .badge-emergency {
 /* Dark Mode Brand Emblem & Logo */
 [data-theme="dark"] .brand-emblem-ring,
 html.dark .brand-emblem-ring {
-  background: linear-gradient(135deg, #12544F, #2A835F) !important;
-  box-shadow: 0 4px 14px rgba(18, 84, 79, 0.30) !important;
+  background: linear-gradient(135deg, #061E29, #1D546D) !important;
+  box-shadow: 0 4px 14px rgba(6, 30, 41, 0.40) !important;
 }
 
 [data-theme="dark"] .brand-emblem-bg,
@@ -2447,7 +2736,7 @@ html.dark .brand-badge {
 /* Hero Elements in Dark Mode */
 [data-theme="dark"] .hero-gradient-text,
 html.dark .hero-gradient-text {
-  background: linear-gradient(135deg, #FFFFFF 0%, #8BBB92 60%, #2A835F 100%) !important;
+  background: linear-gradient(135deg, #FFFFFF 0%, #5F9598 60%, #1D546D 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
@@ -2489,15 +2778,18 @@ html.dark .nav-signin-btn:hover {
 
 [data-theme="dark"] .nav-register-btn,
 html.dark .nav-register-btn {
-  background: var(--apple-accent) !important;
-  color: #FFFFFF !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 4px 14px rgba(42, 131, 95, 0.35),
-              inset 0 1px 1px rgba(255, 255, 255, 0.60) !important;
+  background: #F59E0B !important;
+  color: #0A0C0E !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  border: 1px solid rgba(251, 191, 36, 0.5) !important;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.35) !important;
 }
 
 [data-theme="dark"] .nav-register-btn:hover,
 html.dark .nav-register-btn:hover {
-  background: #34A074 !important;
+  background: #FBBF24 !important;
+  color: #000000 !important;
+}
 }
 
